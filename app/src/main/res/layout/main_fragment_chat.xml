@@ -1,0 +1,22 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:background="@color/qqloginwhite" >
+
+
+<android.support.v4.widget.SwipeRefreshLayout
+    android:id="@+id/srlsession"
+    android:layout_below="@+id/rlsearch"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+    <ListView
+        android:id="@+id/lvsession"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/rlsearch"
+        android:divider="@drawable/list_divider"
+        android:dividerHeight="1dp" >
+    </ListView>
+</android.support.v4.widget.SwipeRefreshLayout>
+
+</RelativeLayout>

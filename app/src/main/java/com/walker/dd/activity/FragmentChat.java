@@ -1,110 +1,86 @@
 package com.walker.dd.activity;
 
-import android.content.Context;
+import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
+import com.walker.common.util.Bean;
 import com.walker.dd.R;
-import com.walker.dd.activity.dummy.DummyContent;
-import com.walker.dd.activity.dummy.DummyContent.DummyItem;
+import com.walker.dd.adapter.AdapterLvSession;
+import com.walker.dd.util.AndroidTools;
 
-import java.util.List;
+import java.util.*;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
- */
 public class FragmentChat extends Fragment {
 
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
+    SwipeRefreshLayout srlsession;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public FragmentChat() {
-    }
+    ListView lvSession;
+    //type <user,group>,toid id,username,profilepath,nickname,name,   msg,time,status <在线,离线>
+    AdapterLvSession adapterLvSession;
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static FragmentChat newInstance(int columnCount) {
-        FragmentChat fragment = new FragmentChat();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    List<Bean> listSessions = new ArrayList<>();
+
+
+    ListView lvsession;
+
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v=inflater.inflate(R.layout.main_fragment_chat,container,false);
 
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_chat_item_list, container, false);
-
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+        srlsession = v.findViewById(R.id.srlsession);
+        lvsession =  v.findViewById(R.id.lvsession);
+        adapterLvSession = new AdapterLvSession(getContext(), listSessions);
+        lvSession.setAdapter( adapterLvSession);
+        lvSession.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                AndroidTools.toast(getActivity(), "click " + listSessions.get(arg2).toString());
             }
-            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+        });
+        lvSession.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,  int arg2, long arg3) {
+                AndroidTools.toast(getActivity(), "remove " + listSessions.get(arg2).toString());
+                return true;
+            }
+        });
+
+//        /设置刷新时动画的颜色，可以设置4个
+        srlsession.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
+        srlsession.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                AndroidTools.toast(getContext(), "refresh");
+            }
+        });
+
+
+        init();
+        notifyDataSetChanged();
+
+        return v;
+    }
+
+
+    public void notifyDataSetChanged(){
+        adapterLvSession.notifyDataSetChanged();
+    }
+    public void init(){
+        for(int i = 0; i < 10; i++) {
+            listSessions.add(new Bean().set("MSG", "TEXT").set("NAME", "test" + i).set("TEXT", "text" + i)
+                    .set("VOICE", "").set("FILE", "").set("PHOTO", "").set("NUM", 88).set("PROFILEPATH", ""));
+
+            //NAME TEXT VOICE FILE PHOTO NUM PROFILEPATH
         }
-        return view;
+
     }
 
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
-    }
 }
