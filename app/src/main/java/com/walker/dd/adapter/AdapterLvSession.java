@@ -51,7 +51,8 @@ public   class AdapterLvSession extends BaseAdapter    {
 		//构建或者取出可复用布局
 		if (convertView == null) { //若无可复用布局
 				viewHolderUser = new ViewHolderUser();
-				convertView = listContainer.inflate(R.layout.listview_adapter_session_item, null);	// 获取list_item布局文件的视图
+            convertView = listContainer.inflate(R.layout.listview_adapter_session_item, null);	// 获取list_item布局文件的视图
+//            convertView = getla.inflate(R.layout.listview_adapter_session_item, null);	// 获取list_item布局文件的视图
 				viewHolderUser.ivprofile = (ImageView) convertView .findViewById(R.id.ivprofile);
 				viewHolderUser.tvtime = (TextView) convertView .findViewById(R.id.tvtime);
 				viewHolderUser.tvusername = (TextView) convertView .findViewById(R.id.tvusername);

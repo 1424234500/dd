@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
@@ -36,8 +37,21 @@ public class FragmentChat extends Fragment {
 
         srlsession = v.findViewById(R.id.srlsession);
         lvsession =  v.findViewById(R.id.lvsession);
-        adapterLvSession = new AdapterLvSession(getContext(), listSessions);
-        lvSession.setAdapter( adapterLvSession);
+//        adapterLvSession = new AdapterLvSession(lvsession.getContext(), listSessions);
+//        lvSession.setAdapter( adapterLvSession);
+
+        List<Map<String, Object>> mData = new ArrayList<>();
+        for(int i = 0; i < 10; i ++){
+            Map<String,Object> item = new HashMap<String,Object>();
+            item.put("name", "n" + i);
+            item.put("num", i);
+            mData.add(item);
+        }
+        SimpleAdapter adapter = new SimpleAdapter(getActivity(),mData,android.R.layout.simple_expandable_list_item_2,
+                new String[]{"name","num"},new int[]{android.R.id.text1,android.R.id.text2});
+        lvSession.setAdapter(adapter);
+
+
         lvSession.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -62,12 +76,14 @@ public class FragmentChat extends Fragment {
         });
 
 
-        init();
-        notifyDataSetChanged();
-
         return v;
     }
-
+    @Override
+    public void onStart() {
+        init();
+        notifyDataSetChanged();
+        super.onStart();
+    }
 
     public void notifyDataSetChanged(){
         adapterLvSession.notifyDataSetChanged();
