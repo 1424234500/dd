@@ -15,6 +15,14 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
 
+    FragmentChat fragmentChat;
+    FragmentList fragmentList;
+    FragmentOther fragmentOther;
+
+    FragmentManager fragmentManager;
+
+
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -23,22 +31,21 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     mTextMessage.setText(R.string.title_home);
+                    fragmentManager.beginTransaction().replace(R.id.main_fragment, fragmentChat).commit();
                     return true;
                 case R.id.navigation_dashboard:
                     mTextMessage.setText(R.string.title_dashboard);
+                    fragmentManager.beginTransaction().replace(R.id.main_fragment, fragmentList).commit();
+
                     return true;
                 case R.id.navigation_notifications:
                     mTextMessage.setText(R.string.title_notifications);
-
-                    startActivity(new Intent(MainActivity.this, ActivityTestSocket.class));
+                    fragmentManager.beginTransaction().replace(R.id.main_fragment, fragmentOther).commit();
+//                    startActivity(new Intent(MainActivity.this, ActivityTestSocket.class));
 
                     return true;
             }
 
-
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag(nowFragment)).commit();
-            fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag(nowFragment)).commit();
 
             return false;
         }
@@ -56,6 +63,18 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+        giftFragment = new Fragment1();
+        hatFragment = new Fragment2();
+        messageFragment = new Fragment3();
+        centerFragment = new Fragment4();
+
+        fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.main_fragment, giftFragment).commit();
+
+
+//        FragmentManager fragmentManager = getFragmentManager();
+//        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag(nowFragment)).commit();
+//        fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag(nowFragment)).commit();
 
     }
 
