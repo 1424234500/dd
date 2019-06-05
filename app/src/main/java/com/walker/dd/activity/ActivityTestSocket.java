@@ -1,6 +1,9 @@
 package com.walker.dd.activity;
 
+import android.app.NotificationManager;
+import android.content.Intent;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -22,6 +25,8 @@ public class ActivityTestSocket extends AppCompatActivity implements View.OnClic
     TextView tietOut;
     TextInputEditText tietMsg;
     Button bconn;
+
+
     Client client;
 
     @Override
@@ -31,12 +36,6 @@ public class ActivityTestSocket extends AppCompatActivity implements View.OnClic
 
         bconn = this.findViewById(R.id.conn);
         bconn.setOnClickListener(this);
-        this.findViewById(R.id.conn).setOnClickListener(this);
-        this.findViewById(R.id.login).setOnClickListener(this);
-        this.findViewById(R.id.send).setOnClickListener(this);
-        this.findViewById(R.id.session).setOnClickListener(this);
-        this.findViewById(R.id.auto).setOnClickListener(this);
-        this.findViewById(R.id.other).setOnClickListener(this);
 
         tietIpPort = this.findViewById(R.id.tietIpPort);
         tietOut = this.findViewById(R.id.tietOut);
@@ -57,6 +56,7 @@ public class ActivityTestSocket extends AppCompatActivity implements View.OnClic
                     client.start();
                 }else{
                     client.stop();
+                    client = null;
                 }
                 break;
             case R.id.login:
@@ -84,18 +84,21 @@ public class ActivityTestSocket extends AppCompatActivity implements View.OnClic
     public String out(Object... objects) {
         String str = Tools.objects2string(objects);
         AndroidTools.log(str);
+        tietOut.setText("" + TimeUtil.getTimeYmdHms() + " " + str + " \n");
 //        tietOut.setText(tietOut.getText() + "" + TimeUtil.getTimeYmdHms() + " " + str + " \n");
-        tietOut.append(TimeUtil.getTimeYmdHms() + " " + str + " \n");
-        if(tietOut.getTextSize() > 40000){
-            tietOut.setText("clear");
-        }
+//        tietOut.append(TimeUtil.getTimeYmdHms() + " " + str + " \n");
+//        if(tietOut.getTextSize() > 40000){
+//            tietOut.setText("clear");
+//        }
 //        tietOut.scrollTo(0, 0);
+
         return "";
     }
 
     @Override
     public void onRead(String s, String s1) {
         out("收到", s1);
+        sendBroadcast(new Intent("111").putExtra("msg", s1)); //发送应用内广播
     }
 
     @Override

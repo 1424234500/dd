@@ -41,7 +41,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.ActivityTestSocket"></activity>
+        <activity android:name=".activity.ActivityTestSocket" />
+        <activity android:name=".activity.ActivityCompose" />
+        <activity
+            android:name=".activity.AcBase"
+            android:label="@string/title_activity_ac_base"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

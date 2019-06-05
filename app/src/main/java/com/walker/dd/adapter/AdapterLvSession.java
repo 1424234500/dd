@@ -21,24 +21,22 @@ import com.walker.dd.R;
 import com.walker.dd.util.EmotionUtils;
 
 /**
- * @author Walker
- * @date 2017-3-21 下午2:30:44
- * Description: 聊天会话列表
+ * 会话列表
+ *
  */
 public   class AdapterLvSession extends BaseAdapter    {
 	private Context context; // 运行上下文
 	private List<Bean>  listItems = null; // listview的数据集合
-	private LayoutInflater listContainer; // 视图容器
+	private LayoutInflater layoutInflater; // 视图容器
 	//控件集合实例
-	private ViewHolderUser viewHolderUser ;
+	private ViewHolder viewHolder ;
 	//布局类型
-    // // 自定义控件集合  布局类型
-	public final class ViewHolderUser {
+    //自定义控件集合  布局类型
+	public final class ViewHolder {
 		public ImageView ivprofile; 
 		public TextView tvusername; 
 		public TextView tvmsg;
 		public TextView tvtime;
-		
 		public TextView tvnum;
 		
 	}
@@ -46,57 +44,57 @@ public   class AdapterLvSession extends BaseAdapter    {
 	
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		viewHolderUser = null;  
+		viewHolder = null;  
 
 		//构建或者取出可复用布局
 		if (convertView == null) { //若无可复用布局
-				viewHolderUser = new ViewHolderUser();
-            convertView = listContainer.inflate(R.layout.listview_adapter_session_item, null);	// 获取list_item布局文件的视图
+				viewHolder = new ViewHolder();
+            convertView = layoutInflater.inflate(R.layout.listview_adapter_session_item, null);	// 获取list_item布局文件的视图
 //            convertView = getla.inflate(R.layout.listview_adapter_session_item, null);	// 获取list_item布局文件的视图
-				viewHolderUser.ivprofile = (ImageView) convertView .findViewById(R.id.ivprofile);
-				viewHolderUser.tvtime = (TextView) convertView .findViewById(R.id.tvtime);
-				viewHolderUser.tvusername = (TextView) convertView .findViewById(R.id.tvusername);
-				viewHolderUser.tvmsg = (TextView) convertView .findViewById(R.id.tvmsg);
-				viewHolderUser.tvnum = (TextView) convertView .findViewById(R.id.tvnum);
+				viewHolder.ivprofile = (ImageView) convertView .findViewById(R.id.ivprofile);
+				viewHolder.tvtime = (TextView) convertView .findViewById(R.id.tvtime);
+				viewHolder.tvusername = (TextView) convertView .findViewById(R.id.tvusername);
+				viewHolder.tvmsg = (TextView) convertView .findViewById(R.id.tvmsg);
+				viewHolder.tvnum = (TextView) convertView .findViewById(R.id.tvnum);
 				
-				convertView.setTag(viewHolderUser);// 设置控件集到convertView
+				convertView.setTag(viewHolder);// 设置控件集到convertView
 		} else {//若有可复用布局
-				viewHolderUser = (ViewHolderUser) convertView.getTag();
+				viewHolder = (ViewHolder) convertView.getTag();
 		}
 		// 设置文字和图片和监听
-		//	viewHolderUser.tvusername.setText("aaaaaaaaaaaaaaaaaa") ;
+		//	viewHolder.tvusername.setText("aaaaaaaaaaaaaaaaaa") ;
         //NAME TEXT VOICE FILE PHOTO NUM PROFILEPATH
 
-		viewHolderUser.tvusername.setText(listItems.get(position).get("NAME", "")) ;
-		//viewHolderUser.tvmsg.setText(listItems.get(position, "MSG")) ;
+		viewHolder.tvusername.setText(listItems.get(position).get("NAME", "")) ;
+		//viewHolder.tvmsg.setText(listItems.get(position, "MSG")) ;
 		if(listItems.get(position).get("MSG", "").equals("TEXT")){
-			SpannableString spannableString = EmotionUtils.getEmotionContent(context,viewHolderUser.tvmsg,listItems.get(position).get("MSG", ""));
-			viewHolderUser.tvmsg.setText(spannableString);
+			SpannableString spannableString = EmotionUtils.getEmotionContent(context,viewHolder.tvmsg,listItems.get(position).get("MSG", ""));
+			viewHolder.tvmsg.setText(spannableString);
 		}else if(listItems.get(position).get("MSG", "").equals("VOICE")){
-			viewHolderUser.tvmsg.setText("[语音]");
+			viewHolder.tvmsg.setText("[语音]");
 		}else if(listItems.get(position).get("MSG", "").equals("FILE")){
-			viewHolderUser.tvmsg.setText("[文件]");
+			viewHolder.tvmsg.setText("[文件]");
 		}else if(listItems.get(position).get("MSG", "").equals("PHOTO")){
-			viewHolderUser.tvmsg.setText("[图片]");
+			viewHolder.tvmsg.setText("[图片]");
 		}else {
-			SpannableString spannableString = EmotionUtils.getEmotionContent(context,viewHolderUser.tvmsg,listItems.get(position).get("MSG", ""));
-			viewHolderUser.tvmsg.setText(spannableString);
+			SpannableString spannableString = EmotionUtils.getEmotionContent(context,viewHolder.tvmsg,listItems.get(position).get("MSG", ""));
+			viewHolder.tvmsg.setText(spannableString);
 		}
 		
 			
-		viewHolderUser.tvtime.setText(listItems.get(position).get("TIME", ""));
+		viewHolder.tvtime.setText(listItems.get(position).get("TIME", ""));
 		int t = listItems.get(position).get("NUM", 0);
 		if(t <= 0){
-			viewHolderUser.tvnum.setText( "") ;
-			viewHolderUser.tvnum.setVisibility(View.INVISIBLE);
+			viewHolder.tvnum.setText( "") ;
+			viewHolder.tvnum.setVisibility(View.INVISIBLE);
 		}else if(t > 99){
-			viewHolderUser.tvnum.setText( "99+") ;
-			viewHolderUser.tvnum.setVisibility(View.VISIBLE);
+			viewHolder.tvnum.setText( "99+") ;
+			viewHolder.tvnum.setVisibility(View.VISIBLE);
 		}else{
-			viewHolderUser.tvnum.setText( ""+t) ;
-			viewHolderUser.tvnum.setVisibility(View.VISIBLE);
+			viewHolder.tvnum.setText( ""+t) ;
+			viewHolder.tvnum.setVisibility(View.VISIBLE);
 		}
-//	 	NetImage.loadProfile(context, listItems.get(position, "PROFILEPATH"), viewHolderUser.ivprofile);
+//	 	NetImage.loadProfile(context, listItems.get(position, "PROFILEPATH"), viewHolder.ivprofile);
 		 
 		return convertView; 
 	}
@@ -115,7 +113,7 @@ public   class AdapterLvSession extends BaseAdapter    {
 	
 	public AdapterLvSession(Context context, List<Bean> listItems) {
 		this.context = context;
-		listContainer = LayoutInflater.from(context); // 创建视图容器并设置上下文
+		layoutInflater = LayoutInflater.from(context); // 创建视图容器并设置上下文
         this.listItems = listItems;
 	 
 	}
