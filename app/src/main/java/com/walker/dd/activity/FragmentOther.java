@@ -55,10 +55,27 @@ public class FragmentOther extends FragmentBase {
             }
         });
 
-        init();
-        notifyDataSetChanged();
 
         return v;
+    }
+
+    /**
+     * 传递引用对象数据初始化
+     *
+     * @param data
+     */
+    @Override
+    public void setData(Object data) {
+
+        this.listItems = (List<Bean>) data;
+        if(this.listItems.size() <= 0){
+            listItems.add(new Bean().set("IMAGE", "").set("TEXT", "socket"));
+            listItems.add(new Bean().set("IMAGE", "").set("TEXT", "compose"));
+            for(int i = 0; i < 10; i++) {
+                listItems.add(new Bean().set("IMAGE", "").set("TEXT", "text" + i));
+            }
+        }
+        this.notifyDataSetChanged();
     }
 
     /**
@@ -66,23 +83,10 @@ public class FragmentOther extends FragmentBase {
      */
     @Override
     public void notifyDataSetChanged() {
-        adapter.notifyDataSetChanged();
+        if(adapter != null)
+            adapter.notifyDataSetChanged();
     }
 
-    /**
-     * 初始化数据
-     */
-    @Override
-    public void init() {
-        listItems.add(new Bean().set("IMAGE", "").set("TEXT", "socket"));
-        listItems.add(new Bean().set("IMAGE", "").set("TEXT", "compose"));
-
-        for(int i = 0; i < 10; i++) {
-            listItems.add(new Bean().set("IMAGE", "").set("TEXT", "text" + i));
-
-            //NAME TEXT VOICE FILE PHOTO NUM PROFILEPATH
-        }
-    }
 
     /**
      * 数据广播传递 activity通过baseAc收到广播后派发给当前fragment
@@ -105,7 +109,7 @@ public class FragmentOther extends FragmentBase {
                 startActivity(new Intent(getActivity(), ActivityTestSocket.class));
                 break;
                 default:
-
+                sendSocket("echo", bean);
                     break;
         }
 

@@ -23,10 +23,8 @@ public class FragmentChat extends FragmentBase implements  AdapterView.OnItemCli
 
     ListView lv;
     //type <user,group>,toid id,username,profilepath,nickname,name,   msg,time,status <在线,离线>
-    List<Bean> listItems = new ArrayList<>();
+    public static List<Bean> listItems;
     AdapterLvSession adapter;
-
-
 
 
     @Override
@@ -50,33 +48,36 @@ public class FragmentChat extends FragmentBase implements  AdapterView.OnItemCli
             }
         });
 
-
-        init();
-        notifyDataSetChanged();
-
         return v;
     }
 
+
+    /**
+     * 传递引用对象数据初始化
+     *
+     * @param data
+     */
+    @Override
+    public void setData(Object data) {
+        this.listItems = (List<Bean>) data;
+        if(this.listItems.size() <= 0){
+            for(int i = 0; i < 10; i++) {
+                listItems.add(new Bean().set("MSG", "TEXT").set("NAME", "test" + i).set("TEXT", "text" + i)
+                        .set("VOICE", "").set("FILE", "").set("PHOTO", "").set("NUM", 88).set("PROFILEPATH", ""));
+
+                //NAME TEXT VOICE FILE PHOTO NUM PROFILEPATH
+            }
+        }
+        this.notifyDataSetChanged();
+    }
 
     /**
      * 更新数据
      */
     @Override
     public void notifyDataSetChanged() {
-        adapter.notifyDataSetChanged();
-    }
-
-    /**
-     * 初始化数据
-     */
-    @Override
-    public void init() {
-        for(int i = 0; i < 10; i++) {
-            listItems.add(new Bean().set("MSG", "TEXT").set("NAME", "test" + i).set("TEXT", "text" + i)
-                    .set("VOICE", "").set("FILE", "").set("PHOTO", "").set("NUM", 88).set("PROFILEPATH", ""));
-
-            //NAME TEXT VOICE FILE PHOTO NUM PROFILEPATH
-        }
+        if(adapter != null)
+            adapter.notifyDataSetChanged();
     }
 
     /**
@@ -86,7 +87,7 @@ public class FragmentChat extends FragmentBase implements  AdapterView.OnItemCli
      */
     @Override
     public void onReceive(String msg) {
-        AndroidTools.toast(getContext(), "onReceive " + msg);
+        AndroidTools.toast(getContext(), "chat onReceive " + msg);
     }
 
     /**

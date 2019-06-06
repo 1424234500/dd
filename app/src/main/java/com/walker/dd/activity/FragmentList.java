@@ -17,18 +17,20 @@ public class FragmentList extends FragmentBase {
     }
 
     /**
-     * 更新数据
+     * 传递引用对象数据初始化
+     *
+     * @param data
      */
     @Override
-    public void notifyDataSetChanged() {
+    public void setData(Object data) {
 
     }
 
     /**
-     * 初始化数据
+     * 更新数据
      */
     @Override
-    public void init() {
+    public void notifyDataSetChanged() {
 
     }
 

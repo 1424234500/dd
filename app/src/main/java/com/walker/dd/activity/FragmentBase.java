@@ -20,14 +20,13 @@ import java.util.List;
 public abstract class FragmentBase extends Fragment {
 
     /**
-     * 更新数据
+     * 传递引用对象数据初始化
+     */
+    public abstract  void setData(Object data);
+    /**
+     * 更新数据 后 通知更新页面
      */
     public abstract void notifyDataSetChanged();
-
-    /**
-     * 初始化数据
-     */
-    public abstract void init();
 
 
     /**

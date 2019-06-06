@@ -16,6 +16,7 @@ import com.walker.common.util.Tools;
 import com.walker.dd.database.BaseDao;
 import com.walker.dd.database.BaseDaoImpl;
 import com.walker.dd.util.AndroidTools;
+import com.walker.dd.util.Constant;
 import com.walker.dd.view.DialogBeats;
 
 public abstract class AcBase extends AppCompatActivity implements View.OnClickListener{
@@ -52,7 +53,7 @@ public abstract class AcBase extends AppCompatActivity implements View.OnClickLi
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
-                String msg = intent.getExtras().getString("msg");
+                String msg = intent.getExtras().getString(Constant.BROAD_KEY);
                 log("BaseAc.receive." + msg);
                 OnReceive(msg);
             }catch (Exception e){
@@ -73,7 +74,7 @@ public abstract class AcBase extends AppCompatActivity implements View.OnClickLi
         //registerReceiver(mBroadcastReceiver, intentFilter);
         //注册应用内广播接收器
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter("cc.broadcast.client"));
+        localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter(Constant.BROAD_URL));
         sqlDao = new BaseDaoImpl(this);
 
         OnCreate(savedInstanceState);

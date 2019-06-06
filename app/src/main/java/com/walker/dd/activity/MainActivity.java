@@ -9,16 +9,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.walker.common.util.Bean;
 import com.walker.dd.R;
 import com.walker.dd.util.AndroidTools;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AcBase  {
 
     TextView mTextMessage;
 
+    //所有fragment的数据都用static共用数据
     FragmentBase fragmentChat;
+    List<Bean> listItemChat = new ArrayList<>();
     FragmentBase fragmentList;
+
     FragmentBase fragmentOther;
+    List<Bean> listItemOther = new ArrayList<>();
     android.support.v4.app.FragmentManager fragmentManager;
     FragmentBase fragmentNow;
 
@@ -64,13 +72,15 @@ public class MainActivity extends AcBase  {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
 
-
         fragmentChat = new FragmentChat();
+        fragmentChat.setData(listItemChat);
         fragmentList = new FragmentList();
         fragmentOther = new FragmentOther();
+        fragmentOther.setData(listItemOther);
 
 //        fragmentManager = getFragmentManager();
-        fragmentManager = getSupportFragmentManager();
+        fragmentManager = getSupportFragmentManager();  //v4
+
         turnToFragment(fragmentChat);
 
 
@@ -93,18 +103,27 @@ public class MainActivity extends AcBase  {
     @Override
     public void OnReceive(String msg) {
         if(fragmentNow != null){
-            fragmentNow.onReceive(msg);
+//            fragmentNow.onReceive(msg);
+
+            for(int i = 0; i < 2; i++) {
+                listItemChat.add(new Bean().set("MSG", "TEXT").set("NAME", "test" + i).set("TEXT", "text" + i)
+                        .set("VOICE", "").set("FILE", "").set("PHOTO", "").set("NUM", i).set("PROFILEPATH", ""));
+            }
+            fragmentChat.notifyDataSetChanged();
         }
     }
 
-    //        fragmentManager.beginTransaction().replace(R.id.main_fragment, fragmentChat).commit();
+    //fragmentManager.beginTransaction().replace(R.id.main_fragment, fragmentChat).commit();
     public void turnToFragment(FragmentBase fragment){
         if(fragment == fragmentNow) return;
 
         FragmentTransaction t = fragmentManager.beginTransaction();
-        if(1==1 || fragmentNow == null){
+        if(fragmentNow == null){
             t.replace(R.id.main_fragment, fragment);
         }else{
+            if(!fragment.isAdded()){
+                t.add(R.id.main_fragment, fragment);
+            }
             t.hide(fragmentNow).show(fragment);
         }
         fragmentNow = fragment;

@@ -5,7 +5,9 @@ import android.os.Environment;
 import com.walker.dd.R;
 
 public class Constant {
-	//public static String serverIp = "10.18.176.187";//校园网
+    public static final String BROAD_URL = "broad_url";
+    public static final String BROAD_KEY = "msg";
+    //public static String serverIp = "10.18.176.187";//校园网
 	//public static String serverIp = "192.168.253.1";	//本机360wifi作废了
 
 

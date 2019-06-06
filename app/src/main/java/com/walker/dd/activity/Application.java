@@ -1,18 +1,24 @@
 package com.walker.dd.activity;
 
 import android.app.ActivityManager;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.walker.common.util.Tools;
 import com.walker.dd.util.AndroidTools;
+import com.walker.dd.util.Constant;
 import com.walker.socket.client.Client;
 import com.walker.socket.client.ClientNetty;
 import com.walker.socket.client.OnSocket;
 
 
 public class Application extends android.app.Application implements OnSocket {
+    LocalBroadcastManager localBroadcastManager;	//本地的activity广播机制
+    NotificationManager notificationManager;    //推送栏广播
+
     /**
      * socket
      */
@@ -48,7 +54,9 @@ public class Application extends android.app.Application implements OnSocket {
     @Override
     public void onRead(String socket, String jsonstr) {
         out("onRead", socket, jsonstr);
-        sendBroadcast(new Intent("111").putExtra("msg", jsonstr)); //发送应用内广播
+
+        localBroadcastManager.sendBroadcast(new Intent(Constant.BROAD_URL).putExtra(Constant.BROAD_KEY, jsonstr)); //发送应用内广播
+//        sendBroadcast(new Intent(Constant.BROAD_URL).putExtra(Constant.BROAD_KEY, jsonstr)); //发送应用内广播
 
     }
     public void send(String jsonstr){
@@ -84,7 +92,12 @@ public class Application extends android.app.Application implements OnSocket {
 		
 		showSystemInfo();
 		taskInitSocket.execute();
-	}
+
+
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);//推送栏广播
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+
+    }
 
 
 
