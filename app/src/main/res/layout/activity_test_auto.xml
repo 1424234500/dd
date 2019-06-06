@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.other.ActivityTestSocket">
+    tools:context=".activity.other.ActivityTestAuto">
 
     <RelativeLayout
         android:id="@+id/page"
@@ -42,57 +42,20 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="0dp"
-            android:layout_marginBottom="0dp"            android:onClick="onClick"
+            android:layout_marginBottom="0dp"
+            android:onClick="onClick"
 
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/conn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"            android:onClick="onClick"
-
-                android:layout_weight="1"
-                android:text="conn" />
-
-            <Button
-                android:id="@+id/login"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"            android:onClick="onClick"
-
-                android:layout_weight="1"
-                android:text="login" />
-
-            <Button
                 android:id="@+id/send"
-                android:layout_width="wrap_content"            android:onClick="onClick"
-
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="onClick"
+
                 android:layout_weight="1"
                 android:text="send" />
 
-            <Button
-                android:id="@+id/session"
-                android:layout_width="wrap_content"            android:onClick="onClick"
-
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="ses" />
-
-            <Button
-                android:id="@+id/auto"
-                android:layout_width="wrap_content"            android:onClick="onClick"
-
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="auto" />
-
-            <Button
-                android:id="@+id/other"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"            android:onClick="onClick"
-
-                android:layout_weight="1"
-                android:text="oth" />
         </LinearLayout>
 
         <ScrollView

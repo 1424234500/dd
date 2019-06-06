@@ -1,4 +1,4 @@
-package com.walker.dd.activity;
+package com.walker.dd.activity.other;
 
 import android.app.NotificationManager;
 import android.content.Intent;
@@ -41,7 +41,7 @@ public class ActivityTestSocket extends AppCompatActivity implements View.OnClic
         tietOut = this.findViewById(R.id.tietOut);
         tietMsg = this.findViewById(R.id.tietMsg);
 
-        tietOut.setMovementMethod(new ScrollingMovementMethod());
+//        tietOut.setMovementMethod(new ScrollingMovementMethod());
 
     }
 
@@ -69,9 +69,11 @@ public class ActivityTestSocket extends AppCompatActivity implements View.OnClic
                 tietMsg.setText("{type:monitor,data:{type:show} }");
                 break;
             case R.id.auto:
+                tietMsg.setText("{type:message,to:\"all_user\",from:222,data:{type:txt,body:hello} }");
 
                 break;
             case R.id.other:
+                tietMsg.setText("{type:message,to:\"all_socket\",from:222,data:{type:txt,body:hello} }");
 
                 break;
 

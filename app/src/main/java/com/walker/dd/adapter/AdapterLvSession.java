@@ -1,8 +1,6 @@
 package com.walker.dd.adapter;
 
-import java.sql.Timestamp;
 import java.util.List;
-import java.util.Map;
 
 
 import android.content.Context;
@@ -15,8 +13,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.walker.common.util.Bean;
-import com.walker.common.util.MapListUtil;
-import com.walker.common.util.Tools;
 import com.walker.dd.R;
 import com.walker.dd.util.EmotionUtils;
 
@@ -49,8 +45,8 @@ public   class AdapterLvSession extends BaseAdapter    {
 		//构建或者取出可复用布局
 		if (convertView == null) { //若无可复用布局
 				viewHolder = new ViewHolder();
-            convertView = layoutInflater.inflate(R.layout.listview_adapter_session_item, null);	// 获取list_item布局文件的视图
-//            convertView = getla.inflate(R.layout.listview_adapter_session_item, null);	// 获取list_item布局文件的视图
+            convertView = layoutInflater.inflate(R.layout.item_session, null);	// 获取list_item布局文件的视图
+//            convertView = getla.inflate(R.layout.item_session, null);	// 获取list_item布局文件的视图
 				viewHolder.ivprofile = (ImageView) convertView .findViewById(R.id.ivprofile);
 				viewHolder.tvtime = (TextView) convertView .findViewById(R.id.tvtime);
 				viewHolder.tvusername = (TextView) convertView .findViewById(R.id.tvusername);

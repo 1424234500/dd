@@ -37,7 +37,7 @@ public class RobotTuling {
 	}
 	
 	
-	public static String makeMsg(String jsonstr){
+	public static String parseMsg(String jsonstr){
 	 
 			if(!Tools.notNull( jsonstr))return "nothing";
 			String res = "";

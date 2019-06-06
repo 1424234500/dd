@@ -59,7 +59,7 @@ public class AndroidTools {
             if(obj != null)
                 map.put(key, b.get(key));
             else{
-                map.put(key, "null");
+                map.put(key, null);
             }
         }
         return map;

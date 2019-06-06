@@ -1,19 +1,20 @@
-package com.walker.dd.activity;
+package com.walker.dd.activity.main;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
+import com.walker.dd.activity.chat.ActivityChat;
 import com.walker.dd.adapter.AdapterLvSession;
 import com.walker.dd.util.AndroidTools;
+import com.walker.dd.util.Constant;
 
 import java.util.*;
 
@@ -40,11 +41,12 @@ public class FragmentChat extends FragmentBase implements  AdapterView.OnItemCli
         lv.setOnItemLongClickListener(this);
 
 //        /设置刷新时动画的颜色，可以设置4个
-        srl.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
+        srl.setColorSchemeResources(Constant.SRLColors);
         srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 AndroidTools.toast(getContext(), "refresh");
+                srl.setRefreshing(false);
             }
         });
 
@@ -108,6 +110,10 @@ public class FragmentChat extends FragmentBase implements  AdapterView.OnItemCli
         Bean bean = listItems.get(position);
         AndroidTools.toast(getActivity(), "click " + bean.toString());
         sendSocket("echo", bean);
+
+        Intent intent = new Intent(getActivity(), ActivityChat.class);
+        AndroidTools.putMapToIntent(intent, bean);
+        startActivity(intent);
 
     }
 

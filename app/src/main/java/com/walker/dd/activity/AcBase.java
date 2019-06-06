@@ -135,8 +135,12 @@ public abstract class AcBase extends AppCompatActivity implements View.OnClickLi
         }
 
     }
-    public void sendSocket(String plugin, Bean data){
-        ((Application)getApplication()).send(new Bean().set("type", plugin).set("data", data).toString());
+
+    public void sendSocket(String plugin, Bean data) {
+        sendSocket(plugin, "", data);
+    }
+    public void sendSocket(String plugin, String to, Bean data){
+        ((Application)getApplication()).send(new Bean().set("type", plugin).set("to", to).set("data", data).toString());
     }
 
 

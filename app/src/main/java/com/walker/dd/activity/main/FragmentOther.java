@@ -1,19 +1,19 @@
-package com.walker.dd.activity;
+package com.walker.dd.activity.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ListView;
 
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
+import com.walker.dd.activity.other.ActivityCompose;
+import com.walker.dd.activity.other.ActivityTestAuto;
+import com.walker.dd.activity.other.ActivityTestSocket;
 import com.walker.dd.adapter.AdapterGvOther;
-import com.walker.dd.adapter.AdapterLvSession;
 import com.walker.dd.util.AndroidTools;
 
 import java.util.ArrayList;
@@ -71,6 +71,7 @@ public class FragmentOther extends FragmentBase {
         if(this.listItems.size() <= 0){
             listItems.add(new Bean().set("IMAGE", "").set("TEXT", "socket"));
             listItems.add(new Bean().set("IMAGE", "").set("TEXT", "compose"));
+            listItems.add(new Bean().set("IMAGE", "").set("TEXT", "tuling"));
             for(int i = 0; i < 10; i++) {
                 listItems.add(new Bean().set("IMAGE", "").set("TEXT", "text" + i));
             }
@@ -106,9 +107,12 @@ public class FragmentOther extends FragmentBase {
                 startActivity(new Intent(getActivity(), ActivityTestSocket.class));
                 break;
             case "compose":
-                startActivity(new Intent(getActivity(), ActivityTestSocket.class));
+                startActivity(new Intent(getActivity(), ActivityCompose.class));
                 break;
-                default:
+            case "tuling":
+                startActivity(new Intent(getActivity(), ActivityTestAuto.class));
+
+            default:
                 sendSocket("echo", bean);
                     break;
         }

@@ -1,22 +1,23 @@
-package com.walker.dd.activity;
+package com.walker.dd.activity.main;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.walker.common.util.Bean;
+import com.walker.common.util.JsonUtil;
 import com.walker.dd.R;
+import com.walker.dd.activity.AcBase;
 import com.walker.dd.util.AndroidTools;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AcBase  {
+public class MainActivity extends AcBase {
 
     TextView mTextMessage;
 
@@ -83,7 +84,7 @@ public class MainActivity extends AcBase  {
 
         turnToFragment(fragmentChat);
 
-
+        sendSocket("monitor", new Bean().set("type", "session"));
 
     }
 
@@ -103,12 +104,19 @@ public class MainActivity extends AcBase  {
     @Override
     public void OnReceive(String msg) {
         if(fragmentNow != null){
+            Bean bean = JsonUtil.get(msg);
+            List<Bean> list = bean.get("data", new ArrayList<Bean>());
+            for(Bean data : list){
+                listItemChat.add(new Bean().set("NAME", data.get("ID", "")).set("TEXT", data.get("KEY", ""))
+                        .set("NUM", 1).set("PROFILEPATH", ""));
+            }
+
 //            fragmentNow.onReceive(msg);
 
-            for(int i = 0; i < 2; i++) {
-                listItemChat.add(new Bean().set("MSG", "TEXT").set("NAME", "test" + i).set("TEXT", "text" + i)
-                        .set("VOICE", "").set("FILE", "").set("PHOTO", "").set("NUM", i).set("PROFILEPATH", ""));
-            }
+//            for(int i = 0; i < 2; i++) {
+//                listItemChat.add(new Bean().set("MSG", "TEXT").set("NAME", "test" + i).set("TEXT", "text" + i)
+//                       .set("NUM", i).set("PROFILEPATH", ""));
+//            }
             fragmentChat.notifyDataSetChanged();
         }
     }
