@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import com.walker.common.util.Bean;
 import com.walker.common.util.Tools;
 import com.walker.dd.database.BaseDao;
 import com.walker.dd.database.BaseDaoImpl;
@@ -133,6 +134,10 @@ public abstract class AcBase extends AppCompatActivity implements View.OnClickLi
         }
 
     }
+    public void sendSocket(String plugin, Bean data){
+        ((Application)getApplication()).send(new Bean().set("type", plugin).set("data", data).toString());
+    }
+
 
     public void toast(Object...objects){
         log(objects);

@@ -30,7 +30,7 @@ public class SocketClient implements OnSocket{
 
 	@Override
 	public void onRead(String socket, String jsonstr) {
-		sendBroadcast(new Intent("111").putExtra("msg", jsonstr)); //发送应用内广播
+//		sendBroadcast(new Intent("111").putExtra("msg", jsonstr)); //发送应用内广播
 
 	}
 

@@ -2,11 +2,12 @@ package com.walker.dd.util;
 
 import java.util.HashMap;
 
-import com.cc.R;
 
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
+
+import com.walker.dd.R;
 
 public class MySoundPool extends SoundPool {
 

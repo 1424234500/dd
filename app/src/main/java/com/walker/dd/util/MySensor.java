@@ -27,10 +27,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.cc.Constant;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.Callback;
-import com.zhy.http.okhttp.callback.FileCallBack;
+
+import com.walker.common.util.Tools;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -40,11 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import interfac.CallString;
-import okhttp3.Call;
-import okhttp3.Response;
-import util.picasso.NetImage;
 
 /**
  * 传感器工具

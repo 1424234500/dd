@@ -19,7 +19,7 @@ import com.walker.dd.util.AndroidTools;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentOther extends Fragment {
+public class FragmentOther extends FragmentBase {
 
 
     GridView gv;
@@ -61,15 +61,19 @@ public class FragmentOther extends Fragment {
         return v;
     }
 
+    /**
+     * 更新数据
+     */
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    public void notifyDataSetChanged(){
+    public void notifyDataSetChanged() {
         adapter.notifyDataSetChanged();
     }
-    public void init(){
+
+    /**
+     * 初始化数据
+     */
+    @Override
+    public void init() {
         listItems.add(new Bean().set("IMAGE", "").set("TEXT", "socket"));
         listItems.add(new Bean().set("IMAGE", "").set("TEXT", "compose"));
 
@@ -78,6 +82,16 @@ public class FragmentOther extends Fragment {
 
             //NAME TEXT VOICE FILE PHOTO NUM PROFILEPATH
         }
+    }
+
+    /**
+     * 数据广播传递 activity通过baseAc收到广播后派发给当前fragment
+     *
+     * @param msg
+     */
+    @Override
+    public void onReceive(String msg) {
+
     }
 
 
@@ -90,6 +104,9 @@ public class FragmentOther extends Fragment {
             case "compose":
                 startActivity(new Intent(getActivity(), ActivityTestSocket.class));
                 break;
+                default:
+
+                    break;
         }
 
 

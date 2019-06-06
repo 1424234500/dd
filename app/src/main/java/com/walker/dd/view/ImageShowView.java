@@ -14,7 +14,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
-import com.cc.Constant;
+import com.walker.dd.util.AndroidTools;
 
 public class ImageShowView extends View implements OnTouchListener {
 	GestureDetector mGestureDetector;
@@ -43,10 +43,10 @@ public class ImageShowView extends View implements OnTouchListener {
 		w = bitmap.getWidth();
 		h = bitmap.getHeight();
 		
-		sx = (float)Constant.screenW / (float)w;
+		sx = (float)AndroidTools.getScreenWidth() / (float)w;
 		
-		x = Constant.screenW  / 2;
-		y = Constant.screenH / 2;
+		x = AndroidTools.getScreenWidth()   / 2;
+		y = AndroidTools.getScreenHeight() / 2;
 	}
 	
 	@Override

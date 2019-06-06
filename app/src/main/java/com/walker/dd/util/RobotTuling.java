@@ -1,5 +1,9 @@
 package com.walker.dd.util;
 
+import com.walker.common.util.Bean;
+import com.walker.common.util.JsonUtil;
+import com.walker.common.util.Tools;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,18 +42,18 @@ public class RobotTuling {
 			if(!Tools.notNull( jsonstr))return "nothing";
 			String res = "";
 			List<Map<String,Object>> list;
-			Map map = JsonUtil.getMap(jsonstr);
-			int code = Tools.parseInt(MapListUtil.getMap(map, "code"));
+			Bean map = JsonUtil.get(jsonstr);
+			int code = map.get("code", 0);
 			switch(code){
 			case 100000:
-				res = MapListUtil.getMap(map, "text");
+				res = map.get("text", "");
 				break;
 			case 200000:
-				res = MapListUtil.getMap(map, "text") + "\n" + MapListUtil.getMap(map, "url");
+				res = map.get("text", "") + "\n" + map.get("url", "");;
 				break;
 			case 302000:
-				res = MapListUtil.getMap(map, "text") + "\n" ;
-				list = MapListUtil.getMap(map, "text", new ArrayList<Map<String, Object>>()); //JsonUtil.getList(jsonstr, "list");
+				res = map.get("text", "") +  "\n" ;
+				list = map.get("text", new ArrayList<Map<String, Object>>()); //JsonUtil.getList(jsonstr, "list");
 				for(Map<String,Object> item: list){
 					res += "" + item.get("source").toString() + "\n";
 					res += "" + item.get("article").toString() + "\n";
@@ -61,7 +65,7 @@ public class RobotTuling {
 				}
 				break;
 			default:
-				res = MapListUtil.getMap(map, "text");
+				res = map.get("text", "");
 				break;
 			}
 			Tools.out(  "聊天机器人返回." + jsonstr + "  解析结果." + res );

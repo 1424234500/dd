@@ -23,7 +23,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
 
-import com.cc.Constant;
 	/**
 	 * 处理图片的工具类.
 	 */
@@ -207,7 +206,7 @@ Drawable
 	        // draw watermark into
 	        cv.drawBitmap(watermark, w - ww + 5, h - wh + 5, null);// 在src的右下角画入水印
 	        // save all clip
-	        cv.save(Canvas.ALL_SAVE_FLAG);// 保存
+	        cv.save();// 保存
 	        // store
 	        cv.restore();// 存储
 	        return newb;

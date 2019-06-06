@@ -31,9 +31,14 @@ public abstract class FragmentBase extends Fragment {
 
 
     /**
-     * 修改数据
+     * 数据广播传递 activity通过baseAc收到广播后派发给当前fragment
      */
+    public abstract void onReceive(String msg);
 
-    
-
+    /**
+     * 发送广播 获取当前ActivityBase
+     */
+    public void sendSocket(String plugin, Bean data){
+        ((AcBase)getActivity()).sendSocket(plugin, data);
+    }
 }

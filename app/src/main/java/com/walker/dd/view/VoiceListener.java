@@ -15,6 +15,8 @@ import com.walker.common.util.Tools;
 import com.walker.dd.R;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.AudioRecoderUtils;
+import com.walker.dd.util.MyFile;
+import com.walker.dd.util.MyMediaPlayer;
 
 
 public class VoiceListener implements OnTouchListener{

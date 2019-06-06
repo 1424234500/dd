@@ -16,11 +16,11 @@ public class MainActivity extends AcBase  {
 
     TextView mTextMessage;
 
-    Fragment fragmentChat;
-    Fragment fragmentList;
-    Fragment fragmentOther;
+    FragmentBase fragmentChat;
+    FragmentBase fragmentList;
+    FragmentBase fragmentOther;
     android.support.v4.app.FragmentManager fragmentManager;
-    Fragment fragmentNow;
+    FragmentBase fragmentNow;
 
 
 
@@ -52,9 +52,7 @@ public class MainActivity extends AcBase  {
 
     @Override
     public void OnCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         //初始化系统
         AndroidTools.init(this);
@@ -94,11 +92,13 @@ public class MainActivity extends AcBase  {
      */
     @Override
     public void OnReceive(String msg) {
-
+        if(fragmentNow != null){
+            fragmentNow.onReceive(msg);
+        }
     }
 
     //        fragmentManager.beginTransaction().replace(R.id.main_fragment, fragmentChat).commit();
-    public void turnToFragment(Fragment fragment){
+    public void turnToFragment(FragmentBase fragment){
         if(fragment == fragmentNow) return;
 
         FragmentTransaction t = fragmentManager.beginTransaction();
