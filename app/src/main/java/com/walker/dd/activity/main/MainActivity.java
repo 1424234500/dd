@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.walker.common.util.Bean;
 import com.walker.common.util.JsonUtil;
+import com.walker.core.encode.Pinyin;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
 import com.walker.dd.util.AndroidTools;
@@ -86,8 +87,8 @@ public class MainActivity extends AcBase {
         turnToFragment(fragmentChat);
 
         sendSocket("session", new Bean());
-        String user = MySP.get(getContext(), "user", "");
-        String pwd = MySP.get(getContext(), "pwd", "");
+        String user = MySP.get(getContext(), "user", Pinyin.getChinese());
+        String pwd = MySP.get(getContext(), "pwd", Math.random() * 10 + "");
         if(user.length() > 0){
             sendSocket("login", new Bean().put("user", user).put("pwd", pwd));
         }else{

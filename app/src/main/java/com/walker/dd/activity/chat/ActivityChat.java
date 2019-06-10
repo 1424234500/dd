@@ -17,6 +17,7 @@ import com.walker.dd.activity.AcBase;
 import com.walker.dd.adapter.*;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
+import com.walker.dd.util.MySP;
 import com.walker.dd.util.RobotAuto;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ public class ActivityChat extends AcBase {
     adapter.AdapterLvChat adapter;
 
     EditText etsend;
+    //NAME TEXT TIME
     Bean acData;
     
     
@@ -141,7 +143,7 @@ public class ActivityChat extends AcBase {
                 Bean bean = new Bean()
                         .set("TYPE", "text")
                         .set("SELF", true)
-                        .set("USERNAME", "self")
+                        .set("USERNAME", MySP.get(getContext(), "user", "self"))
                         .set("PROFILE", "")
                         .set("TIME", TimeUtil.getTimeYmdHms())
                         .set("TEXT", str)
@@ -151,7 +153,7 @@ public class ActivityChat extends AcBase {
 //            NAME TEXT
 //            ID KEY
 //            {type:message,to:"all_socket",from:222,data:{type:txt,body:hello} }
-               sendSocket("message",acData.get("ID", ""), new Bean().set("type", "txt").set("body", str));
+               sendSocket("message",acData.get("NAME", ""), new Bean().set("type", "txt").set("body", str));
 
                sendAuto(str);
 
