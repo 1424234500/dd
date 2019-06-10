@@ -71,7 +71,7 @@ public class FragmentOther extends FragmentBase {
         if(this.listItems.size() <= 0){
             listItems.add(new Bean().set("IMAGE", "").set("TEXT", "socket"));
             listItems.add(new Bean().set("IMAGE", "").set("TEXT", "compose"));
-            listItems.add(new Bean().set("IMAGE", "").set("TEXT", "tuling"));
+            listItems.add(new Bean().set("IMAGE", "").set("TEXT", "autochat"));
             for(int i = 0; i < 10; i++) {
                 listItems.add(new Bean().set("IMAGE", "").set("TEXT", "text" + i));
             }
@@ -109,7 +109,7 @@ public class FragmentOther extends FragmentBase {
             case "compose":
                 startActivity(new Intent(getActivity(), ActivityCompose.class));
                 break;
-            case "tuling":
+            case "autochat":
                 startActivity(new Intent(getActivity(), ActivityTestAuto.class));
 
             default:

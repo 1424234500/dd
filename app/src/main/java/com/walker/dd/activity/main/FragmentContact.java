@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import com.walker.dd.R;
 
-public class FragmentList extends FragmentBase {
+public class FragmentContact extends FragmentBase {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

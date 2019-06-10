@@ -13,6 +13,7 @@ import com.walker.common.util.JsonUtil;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
 import com.walker.dd.util.AndroidTools;
+import com.walker.dd.util.MySP;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,9 +74,9 @@ public class MainActivity extends AcBase {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
 
-        fragmentChat = new FragmentChat();
+        fragmentChat = new FragmentSession();
         fragmentChat.setData(listItemChat);
-        fragmentList = new FragmentList();
+        fragmentList = new FragmentContact();
         fragmentOther = new FragmentOther();
         fragmentOther.setData(listItemOther);
 
@@ -84,7 +85,14 @@ public class MainActivity extends AcBase {
 
         turnToFragment(fragmentChat);
 
-        sendSocket("monitor", new Bean().set("type", "session"));
+        sendSocket("session", new Bean());
+        String user = MySP.get(getContext(), "user", "");
+        String pwd = MySP.get(getContext(), "pwd", "");
+        if(user.length() > 0){
+            sendSocket("login", new Bean().put("user", user).put("pwd", pwd));
+        }else{
+            //todo:登录弹窗
+        }
 
     }
 
@@ -105,19 +113,21 @@ public class MainActivity extends AcBase {
     public void OnReceive(String msg) {
         if(fragmentNow != null){
             Bean bean = JsonUtil.get(msg);
-            List<Bean> list = bean.get("data", new ArrayList<Bean>());
-            for(Bean data : list){
-                listItemChat.add(new Bean().set("NAME", data.get("ID", "")).set("TEXT", data.get("KEY", ""))
-                        .set("NUM", 1).set("PROFILEPATH", ""));
+            String plugin = bean.get("type", "");
+            if(plugin.equals("session")){
+//                listItemChat.clear();
+                List<Bean> list = bean.get("data", new ArrayList<Bean>());
+                for(Bean data : list){
+                    listItemChat.add(new Bean()
+                            .set("NAME", data.get("ID", "name"))
+                            .set("TEXT", data.get("KEY", "socket"))
+                            .set("TIME", data.get("TIME", "time"))
+                            .set("NUM", 1).set("PROFILEPATH", ""));
+                }
+//            fragmentNow.onReceive(msg);
+                fragmentChat.notifyDataSetChanged();
             }
 
-//            fragmentNow.onReceive(msg);
-
-//            for(int i = 0; i < 2; i++) {
-//                listItemChat.add(new Bean().set("MSG", "TEXT").set("NAME", "test" + i).set("TEXT", "text" + i)
-//                       .set("NUM", i).set("PROFILEPATH", ""));
-//            }
-            fragmentChat.notifyDataSetChanged();
         }
     }
 

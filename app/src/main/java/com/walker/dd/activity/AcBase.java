@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -31,6 +32,10 @@ public abstract class AcBase extends AppCompatActivity implements View.OnClickLi
     public    void OnStop(){} //1111111
     public    void OnDestroy(){}//finish销毁
 
+    /**
+     * handler处理器
+     */
+    public    void OnHandler(String type, String msg){}
     /**
      * 回退键处理，返回false则执行finish，否则不处理
      */
@@ -135,7 +140,23 @@ public abstract class AcBase extends AppCompatActivity implements View.OnClickLi
         }
 
     }
-
+    //handler异步刷新界面
+    Handler handler = new Handler(){
+        public void handleMessage(Message msg) {
+            Bundle b = msg.getData();
+            String type = b.getString("TYPE");
+            String msg1 = b.getString("MSG");
+            OnHandler(type, msg1);
+        }
+    };
+    public void sendHandler(String type, String msg){
+        Message message = new Message();
+        Bundle b = new Bundle();
+        b.putString("TYPE", type);
+        b.putString("MSG", msg);
+        message.setData(b);
+        handler.sendMessage(message);
+    }
     public void sendSocket(String plugin, Bean data) {
         sendSocket(plugin, "", data);
     }
@@ -155,7 +176,9 @@ public abstract class AcBase extends AppCompatActivity implements View.OnClickLi
             super.onBackPressed();
         }
     }
-
+    public void out(Object...objects){
+        log(objects);
+    }
     public void log(Object...objects){
         AndroidTools.out(this.getClass().getName() + "." + Tools.objects2string(objects));
     }

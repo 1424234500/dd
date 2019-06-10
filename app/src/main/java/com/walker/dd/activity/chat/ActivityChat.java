@@ -17,9 +17,18 @@ import com.walker.dd.activity.AcBase;
 import com.walker.dd.adapter.*;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
+import com.walker.dd.util.RobotAuto;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ActivityChat extends AcBase {
     SwipeRefreshLayout srl;
@@ -74,10 +83,10 @@ public class ActivityChat extends AcBase {
                 Bean bean = new Bean()
                         .set("TYPE", "text")
                         .set("SELF", ((int)(Math.random() * 10)) % 2 == 0)
-                        .set("USERNAME", Pinyin.getRandomName(1, null))
+                        .set("USERNAME", "self")
                         .set("PROFILE", "")
                         .set("TIME", TimeUtil.getTimeYmdHms())
-                        .set("TEXT", Pinyin.getRandomName(1, null))
+                        .set("TEXT", "refresh")
                 ;
                 sendSocket("echo", bean);
                 //TYPE<text,voice,photo,file>
@@ -132,20 +141,19 @@ public class ActivityChat extends AcBase {
                 Bean bean = new Bean()
                         .set("TYPE", "text")
                         .set("SELF", true)
-                        .set("USERNAME", Pinyin.getRandomName(1, null))
+                        .set("USERNAME", "self")
                         .set("PROFILE", "")
                         .set("TIME", TimeUtil.getTimeYmdHms())
                         .set("TEXT", str)
                         ;
 
                 addMsg(bean);
-                //            NAME TEXT
+//            NAME TEXT
 //            ID KEY
 //            {type:message,to:"all_socket",from:222,data:{type:txt,body:hello} }
                sendSocket("message",acData.get("ID", ""), new Bean().set("type", "txt").set("body", str));
 
-               //自动应答
-
+               sendAuto(str);
 
 
                etsend.setText("");
@@ -155,6 +163,61 @@ public class ActivityChat extends AcBase {
         }
     }
 
+    /**
+     * handler处理器
+     *
+     * @param type
+     * @param msg
+     */
+    @Override
+    public void OnHandler(String type, String msg) {
+        super.OnHandler(type, msg);
+        if(type.equals("auto")){
+            Bean bean = new Bean()
+                    .set("TYPE", "text")
+                    .set("SELF", false)
+                    .set("USERNAME", "dd")
+                    .set("PROFILE", "")
+                    .set("TIME", TimeUtil.getTimeYmdHms())
+                    .set("TEXT", msg)
+                    ;
+            addMsg(bean);
+        }
+
+    }
+
+    /**
+     * 自动应答
+     */
+    private void sendAuto(String str){
+
+        String url = RobotAuto.TENCENT_URL;
+        OkHttpClient okHttpClient = new OkHttpClient();
+
+        RequestBody requestBody = RobotAuto.getTencentParamRequest(str, "dd");
+//                out(url, requestBody);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                log( "onFailure: ", e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String str = response.body().string();
+                out("onResponse", str);
+                String res=RobotAuto.parseTencentRes(str);
+                out(res);
+                sendHandler("auto", res);
+            }
+        });
+    }
     private void addMsg(Bean bean) {
         listItemMsg.add(bean);
         lv.setSelection(listItemMsg.size());	//选中最新一条，滚动到底部

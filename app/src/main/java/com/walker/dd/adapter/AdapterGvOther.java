@@ -36,6 +36,7 @@ public class AdapterGvOther extends BaseAdapter{
 	
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
+	    Bean bean = listItems.get(position);
         ViewHolder viewHolder = null;
 
 		//构建或者取出可复用布局
@@ -53,7 +54,7 @@ public class AdapterGvOther extends BaseAdapter{
 //        viewHolder.iv.setImageResource(R.drawable.profile);
 
         viewHolder.iv.setBackgroundColor(AndroidTools.getRandomColor());
-        viewHolder.tv.setText(listItems.get(position).get("TEXT", ""));
+        viewHolder.tv.setText(bean.get("TEXT", ""));
 
 		
 		return convertView; 

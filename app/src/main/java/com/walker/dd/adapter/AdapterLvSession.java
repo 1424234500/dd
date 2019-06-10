@@ -40,6 +40,7 @@ public   class AdapterLvSession extends BaseAdapter    {
 	
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
+	    Bean bean = listItems.get(position);
 		viewHolder = null;  
 
 		//构建或者取出可复用布局
@@ -61,25 +62,24 @@ public   class AdapterLvSession extends BaseAdapter    {
 		//	viewHolder.tvusername.setText("aaaaaaaaaaaaaaaaaa") ;
         //NAME TEXT VOICE FILE PHOTO NUM PROFILEPATH
 
-		viewHolder.tvusername.setText(listItems.get(position).get("NAME", "")) ;
-		//viewHolder.tvmsg.setText(listItems.get(position, "MSG")) ;
-		if(listItems.get(position).get("MSG", "").equals("TEXT")){
-			SpannableString spannableString = EmotionUtils.getEmotionContent(context,viewHolder.tvmsg,listItems.get(position).get("MSG", ""));
+		viewHolder.tvusername.setText(bean.get("NAME", "")) ;
+		if(bean.get("MSG", "").equals("TEXT")){
+			SpannableString spannableString = EmotionUtils.getEmotionContent(context,viewHolder.tvmsg,bean.get("TEXT", ""));
 			viewHolder.tvmsg.setText(spannableString);
-		}else if(listItems.get(position).get("MSG", "").equals("VOICE")){
+		}else if(bean.get("MSG", "").equals("VOICE")){
 			viewHolder.tvmsg.setText("[语音]");
-		}else if(listItems.get(position).get("MSG", "").equals("FILE")){
+		}else if(bean.get("MSG", "").equals("FILE")){
 			viewHolder.tvmsg.setText("[文件]");
-		}else if(listItems.get(position).get("MSG", "").equals("PHOTO")){
+		}else if(bean.get("MSG", "").equals("PHOTO")){
 			viewHolder.tvmsg.setText("[图片]");
 		}else {
-			SpannableString spannableString = EmotionUtils.getEmotionContent(context,viewHolder.tvmsg,listItems.get(position).get("MSG", ""));
+			SpannableString spannableString = EmotionUtils.getEmotionContent(context,viewHolder.tvmsg,bean.get("MSG", ""));
 			viewHolder.tvmsg.setText(spannableString);
 		}
 		
 			
-		viewHolder.tvtime.setText(listItems.get(position).get("TIME", ""));
-		int t = listItems.get(position).get("NUM", 0);
+		viewHolder.tvtime.setText(bean.get("TIME", ""));
+		int t = bean.get("NUM", 0);
 		if(t <= 0){
 			viewHolder.tvnum.setText( "") ;
 			viewHolder.tvnum.setVisibility(View.INVISIBLE);

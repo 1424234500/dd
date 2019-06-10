@@ -2,6 +2,8 @@ package com.walker.dd.activity.other;
 
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -81,21 +83,29 @@ public class ActivityTestSocket extends AppCompatActivity implements View.OnClic
 
 
     }
-
-    @Override
-    public String out(Object... objects) {
+    public String out(Object...objects){
         String str = Tools.objects2string(objects);
-        AndroidTools.log(str);
-        tietOut.setText("" + TimeUtil.getTimeYmdHms() + " " + str + " \n");
-//        tietOut.setText(tietOut.getText() + "" + TimeUtil.getTimeYmdHms() + " " + str + " \n");
-//        tietOut.append(TimeUtil.getTimeYmdHms() + " " + str + " \n");
-//        if(tietOut.getTextSize() > 40000){
-//            tietOut.setText("clear");
-//        }
-//        tietOut.scrollTo(0, 0);
-
-        return "";
+        Message message = new Message();
+        Bundle b = new Bundle();
+        b.putString("res", str);
+        message.setData(b);
+        handler.sendMessage(message);
+        return str;
     }
+    //handler异步刷新界面
+    Handler handler = new Handler(){
+        public void handleMessage(Message msg) {
+            Bundle b = msg.getData();
+            String res = b.getString("res");
+
+            tietOut.append("\n" + res);
+            if(tietOut.length() > 40000){
+                tietOut.setText("clear");
+            }
+            tietOut.setScrollY(999999);
+            AndroidTools.log("" + res);
+        }
+    };
 
     @Override
     public void onRead(String s, String s1) {

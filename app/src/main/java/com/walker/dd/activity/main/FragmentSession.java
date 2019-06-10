@@ -18,7 +18,7 @@ import com.walker.dd.util.Constant;
 
 import java.util.*;
 
-public class FragmentChat extends FragmentBase implements  AdapterView.OnItemClickListener,AdapterView.OnItemLongClickListener{
+public class FragmentSession extends FragmentBase implements  AdapterView.OnItemClickListener,AdapterView.OnItemLongClickListener{
 
     SwipeRefreshLayout srl;
 
@@ -46,6 +46,7 @@ public class FragmentChat extends FragmentBase implements  AdapterView.OnItemCli
             @Override
             public void onRefresh() {
                 AndroidTools.toast(getContext(), "refresh");
+                sendSocket("session", new Bean());
                 srl.setRefreshing(false);
             }
         });
@@ -62,14 +63,16 @@ public class FragmentChat extends FragmentBase implements  AdapterView.OnItemCli
     @Override
     public void setData(Object data) {
         this.listItems = (List<Bean>) data;
-        if(this.listItems.size() <= 0){
-            for(int i = 0; i < 10; i++) {
-                listItems.add(new Bean().set("MSG", "TEXT").set("NAME", "test" + i).set("TEXT", "text" + i)
-                        .set("VOICE", "").set("FILE", "").set("PHOTO", "").set("NUM", 88).set("PROFILEPATH", ""));
-
-                //NAME TEXT VOICE FILE PHOTO NUM PROFILEPATH
-            }
-        }
+        this.listItems.add(0, new Bean().set("MSG", "TEXT").set("NAME", "dd").set("TEXT", "auto echo")
+                        .set("VOICE", "").set("FILE", "").set("PHOTO", "").set("NUM", 1).set("PROFILEPATH", ""));
+//        if(this.listItems.size() <= 0){
+//            for(int i = 0; i < 10; i++) {
+//                listItems.add(new Bean().set("MSG", "TEXT").set("NAME", "test" + i).set("TEXT", "text" + i)
+//                        .set("VOICE", "").set("FILE", "").set("PHOTO", "").set("NUM", 88).set("PROFILEPATH", ""));
+//
+//                //NAME TEXT VOICE FILE PHOTO NUM PROFILEPATH
+//            }
+//        }
         this.notifyDataSetChanged();
     }
 

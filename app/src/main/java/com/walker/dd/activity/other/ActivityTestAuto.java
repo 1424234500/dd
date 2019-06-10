@@ -4,23 +4,26 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.TextInputEditText;
-import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.TextView;
 
 import com.walker.common.util.Bean;
-import com.walker.common.util.HttpBuilder;
-import com.walker.common.util.HttpUtil;
 import com.walker.common.util.Tools;
-import com.walker.core.exception.InfoException;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
 import com.walker.dd.util.AndroidTools;
-import com.walker.dd.util.RobotTuling;
+import com.walker.dd.util.Constant;
+import com.walker.dd.util.RobotAuto;
 
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 public class ActivityTestAuto extends AcBase {
@@ -60,34 +63,29 @@ public class ActivityTestAuto extends AcBase {
     public void OnReceive(String msg) {
         out(msg);
     }
-    public void out(Object...objects){
-        tietOut.append(Tools.objects2string(objects));
-        if(tietOut.length() > 40000){
-            tietOut.setText("clear");
-        }
-    }
 
-    //离线模式专用handler异步刷新界面
+    public void out(Object...objects){
+        String str = Tools.objects2string(objects);
+        Message message = new Message();
+        Bundle b = new Bundle();
+        b.putString("res", str);
+        message.setData(b);
+        handler.sendMessage(message);
+    }
+    //handler异步刷新界面
     Handler handler = new Handler(){
         public void handleMessage(Message msg) {
             Bundle b = msg.getData();
             String res = b.getString("res");
-            Bean mapd = new Bean();
-            mapd.put("USERNAME", "CC");
-            mapd.put("TYPE", "text");	//类型，文本，语音，图片，文件
-            mapd.put("PROFILE", "http://img03.tooopen.com/images/20131111/sy_46708898917.jpg");
-            mapd.put("FROMID", "");
-            mapd.put("TOID", "");
-            mapd.put("TIME", Tools.getNowTimeS());
-            mapd.put("TEXT", res) ;
-//            listChatMsg.add(listChatMsg.size(), mapd);
 
-            OnReceive(res);
-
-            AndroidTools.log("robot res=" + res);
+            tietOut.append("\n" + res);
+            if(tietOut.length() > 40000){
+                tietOut.setText("clear");
+            }
+            tietOut.setScrollY(999999);
+            AndroidTools.log("" + res);
         }
     };
-
     /**
      * Called when a view has been clicked.
      *
@@ -95,88 +93,59 @@ public class ActivityTestAuto extends AcBase {
      */
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.send){
+        String ipport = tietIpPort.getText().toString();
+        final String msg = tietMsg.getText().toString();
 
-            String url = tietIpPort.getText().toString();
-            final String msg = tietMsg.getText().toString();
+        if(v.getId() == R.id.sendtuling){
+            String url = RobotAuto.getUrlTuling(msg);
+            out(url);
 
-            out("send ", msg);
-            String h = RobotTuling.getHttp() + msg;
-            String res = "";
-            try {
-                res = HttpUtil.doGet(h, null, null, null);
-                res=RobotTuling.parseMsg(res);
-            } catch (Exception e){
-                out(res);
-            }
-            try {
-                res = HttpUtil.doPost(h, null, null, null);
-                res=RobotTuling.parseMsg(res);
-            } catch (Exception e){
-                out(res);
-            }
-            try {
-                res = HttpUtil.doPut(h, null, null, null);
-                res=RobotTuling.parseMsg(res);
-            } catch (Exception e){
-                out(res);
-            }
-            try {
-                res = HttpUtil.doGet(h, null, null, null);
-                res=RobotTuling.parseMsg(res);
-            } catch (Exception e){
-                out(res);
-            }
-            try {
-                res = HttpUtil.doDelete(h, null, null, null);
-                res=RobotTuling.parseMsg(res);
-            } catch (Exception e){
-                out(res);
-            }
-
-
-
-            //离线模式专用开启线程来发起网络请求,知道为何 okhttp 和网上通用httpUtil都无法获取结果
-            new Thread(new Runnable(){
+            OkHttpClient okHttpClient = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .get()//默认就是GET请求，可以不写
+                    .build();
+            Call call = okHttpClient.newCall(request);
+            call.enqueue(new Callback() {
                 @Override
-                public void run() {
-                    HttpURLConnection connection=null;
-                    try {
-                        String res;
-                        URL url=new URL(RobotTuling.getHttp() + msg);
-                        connection =(HttpURLConnection) url.openConnection();
-                        connection.setRequestMethod("GET");
-                        connection.setConnectTimeout(8000);
-                        connection.setReadTimeout(8000);
-                        java.io.InputStream in=connection.getInputStream();
-                        //下面对获取到的输入流进行读取
-                        java.io.BufferedReader reader=new java.io.BufferedReader(new java.io.InputStreamReader(in));
-                        StringBuilder response=new StringBuilder();
-                        String line;
-                        while((line=reader.readLine())!=null){
-                            response.append(line);
-                        }
-
-                        res=RobotTuling.parseMsg(response.toString());
-
-                        Message message = new Message();
-                        Bundle b = new Bundle();
-                        b.putString("res", res);
-                        message.setData(b);
-                        handler.sendMessage(message);
-                    } catch(Exception e){
-                        e.printStackTrace();
-//                        out(e.toString());
-                        out(Tools.toString(e));
-                    }finally{
-                        if(connection!=null){
-                            connection.disconnect();
-                        }
-                    }
+                public void onFailure(Call call, IOException e) {
+                    out( "onFailure: ", e);
                 }
 
-            }).start();
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String str = response.body().string();
+                    out("onResponse", str);
+                    String res=RobotAuto.parseTulingRes(str);
+                    out(res);
+                }
+            });
+        }else  if(v.getId() == R.id.sendtencent){
+            String url = RobotAuto.TENCENT_URL;
+            OkHttpClient okHttpClient = new OkHttpClient();
 
+            RequestBody requestBody = RobotAuto.getTencentParamRequest(msg, "dd");
+            out(url, requestBody);
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(requestBody)
+                    .build();
+            Call call = okHttpClient.newCall(request);
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    out( "onFailure: ", e);
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String str = response.body().string();
+                    out("onResponse", str);
+                    String res=RobotAuto.parseTencentRes(str);
+                    out(res);
+                }
+            });
         }
 
     }

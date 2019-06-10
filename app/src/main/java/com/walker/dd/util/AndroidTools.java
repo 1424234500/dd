@@ -802,16 +802,6 @@ public class AndroidTools {
     public static void log(String str) {
         Log.e("tools.logs", str);
     }
-    public static void life(String str) {
-        Log.e("tools.life", str);
-    }
-    public static void tip(String str) {
-        Log.e("tools.tip", str);
-    }
-    public static void list(String str) {
-        Log.e("tools.list", str);
-    }
-
 
     //指定为数序列生成器
     public static String hexs = "0123456789ABCDEF"; //16
