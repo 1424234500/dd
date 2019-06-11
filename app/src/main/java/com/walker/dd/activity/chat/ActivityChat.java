@@ -37,7 +37,7 @@ public class ActivityChat extends AcBase {
     //type <user,group>,toid id,username,profilepath,nickname,name,   msg,time,status <在线,离线>
     List<Bean> listItemMsg = new ArrayList<>();
     ListView lv;
-    adapter.AdapterLvChat adapter;
+    AdapterLvChat adapter;
 
     EditText etsend;
     //NAME TEXT TIME
@@ -49,7 +49,7 @@ public class ActivityChat extends AcBase {
 
         srl =findViewById(R.id.srl);
         lv = findViewById(R.id.lv);
-        adapter = new adapter.AdapterLvChat(this, listItemMsg);
+        adapter = new AdapterLvChat(this, listItemMsg);
         lv.setAdapter( adapter);
         lv.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -90,7 +90,7 @@ public class ActivityChat extends AcBase {
                         .set("TIME", TimeUtil.getTimeYmdHms())
                         .set("TEXT", "refresh")
                 ;
-                sendSocket("echo", bean);
+//                sendSocket("echo", bean);
                 //TYPE<text,voice,photo,file>
                 //SELF<true,false>
 
@@ -124,9 +124,29 @@ public class ActivityChat extends AcBase {
     @Override
     public void OnReceive(String msg) {
         Bean bean = JsonUtil.get(msg);
-        Bean data = bean.get("data", new Bean());
-        data.set("SELF", false);
-        addMsg(data);
+        String msgType = bean.get("type", "message");
+        if(!bean.get("from", "").equals(acData.get("NAME", "")))return;
+        if(msgType.equals("message")){
+// {"time_client":1560235377468,"time_do":1560235377498,"
+// data":{"type":"txt","body":"看看"},
+// "sfrom":"223.104.210.192:27959","wait_size":0,
+// "from":"洋","to":"洋",
+// "time_reveive":1560235377469,"type":"message",
+// "sto":"223.104.210.192:27959"}
+            Bean data = bean.get("data", new Bean());
+
+            Bean item = new Bean()
+                    .set("TYPE", data.get("type", "text"))
+                    .set("SELF", false)
+                    .set("USERNAME", bean.get("from", "who?"))
+                    .set("PROFILE", "")
+                    .set("TIME", TimeUtil.format(bean.get("time_do", 0L), "yyyy-MM-dd HH:mm:ss"))
+                    .set("TEXT", data.get("body", "body?"))
+                    ;
+
+            addMsg(item);
+        }
+
     }
 
     /**

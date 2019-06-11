@@ -113,7 +113,8 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
         Bean bean = listItems.get(position);
         AndroidTools.toast(getActivity(), "click " + bean.toString());
         sendSocket("echo", bean);
-
+        bean.set("NUM", 0);
+        notifyDataSetChanged();
         Intent intent = new Intent(getActivity(), ActivityChat.class);
         AndroidTools.putMapToIntent(intent, bean);
         startActivity(intent);
@@ -137,6 +138,8 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         Bean bean = listItems.get(position);
         AndroidTools.toast(getActivity(), "long click " + bean.toString());
+        listItems.remove(bean);
+        notifyDataSetChanged();
         sendSocket("echo", bean);
         return false;
     }

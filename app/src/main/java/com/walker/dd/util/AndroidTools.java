@@ -4,6 +4,8 @@ package com.walker.dd.util;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 import android.app.Activity;
@@ -842,6 +844,49 @@ public class AndroidTools {
     public static int getScreenHeight(){
         return screenH;
     }
+
+
+
+    public static <T> int listIndex(List<T> list, T item, Comparator<T> compre){
+        int res = -1;
+        for(int i = list.size() - 1; i >= 0; i--){
+            if(compre.compare(list.get(i), item) == 0){
+                res = i;
+            }
+        }
+        return res;
+    }
+    public static <T> int listReplaceIndex(int index, List<T> list, T item, Comparator<T> compre){
+        for(int i = list.size() - 1; i >= 0; i--){
+            if(compre.compare(list.get(i), item) == 0){
+                list.remove(i);
+            }
+        }
+        list.add(index, item);
+        return list.size();
+    }
+
+    /**
+     * 移除新集合中存在的 并把新集合中的置顶添加
+     * @param list
+     * @param items
+     * @param compre
+     * @param <T>
+     * @return
+     */
+    public static <T> int listReplaceIndexAndAdd(int index, List<T> list, List<T> items, Comparator<T> compre){
+        for(int i = list.size() - 1; i >= 0; i--){
+            for(int j = items.size() - 1; j >= 0; j--) {
+                if (compre.compare(list.get(i), items.get(j)) == 0) {
+                    list.remove(i);
+                    continue;
+                }
+            }
+        }
+        list.addAll(index, items);
+        return list.size();
+    }
+
 
 
 }

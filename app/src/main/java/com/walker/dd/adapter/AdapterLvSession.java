@@ -59,23 +59,20 @@ public   class AdapterLvSession extends BaseAdapter    {
 				viewHolder = (ViewHolder) convertView.getTag();
 		}
 		// 设置文字和图片和监听
-		//	viewHolder.tvusername.setText("aaaaaaaaaaaaaaaaaa") ;
         //NAME TEXT VOICE FILE PHOTO NUM PROFILEPATH
 
 		viewHolder.tvusername.setText(bean.get("NAME", "")) ;
-		if(bean.get("MSG", "").equals("TEXT")){
-			SpannableString spannableString = EmotionUtils.getEmotionContent(context,viewHolder.tvmsg,bean.get("TEXT", ""));
-			viewHolder.tvmsg.setText(spannableString);
-		}else if(bean.get("MSG", "").equals("VOICE")){
+		if(bean.get("MSG", "").equals("VOICE")){
 			viewHolder.tvmsg.setText("[语音]");
 		}else if(bean.get("MSG", "").equals("FILE")){
 			viewHolder.tvmsg.setText("[文件]");
 		}else if(bean.get("MSG", "").equals("PHOTO")){
 			viewHolder.tvmsg.setText("[图片]");
 		}else {
-			SpannableString spannableString = EmotionUtils.getEmotionContent(context,viewHolder.tvmsg,bean.get("MSG", ""));
-			viewHolder.tvmsg.setText(spannableString);
-		}
+            SpannableString spannableString = EmotionUtils.getEmotionContent(context,viewHolder.tvmsg,bean.get("TEXT", ""));
+            viewHolder.tvmsg.setText(spannableString);
+            viewHolder.tvmsg.setText(bean.get("TEXT", ""));
+        }
 		
 			
 		viewHolder.tvtime.setText(bean.get("TIME", ""));

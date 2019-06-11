@@ -1,4 +1,4 @@
-package adapter;
+package com.walker.dd.adapter;
 
 
 import java.sql.Timestamp;
@@ -88,18 +88,13 @@ public   class AdapterLvChat extends  BaseAdapter      {
 
 
 
-    //布局类型
-    final int TYPE_TEXT_SELF = 0;	//自己发的文本
-    final int TYPE_TEXT_OTHER = 1;	//收到的别人的文本
-    final int TYPE_VOICE_SELF = 2;	//自己发的语音
-    final int TYPE_VOICE_OTHER = 3;	//收到的别人的语音
-    final int TYPE_PHOTO_SELF = 4;	//自己发的图片
-    final int TYPE_PHOTO_OTHER = 5;	//收到的别人的图片
-    final int TYPE_FILE_SELF = 6;	//自己发的文件
-    final int TYPE_FILE_OTHER = 7;	//收到的别人的文件
+    //布局类型 0开始
+    final int TYPE_TEXT = 0;	//自己发的文本
+    final int TYPE_FILE = 2;	//自己发的文件
+    final int TYPE_VOICE = 4;	//自己发的语音
+    final int TYPE_PHOTO = 6;	//自己发的图片
     Bean types = new Bean()
-            .set("text_true", 0)
-            .set("text_false", 1)
+            .set("text", TYPE_TEXT)
 //            .set("voice_true", 2)
 //            .set("voice_false", 3)
 //            .set("voice_true", 4)
@@ -112,13 +107,14 @@ public   class AdapterLvChat extends  BaseAdapter      {
     public View getView(final int position, View convertView, ViewGroup parent) {
         //TIME,TYPE TEXT VOICE,FROMID,TOID,PROFILEPATH
         Bean data = listItems.get(position);
-        int type = getItemViewType(position);	//得到No.i条数据布局类型
-        boolean ifSelf = type % 2 == 0;
+//        int type = getItemViewType(position);	//得到No.i条数据布局类型
+        int type = types.get(data.get("TYPE", "text"), TYPE_TEXT);
+        boolean ifSelf = data.get("SELF", false);
+
         //构建或者取出可复用布局
         if (convertView == null) { //若无可复用布局
             switch (type){
-            case TYPE_TEXT_SELF:
-            case TYPE_TEXT_OTHER:
+            case TYPE_TEXT:
                 ViewHolderText viewHolderText = new ViewHolderText();
                 convertView = layoutInflater.inflate(ifSelf ? R.layout.chat_item_text_right : R.layout.chat_item_text_left, null);	// 获取list_item布局文件的视图
                 viewHolderText.tvtext = (TextView) convertView .findViewById(R.id.tvtext);
@@ -145,8 +141,7 @@ public   class AdapterLvChat extends  BaseAdapter      {
 
         //私有属性设置
         switch (type){
-            case TYPE_TEXT_SELF:
-            case TYPE_TEXT_OTHER:
+            case TYPE_TEXT:
                 ViewHolderText viewHolderText = (ViewHolderText) viewHolder;
                 viewHolderText.tvtext.setText(EmotionUtils.getEmotionContent(convertView.getContext(),viewHolderText.tvtext,data.get("TEXT", "")));
                 break;
@@ -158,17 +153,17 @@ public   class AdapterLvChat extends  BaseAdapter      {
         return convertView;
     }
 
-    //必须实现，通知adapter有几种布局类型
+    //必须实现，通知adapter有几种布局类型 0开始 必须有序
     @Override
     public int getViewTypeCount() {
-        return types.size();
+        return types.size() * 2;
     }
     //必须实现，让adapter可控布局类型
     @Override
     public int getItemViewType(int position) {
         Bean bean = listItems.get(position);
-        String key = bean.get("TYPE", "text") + "_" + bean.get("SELF", false);
-        return types.get(key, 0);
+        String key = bean.get("TYPE", "text");
+        return types.get(key, 0) * 2 + (bean.get("SELF", false)? 1 : 0);
     }
 
 

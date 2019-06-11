@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.walker.common.util.Bean;
 import com.walker.common.util.JsonUtil;
+import com.walker.common.util.TimeUtil;
 import com.walker.core.encode.Pinyin;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
@@ -17,6 +18,7 @@ import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.MySP;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AcBase {
@@ -25,7 +27,16 @@ public class MainActivity extends AcBase {
 
     //所有fragment的数据都用static共用数据
     FragmentBase fragmentChat;
+    /**
+     * NAME TEXT TIME NUM
+     */
     List<Bean> listItemChat = new ArrayList<>();
+    Comparator<Bean> sessionCompare = new Comparator<Bean>() {
+        @Override
+        public int compare(Bean o1, Bean o2) {
+            return o1.get("NAME", "").compareTo(o2.get("NAME", ""));
+        }
+    };
     FragmentBase fragmentList;
 
     FragmentBase fragmentOther;
@@ -114,17 +125,52 @@ public class MainActivity extends AcBase {
     public void OnReceive(String msg) {
         if(fragmentNow != null){
             Bean bean = JsonUtil.get(msg);
-            String plugin = bean.get("type", "");
-            if(plugin.equals("session")){
-//                listItemChat.clear();
-                List<Bean> list = bean.get("data", new ArrayList<Bean>());
-                for(Bean data : list){
-                    listItemChat.add(new Bean()
-                            .set("NAME", data.get("ID", "name"))
-                            .set("TEXT", data.get("KEY", "socket"))
-                            .set("TIME", data.get("TIME", "time"))
-                            .set("NUM", 1).set("PROFILEPATH", ""));
+            String plugin = bean.get("type", "message");
+
+            if(plugin.equals("message")){
+// {"time_client":1560235377468,"time_do":1560235377498,"
+// data":{"type":"txt","body":"看看"},
+// "sfrom":"223.104.210.192:27959","wait_size":0,
+// "from":"洋","to":"洋",
+// "time_reveive":1560235377469,"type":"message",
+// "sto":"223.104.210.192:27959"}
+                Bean data = bean.get("data", new Bean());
+
+                Bean item = new Bean()
+                        .set("MSG", "TEXT")
+                        .set("NAME", bean.get("from", "name?"))
+                        .set("TEXT", data.get("body", "text?"))
+                        .set("TIME", TimeUtil.format(bean.get("time_do", 0L), "yyyy-MM-dd HH:mm:ss"))
+                        .set("NUM", 1)
+                        .set("PROFILEPATH", "");
+                int i = AndroidTools.listIndex(listItemChat, item, sessionCompare);
+                if(i >= 0){
+                    item.set("NUM", listItemChat.get(i).get("NUM", 0) + 1);
+                    listItemChat.remove(i);
                 }
+                listItemChat.add(0, item);
+
+                fragmentChat.notifyDataSetChanged();
+            } else if(plugin.equals("session")){
+//{"time_client":1560238312727,"time_do":1560238312778,
+// "data":[
+// {"TIME":"2019-06-11 14:49:59","ID":"蓼","KEY":"223.104.210.192:27961"},
+// {"TIME":"2019-06-11 15:31:18","ID":"岘","KEY":"223.104.210.192:29886"}],
+// "sfrom":"223.104.210.192:29886","wait_size":0,
+// "from":"岘","to":"","time_reveive":1560238312728,"type":"session","sto":"223.104.210.192:29886"}
+                List<Bean> list = bean.get("data", new ArrayList<Bean>());
+                List<Bean> newList = new ArrayList<>();
+                for(Bean data : list) {
+                    Bean item = new Bean()
+                            .set("MSG", "TEXT")
+                            .set("NAME", data.get("ID", "name?"))
+                            .set("TEXT", data.get("KEY", "text?"))
+                            .set("TIME", data.get("TIME", "time?"))
+                            .set("NUM", 1)
+                            .set("PROFILEPATH", "");
+                    newList.add(item);
+                }
+                AndroidTools.listReplaceIndexAndAdd(0, listItemChat, newList, sessionCompare);
 //            fragmentNow.onReceive(msg);
                 fragmentChat.notifyDataSetChanged();
             }
