@@ -1,19 +1,11 @@
 package com.walker.dd.view;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.walker.dd.R;
 
@@ -33,7 +25,7 @@ public class ImagePoint extends RelativeLayout  {
 		
 		this.context = context;
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View parentView = inflater.inflate(R.layout.image_point_item, this, true);
+		View parentView = inflater.inflate(R.layout.item_image_point, this, true);
 		ivPoint = (ImageView)parentView.findViewById(R.id.image_point_point);
 		ivImage = (ImageView)parentView.findViewById(R.id.image_point_image);
 		

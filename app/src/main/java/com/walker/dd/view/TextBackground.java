@@ -4,8 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -28,7 +26,7 @@ public class TextBackground extends LinearLayout  {
 		super(context, attrs);
 		this.context = context;
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View parentView = inflater.inflate(R.layout.item_redpoint_image_text, this, true);
+		View parentView = inflater.inflate(R.layout.item_redpoint, this, true);
 		textView = (TextView)parentView.findViewById(R.id.tvnum);
 	
 	}

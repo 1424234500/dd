@@ -16,7 +16,7 @@ import android.view.View.OnTouchListener;
 
 import com.walker.dd.util.AndroidTools;
 
-public class ImageShowView extends View implements OnTouchListener {
+public class ImageViewDrable extends View implements OnTouchListener {
 	GestureDetector mGestureDetector;
 	ScaleGestureDetector mScaleDetector;
 	
@@ -26,7 +26,7 @@ public class ImageShowView extends View implements OnTouchListener {
 	int x = 0, y = 0, w, h, ww, hh;
 	float sx = 1 ;
 
-	public ImageShowView(Context con) {
+	public ImageViewDrable(Context con) {
 		super(con);
 		
 		paint = new Paint(); 

@@ -4,4 +4,7 @@
     <string name="title_dashboard">contact</string>
     <string name="title_notifications">other</string>
     <string name="title_activity_ac_base">AcBase</string>
+    <string name="msg">msg</string>
+    <string name="contact">contact</string>
+    <string name="other">other</string>
 </resources>

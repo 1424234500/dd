@@ -6,17 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".activity.other.ActivityTestSocket">
 
-    <RelativeLayout
-        android:id="@+id/page"
-        android:layout_width="0dp"            android:onClick="onClick"
 
-        android:layout_height="587dp"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp"
+
+    <LinearLayout
+        android:id="@+id/viewchatmain"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/qqlightwhite"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="2dp"
         tools:ignore="MissingConstraints">
 
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/tietIpPort"
+        <EditText
+            android:id="@+id/ettop"
             android:layout_width="match_parent"
             android:onClick="onClick"
             android:layout_height="50dp"
@@ -24,94 +26,140 @@
             android:hint="ip port"
             android:text="39.106.111.11 8093" />
 
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/tietMsg"            android:onClick="onClick"
-
-            android:layout_width="match_parent"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/srl"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/bottom"
-            android:layout_marginBottom="0dp"
-            android:hint="jsonstr"
-            android:text="msg" />
+            android:layout_weight="1">
+
+
+            <ScrollView
+                android:id="@+id/sv"
+                android:layout_above="@+id/tietMsg"
+                android:layout_below="@+id/tietIpPort"
+                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+
+                <TextView
+                    android:id="@+id/tvout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="out" />
+
+            </ScrollView>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
 
         <LinearLayout
-            android:id="@+id/bottom"
+            android:id="@+id/viewbottom"
             android:layout_width="match_parent"
-            android:layout_height="200px"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="0dp"
-            android:layout_marginBottom="0dp"            android:onClick="onClick"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="0dp"
+            android:background="@color/qqmiddlewhite"
+            android:orientation="vertical"
+            android:paddingTop="4dp">
 
-            android:orientation="horizontal">
+            <RelativeLayout
+                android:layout_width="match_parent"
 
-            <Button
-                android:id="@+id/conn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"            android:onClick="onClick"
+                android:layout_height="wrap_content">
 
-                android:layout_weight="1"
-                android:text="conn" />
+                <EditText
+                    android:id="@+id/etsend"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toLeftOf="@+id/tvsend"
+                    android:layout_weight="1"
+                    android:background="@color/qqlightwhite"
+                    android:inputType="textMultiLine"
+                    android:maxLength="200"
+                    android:minHeight="36dp"
+                    android:onClick="onClick"
+                    android:text="etsend"
+                    android:paddingLeft="4dp"
+                    android:textSize="17dp" />
 
-            <Button
-                android:id="@+id/login"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"            android:onClick="onClick"
+                <TextView
+                    android:id="@+id/tvsend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/selector_button_login"
+                    android:onClick="onClick"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="5dp"
+                    android:text="发送"
+                    android:textColor="@color/qqlightwhite"
+                    android:textSize="20dp" />
+            </RelativeLayout>
 
-                android:layout_weight="1"
-                android:text="login" />
 
-            <Button
-                android:id="@+id/send"
-                android:layout_width="wrap_content"            android:onClick="onClick"
-
+            <LinearLayout
+                android:id="@+id/bottom"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="send" />
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginBottom="0dp"
+                android:onClick="onClick"
 
-            <Button
-                android:id="@+id/session"
-                android:layout_width="wrap_content"            android:onClick="onClick"
+                android:orientation="horizontal">
 
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="ses" />
+                <Button
+                    android:id="@+id/conn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"            android:onClick="onClick"
 
-            <Button
-                android:id="@+id/auto"
-                android:layout_width="wrap_content"            android:onClick="onClick"
+                    android:layout_weight="1"
+                    android:text="conn" />
 
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="auto" />
+                <Button
+                    android:id="@+id/login"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"            android:onClick="onClick"
 
-            <Button
-                android:id="@+id/other"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"            android:onClick="onClick"
+                    android:layout_weight="1"
+                    android:text="login" />
 
-                android:layout_weight="1"
-                android:text="oth" />
+
+                <Button
+                    android:id="@+id/session"
+                    android:layout_width="wrap_content"            android:onClick="onClick"
+
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="ses" />
+
+                <Button
+                    android:id="@+id/auto"
+                    android:layout_width="wrap_content"            android:onClick="onClick"
+
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="auto" />
+
+                <Button
+                    android:id="@+id/other"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"            android:onClick="onClick"
+
+                    android:layout_weight="1"
+                    android:text="oth" />
+            </LinearLayout>
+
+
         </LinearLayout>
-
-        <ScrollView
-            android:id="@+id/scrollView1"
-
-            android:layout_above="@+id/tietMsg"
-            android:layout_below="@+id/tietIpPort"
-            android:layout_weight="1"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" >
-            <TextView
-                android:id="@+id/tietOut"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="out" />
-
-        </ScrollView>
+    </LinearLayout>
 
 
-    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -16,6 +16,8 @@ import com.walker.common.util.Bean;
 import com.walker.dd.R;
 import com.walker.dd.util.AndroidTools;
 
+import org.w3c.dom.Text;
+
 /**
  * IMAGE, TEXT
  */
@@ -43,8 +45,8 @@ public class AdapterGvOther extends BaseAdapter{
 		if (convertView == null) { //若无可复用布局
 			viewHolder = new ViewHolder();
 			convertView = layoutInflater.inflate(R.layout.item_image_text, null);	// 获取list_item布局文件的视图
-            viewHolder.iv = convertView .findViewById(R.id.iv);
-            viewHolder.tv = convertView .findViewById(R.id.tv);
+            viewHolder.iv = (ImageView)convertView .findViewById(R.id.iv);
+            viewHolder.tv = (TextView)convertView .findViewById(R.id.tv);
 
 			convertView.setTag(viewHolder);// 设置控件集到convertView
 		} else {//若有可复用布局

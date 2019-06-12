@@ -3,8 +3,10 @@ package com.walker.dd.activity.other;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.TextInputEditText;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.walker.common.util.Bean;
@@ -26,11 +28,14 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
-public class ActivityTestAuto extends AcBase {
+public class ActivityTestEcho extends AcBase {
 
-    TextInputEditText tietIpPort;
-    TextView tietOut;
-    TextInputEditText tietMsg;
+    private EditText ettop;
+    private TextView tvout;
+    private EditText etsend;
+
+    private SwipeRefreshLayout srl;
+    private ScrollView sv;
     /**
      * 生命周期
      *
@@ -40,10 +45,22 @@ public class ActivityTestAuto extends AcBase {
     public void OnCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_test_auto);
 
-        tietIpPort = this.findViewById(R.id.tietIpPort);
-        tietOut = this.findViewById(R.id.tietOut);
-        tietMsg = this.findViewById(R.id.tietMsg);
+        ettop = (EditText)this.findViewById(R.id.ettop);
+        tvout = (TextView)this.findViewById(R.id.tvout);
+        etsend = (EditText)this.findViewById(R.id.etsend);
 
+        sv = (ScrollView) findViewById(R.id.sv);
+
+        srl = (SwipeRefreshLayout)findViewById(R.id.srl);
+        //设置刷新时动画的颜色，可以设置4个
+        srl.setColorSchemeResources(Constant.SRLColors);
+        srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                tvout.setText("clear");
+                srl.setRefreshing(false);
+            }
+        });
     }
 
     /**
@@ -78,11 +95,11 @@ public class ActivityTestAuto extends AcBase {
             Bundle b = msg.getData();
             String res = b.getString("res");
 
-            tietOut.append("\n" + res);
-            if(tietOut.length() > 40000){
-                tietOut.setText("clear");
+            tvout.append("\n" + res);
+            if(tvout.length() > 40000){
+                tvout.setText("clear");
             }
-            tietOut.setScrollY(999999);
+            tvout.setScrollY(999999);
             AndroidTools.log("" + res);
         }
     };
@@ -93,8 +110,8 @@ public class ActivityTestAuto extends AcBase {
      */
     @Override
     public void onClick(View v) {
-        String ipport = tietIpPort.getText().toString();
-        final String msg = tietMsg.getText().toString();
+        String ipport = ettop.getText().toString();
+        final String msg = etsend.getText().toString();
 
         if(v.getId() == R.id.sendtuling){
             String url = RobotAuto.getUrlTuling(msg);

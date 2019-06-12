@@ -7,14 +7,14 @@ import android.util.AttributeSet;
 import android.view.View;
 
 
-public class ImageView extends android.support.v7.widget.AppCompatImageView implements View.OnClickListener {
+public class ImageViewShowable extends android.widget.ImageView implements View.OnClickListener {
 	Bitmap bitmap;
 
-	public ImageView(Context con) {
+	public ImageViewShowable(Context con) {
 		super(con);
 		this.setOnClickListener(this);
 	}
-	public ImageView(Context context, AttributeSet attrs) {
+	public ImageViewShowable(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		this.setOnClickListener(this);
 	}

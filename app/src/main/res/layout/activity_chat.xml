@@ -7,22 +7,26 @@
     tools:context=".activity.chat.ActivityChat">
 
 
-
     <LinearLayout
         android:id="@+id/viewchatmain"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@color/qqlightwhite"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="2dp"
+        tools:ignore="MissingConstraints">
 
-
-
-
+        <com.walker.dd.view.NavigationBar
+            android:id="@+id/nb"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            />
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/srl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" >
+            android:layout_weight="1">
 
             <ListView
                 android:id="@+id/lv"
@@ -31,8 +35,7 @@
                 android:layout_weight="1"
                 android:background="@color/qqloginwhite"
                 android:divider="@drawable/list_divider"
-                android:dividerHeight="0dp" >
-            </ListView>
+                android:dividerHeight="0dp"></ListView>
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
@@ -41,14 +44,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:background="@color/qqloginwhite"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="0dp"
+            android:background="@color/qqmiddlewhite"
             android:orientation="vertical"
-            android:paddingTop="4dp" >
+            android:paddingTop="4dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+
+                android:layout_height="wrap_content">
 
                 <EditText
                     android:id="@+id/etsend"
@@ -73,35 +77,33 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="4dp"
                     android:layout_marginRight="10dp"
-                    android:onClick="onClick"
                     android:background="@drawable/selector_button_login"
-                    android:paddingBottom="5dp"
+                    android:onClick="onClick"
                     android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
                     android:paddingTop="5dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="5dp"
                     android:text="发送"
-                    android:textSize="20dp"
-                    android:textColor="@color/qqlightwhite" />
+                    android:textColor="@color/qqlightwhite"
+                    android:textSize="20dp" />
             </RelativeLayout>
 
-            <!--<util.view.ChatView-->
-                <!--android:id="@+id/cvchat"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content" />-->
+            <com.walker.dd.view.NavigationImageView
+                android:id="@+id/niv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
             <LinearLayout
                 android:id="@+id/viewfill"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:background="@color/qqlightwhite"
                 android:orientation="horizontal"
-                android:visibility="gone" >
+                android:visibility="gone">
 
                 <FrameLayout
                     android:id="@+id/main_fragment"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent" >
-                </FrameLayout>
+                    android:layout_height="fill_parent"></FrameLayout>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

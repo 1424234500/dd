@@ -6,12 +6,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.walker.common.util.Bean;
 import com.walker.common.util.JsonUtil;
 import com.walker.common.util.TimeUtil;
-import com.walker.core.encode.Pinyin;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
 import com.walker.dd.adapter.*;
@@ -19,6 +20,8 @@ import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.dd.util.MySP;
 import com.walker.dd.util.RobotAuto;
+import com.walker.dd.view.NavigationBar;
+import com.walker.dd.view.NavigationImageView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,13 +45,21 @@ public class ActivityChat extends AcBase {
     EditText etsend;
     //NAME TEXT TIME
     Bean acData;
-    
+
+    /**
+     * 导航切换聊天 语言 表情 拍照 fragment
+     */
+    NavigationImageView niv;
+
+    /**
+     * 标题栏
+     */
+    NavigationBar nb;
     
     public void OnCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_chat);
-
-        srl =findViewById(R.id.srl);
-        lv = findViewById(R.id.lv);
+        srl =(SwipeRefreshLayout)findViewById(R.id.srl);
+        lv = (ListView)findViewById(R.id.lv);
         adapter = new AdapterLvChat(this, listItemMsg);
         lv.setAdapter( adapter);
         lv.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -103,9 +114,50 @@ public class ActivityChat extends AcBase {
             }
         });
 
-        etsend = findViewById(R.id.etsend);
+        etsend = (EditText)findViewById(R.id.etsend);
+        niv = (NavigationImageView)findViewById(R.id.niv);
+        niv.setOnControl(new NavigationImageView.OnControl() {
+            @Override
+            public void onClose() {
+                AndroidTools.toast(getContext(), "onClose");
+            }
+
+            @Override
+            public void onOpen(int id) {
+                AndroidTools.toast(getContext(), "onOpen id");
+            }
+        });
 
         this.acData = AndroidTools.getMapFromIntent(this.getIntent());
+
+        nb = (NavigationBar)findViewById(R.id.nb);
+        nb.setMenu(R.drawable.more);
+        nb.setTitle(acData.get("NAME", "title"));
+        nb.setSubtitle("在线");
+        nb.setReturn("消息");
+//        nb.setReturnIcon(R.id.ivprofile);
+        nb.setOnNavigationBar(new NavigationBar.OnNavigationBar() {
+            @Override
+            public void onClickIvMenu(ImageView view) {
+                toast("more");
+            }
+
+            @Override
+            public void onClickTvReturn(TextView view) {
+                onBackPressed();
+            }
+
+            @Override
+            public void onClickTvTitle(TextView view) {
+
+            }
+
+            @Override
+            public void onClickTvSubtitle(TextView view) {
+
+            }
+        });
+
     }
 
     /**
@@ -245,5 +297,12 @@ public class ActivityChat extends AcBase {
         lv.setSelection(listItemMsg.size());	//选中最新一条，滚动到底部
     }
 
+    /**
+     * 更多菜单点击
+     */
+    @Override
+    public void OnMoreClick() {
+        toast("more");
 
+    }
 }

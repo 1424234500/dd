@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import com.walker.dd.R;
 import com.walker.dd.util.AndroidTools;
 
-public class BeatsView extends android.support.v7.widget.AppCompatImageView implements OnClickListener {
+public class BeatsView extends ImageView implements OnClickListener {
 
 	Handler handler = new Handler(){
 		public void handleMessage(android.os.Message msg) {

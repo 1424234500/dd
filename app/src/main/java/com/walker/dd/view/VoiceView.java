@@ -19,7 +19,7 @@ import com.walker.dd.util.MyFile;
 import com.walker.dd.util.MyMediaPlayer;
 
 
-public class VoiceListener implements OnTouchListener{
+public class VoiceView implements OnTouchListener{
 	View view;
 	
 	TextView tvtip, tvtime ;
@@ -36,7 +36,7 @@ public class VoiceListener implements OnTouchListener{
 	String file = "";	//操作的录音文件名，录制完毕后存储
 	
 	Context context;
-	public VoiceListener(Context context, View viewVoice) {
+	public VoiceView(Context context, View viewVoice) {
 		this.context = context;
 	   view = viewVoice;
 	   tvtime = ((TextView)viewVoice.findViewById(R.id.tvtime));

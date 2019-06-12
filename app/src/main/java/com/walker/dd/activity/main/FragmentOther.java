@@ -11,7 +11,7 @@ import android.widget.GridView;
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
 import com.walker.dd.activity.other.ActivityCompose;
-import com.walker.dd.activity.other.ActivityTestAuto;
+import com.walker.dd.activity.other.ActivityTestEcho;
 import com.walker.dd.activity.other.ActivityTestSocket;
 import com.walker.dd.adapter.AdapterGvOther;
 import com.walker.dd.util.AndroidTools;
@@ -30,13 +30,13 @@ public class FragmentOther extends FragmentBase {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        AndroidTools.toast(getContext(), "FragmentOther onCreateView");
+        AndroidTools.log("FragmentOther onCreateView");
 
         View v=inflater.inflate(R.layout.main_fragment_other,container,false);
 
         adapter = new AdapterGvOther(getContext(), listItems);
 
-        gv = v.findViewById(R.id.gv);
+        gv = (GridView)v.findViewById(R.id.gv);
         gv.setNumColumns(4);
         gv.setAdapter(adapter);
 
@@ -110,7 +110,7 @@ public class FragmentOther extends FragmentBase {
                 startActivity(new Intent(getActivity(), ActivityCompose.class));
                 break;
             case "autochat":
-                startActivity(new Intent(getActivity(), ActivityTestAuto.class));
+                startActivity(new Intent(getActivity(), ActivityTestEcho.class));
 
             default:
                 sendSocket("echo", bean);

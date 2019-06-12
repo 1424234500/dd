@@ -30,17 +30,17 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v=inflater.inflate(R.layout.main_fragment_chat,container,false);
+        View v=inflater.inflate(R.layout.main_fragment_session,container,false);
 
-        srl = v.findViewById(R.id.srl);
-        lv =  v.findViewById(R.id.lv);
+        lv =  (ListView)v.findViewById(R.id.lv);
         adapter = new AdapterLvSession(getActivity(), listItems);
         lv.setAdapter( adapter);
 
         lv.setOnItemClickListener(this);
         lv.setOnItemLongClickListener(this);
 
-//        /设置刷新时动画的颜色，可以设置4个
+        srl = (SwipeRefreshLayout)v.findViewById(R.id.srl);
+        //设置刷新时动画的颜色，可以设置4个
         srl.setColorSchemeResources(Constant.SRLColors);
         srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
