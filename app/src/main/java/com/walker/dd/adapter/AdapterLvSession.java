@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
 import com.walker.dd.util.EmotionUtils;
+import com.walker.socket.server_1.Key;
 
 /**
  * 会话列表
@@ -22,6 +23,15 @@ import com.walker.dd.util.EmotionUtils;
  */
 public   class AdapterLvSession extends BaseAdapter    {
 	private Context context; // 运行上下文
+
+
+//            .set(Key.TYPE, "TEXT")
+//            .set(Key.FROM, msg.getFrom())
+//            .set(Key.NAME, msg.getUserFrom())
+//            .set(Key.TEXT, data.get(Key.TEXT))
+//            .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
+//            .set(Key.NUM, 1)
+//            .set(Key.PROFILE, "");    public static List<Bean> listItems;
 	private List<Bean>  listItems = null; // listview的数据集合
 	private LayoutInflater layoutInflater; // 视图容器
 	//控件集合实例
@@ -59,24 +69,31 @@ public   class AdapterLvSession extends BaseAdapter    {
 				viewHolder = (ViewHolder) convertView.getTag();
 		}
 		// 设置文字和图片和监听
-        //NAME TEXT VOICE FILE PHOTO NUM PROFILEPATH
+//            .set(Key.TYPE, "TEXT")
+//            .set(Key.ID, msg.getFrom())
+//            .set(Key.NAME, msg.getUserFrom())
+//            .set(Key.TEXT, data.get(Key.TEXT))
+//            .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
+//            .set(Key.NUM, 1)
+//            .set(Key.PROFILE, "");    public static List<Bean> listItems;
 
-		viewHolder.tvusername.setText(bean.get("NAME", "")) ;
-		if(bean.get("MSG", "").equals("VOICE")){
+		viewHolder.tvusername.setText(bean.get(Key.NAME, "")) ;
+		String type = bean.get(Key.TYPE, "");
+		if(type.equals(Key.VOICE)){
 			viewHolder.tvmsg.setText("[语音]");
-		}else if(bean.get("MSG", "").equals("FILE")){
+		}else if(type.equals(Key.FILE)){
 			viewHolder.tvmsg.setText("[文件]");
-		}else if(bean.get("MSG", "").equals("PHOTO")){
+		}else if(type.equals(Key.PHOTO)){
 			viewHolder.tvmsg.setText("[图片]");
 		}else {
             SpannableString spannableString = EmotionUtils.getEmotionContent(context,viewHolder.tvmsg,bean.get("TEXT", ""));
             viewHolder.tvmsg.setText(spannableString);
-            viewHolder.tvmsg.setText(bean.get("TEXT", ""));
+            viewHolder.tvmsg.setText(bean.get(Key.TEXT, ""));
         }
 		
 			
-		viewHolder.tvtime.setText(bean.get("TIME", ""));
-		int t = bean.get("NUM", 0);
+		viewHolder.tvtime.setText(bean.get(Key.TIME, ""));
+		int t = bean.get(Key.NUM, 0);
 		if(t <= 0){
 			viewHolder.tvnum.setText( "") ;
 			viewHolder.tvnum.setVisibility(View.INVISIBLE);

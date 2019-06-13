@@ -10,11 +10,14 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.walker.common.util.Bean;
+import com.walker.common.util.TimeUtil;
 import com.walker.dd.R;
 import com.walker.dd.activity.chat.ActivityChat;
 import com.walker.dd.adapter.AdapterLvSession;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
+import com.walker.socket.server_1.Key;
+import com.walker.socket.server_1.plugin.Plugin;
 
 import java.util.*;
 
@@ -23,7 +26,14 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
     SwipeRefreshLayout srl;
 
     ListView lv;
-    //type <user,group>,toid id,username,profilepath,nickname,name,   msg,time,status <在线,离线>
+
+//            .set(Key.TYPE, Key.TEXT)
+//            .set(Key.FROM, msg.getFrom())
+//            .set(Key.NAME, msg.getUserFrom())
+//            .set(Key.TEXT, data.get(Key.TEXT))
+//            .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
+//            .set(Key.NUM, 1)
+//            .set(Key.PROFILE, "");
     public static List<Bean> listItems;
     AdapterLvSession adapter;
 
@@ -45,8 +55,8 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
         srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                AndroidTools.toast(getContext(), "refresh");
-                sendSocket("session", new Bean());
+                AndroidTools.toast(getActivity(), "refresh");
+                sendSocket(Plugin.KEY_SESSION, new Bean());
                 srl.setRefreshing(false);
             }
         });
@@ -63,16 +73,14 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
     @Override
     public void setData(Object data) {
         this.listItems = (List<Bean>) data;
-        this.listItems.add(0, new Bean().set("MSG", "TEXT").set("NAME", "dd").set("TEXT", "auto echo")
-                        .set("VOICE", "").set("FILE", "").set("PHOTO", "").set("NUM", 1).set("PROFILEPATH", ""));
-//        if(this.listItems.size() <= 0){
-//            for(int i = 0; i < 10; i++) {
-//                listItems.add(new Bean().set("MSG", "TEXT").set("NAME", "test" + i).set("TEXT", "text" + i)
-//                        .set("VOICE", "").set("FILE", "").set("PHOTO", "").set("NUM", 88).set("PROFILEPATH", ""));
-//
-//                //NAME TEXT VOICE FILE PHOTO NUM PROFILEPATH
-//            }
-//        }
+         Bean bean = new Bean().set(Key.TYPE, Key.TEXT)
+            .set(Key.FROM, Key.DD)
+            .set(Key.NAME, Key.DD)
+            .set(Key.TEXT, "auto echo")
+            .set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
+            .set(Key.NUM, 1)
+            .set(Key.PROFILE, "");
+        this.listItems.add(bean);
         this.notifyDataSetChanged();
     }
 
@@ -113,7 +121,7 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
         Bean bean = listItems.get(position);
         AndroidTools.toast(getActivity(), "click " + bean.toString());
         sendSocket("echo", bean);
-        bean.set("NUM", 0);
+        bean.set(Key.NUM, 0);
         notifyDataSetChanged();
         Intent intent = new Intent(getActivity(), ActivityChat.class);
         AndroidTools.putMapToIntent(intent, bean);
@@ -140,7 +148,7 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
         AndroidTools.toast(getActivity(), "long click " + bean.toString());
         listItems.remove(bean);
         notifyDataSetChanged();
-        sendSocket("echo", bean);
+        sendSocket(Plugin.KEY_ECHO, bean);
         return false;
     }
 }

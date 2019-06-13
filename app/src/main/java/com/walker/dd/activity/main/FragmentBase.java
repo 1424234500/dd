@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class FragmentBase extends Fragment {
-
     /**
      * 传递引用对象数据初始化
      */

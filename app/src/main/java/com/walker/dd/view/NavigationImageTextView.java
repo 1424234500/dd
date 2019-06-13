@@ -25,7 +25,7 @@ public class NavigationImageTextView extends LinearLayout implements View.OnClic
 	private List<ImageText> its = new ArrayList<ImageText>();
 	
 	String[] texts = {"msg", "contact", "other"};
-	int color1 =   R.color.qqloginwhite, color2 = R.color.qqtoppanelblue;
+	int color1 =   R.color.colorPrimary, color2 = R.color.qqtoppanelblue;
 	int img1s[] = {R.drawable.msg, R.drawable.contact, R.drawable.more };
 	int img2s[] = {R.drawable.msgblue, R.drawable.contactblue, R.drawable.moreblue };
 	int ids[] =   {R.id.itmsg, R.id.itcontact, R.id.itdollar};

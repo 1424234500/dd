@@ -1,7 +1,6 @@
 package com.walker.dd.activity.chat;
 
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AbsListView;
@@ -11,17 +10,20 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.walker.common.util.Bean;
-import com.walker.common.util.JsonUtil;
 import com.walker.common.util.TimeUtil;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
 import com.walker.dd.adapter.*;
+import com.walker.dd.service.User;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
+import com.walker.socket.server_1.Key;
 import com.walker.dd.util.MySP;
 import com.walker.dd.util.RobotAuto;
 import com.walker.dd.view.NavigationBar;
 import com.walker.dd.view.NavigationImageView;
+import com.walker.socket.server_1.Msg;
+import com.walker.socket.server_1.plugin.Plugin;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,13 +39,27 @@ import okhttp3.Response;
 public class ActivityChat extends AcBase {
     SwipeRefreshLayout srl;
 
-    //type <user,group>,toid id,username,profilepath,nickname,name,   msg,time,status <在线,离线>
+//.set(Key.TYPE, Key.TEXT)
+//.set(Key.FROM, User.getId())
+//.set(Key.NAME, User.getUser())
+//.set(Key.TO, User.getId())
+//.set(Key.TONAME, User.getUser())
+//.set(Key.PROFILE, "")
+//.set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
+//.set(Key.TEXT, str)
+//.set(Key.FILE, str)
     List<Bean> listItemMsg = new ArrayList<>();
     ListView lv;
     AdapterLvChat adapter;
 
     EditText etsend;
-    //NAME TEXT TIME
+//            .set(Key.TYPE, Key.TEXT)
+//            .set(Key.FROM, msg.getFrom())
+//            .set(Key.NAME, msg.getUserFrom())
+//            .set(Key.TEXT, data.get(Key.TEXT))
+//            .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
+//            .set(Key.NUM, 1)
+//            .set(Key.PROFILE, "");
     Bean acData;
 
     /**
@@ -93,23 +109,6 @@ public class ActivityChat extends AcBase {
             @Override
             public void onRefresh() {
                 AndroidTools.toast(getContext(), "refresh");
-                Bean bean = new Bean()
-                        .set("TYPE", "text")
-                        .set("SELF", ((int)(Math.random() * 10)) % 2 == 0)
-                        .set("USERNAME", "self")
-                        .set("PROFILE", "")
-                        .set("TIME", TimeUtil.getTimeYmdHms())
-                        .set("TEXT", "refresh")
-                ;
-//                sendSocket("echo", bean);
-                //TYPE<text,voice,photo,file>
-                //SELF<true,false>
-
-                //USERNAME
-                //PROFILE
-                //TIME
-
-                //TEXT
                 srl.setRefreshing(false);
             }
         });
@@ -124,16 +123,22 @@ public class ActivityChat extends AcBase {
 
             @Override
             public void onOpen(int id) {
-                AndroidTools.toast(getContext(), "onOpen id");
+                AndroidTools.toast(getContext(), "onOpen id " + id);
             }
         });
 
         this.acData = AndroidTools.getMapFromIntent(this.getIntent());
-
+//            .set(Key.TYPE, Key.TEXT)
+//            .set(Key.FROM, msg.getFrom())
+//            .set(Key.NAME, msg.getUserFrom())
+//            .set(Key.TEXT, data.get(Key.TEXT))
+//            .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
+//            .set(Key.NUM, 1)
+//            .set(Key.PROFILE, "");
         nb = (NavigationBar)findViewById(R.id.nb);
         nb.setMenu(R.drawable.more);
-        nb.setTitle(acData.get("NAME", "title"));
-        nb.setSubtitle("在线");
+        nb.setTitle(acData.get(Key.NAME, Key.NAME));
+        nb.setSubtitle(acData.get(Key.FROM, Key.FROM));
         nb.setReturn("消息");
 //        nb.setReturnIcon(R.id.ivprofile);
         nb.setOnNavigationBar(new NavigationBar.OnNavigationBar() {
@@ -158,6 +163,9 @@ public class ActivityChat extends AcBase {
             }
         });
 
+        //初始化数据
+
+
     }
 
     /**
@@ -171,29 +179,29 @@ public class ActivityChat extends AcBase {
     /**
      * 收到广播处理
      *
-     * @param msg
+     * @param msgJson
      */
     @Override
-    public void OnReceive(String msg) {
-        Bean bean = JsonUtil.get(msg);
-        String msgType = bean.get("type", "message");
-        if(!bean.get("from", "").equals(acData.get("NAME", "")))return;
-        if(msgType.equals("message")){
+    public void OnReceive(String msgJson) {
+        Msg msg = new Msg(msgJson);
+        String plugin = msg.getType();
+        if(msg.getFrom().equals(acData.get(Key.ID)))return;
+        if(plugin.equals(Plugin.KEY_MESSAGE)){
 // {"time_client":1560235377468,"time_do":1560235377498,"
 // data":{"type":"txt","body":"看看"},
 // "sfrom":"223.104.210.192:27959","wait_size":0,
 // "from":"洋","to":"洋",
 // "time_reveive":1560235377469,"type":"message",
 // "sto":"223.104.210.192:27959"}
-            Bean data = bean.get("data", new Bean());
+            Bean data = msg.getData();
 
             Bean item = new Bean()
-                    .set("TYPE", data.get("type", "text"))
-                    .set("SELF", false)
-                    .set("USERNAME", bean.get("from", "who?"))
-                    .set("PROFILE", "")
-                    .set("TIME", TimeUtil.format(bean.get("time_do", 0L), "yyyy-MM-dd HH:mm:ss"))
-                    .set("TEXT", data.get("body", "body?"))
+                    .set(Key.TYPE, data.get(Key.TYPE, Key.TEXT))
+                    .set(Key.FROM, msg.getFrom())
+                    .set(Key.NAME, msg.getUserFrom())
+                    .set(Key.PROFILE, "")
+                    .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
+                    .set(Key.TEXT, data.get(Key.TEXT, ""))
                     ;
 
             addMsg(item);
@@ -213,19 +221,19 @@ public class ActivityChat extends AcBase {
 
             if(str.length() > 0){
                 Bean bean = new Bean()
-                        .set("TYPE", "text")
-                        .set("SELF", true)
-                        .set("USERNAME", MySP.get(getContext(), "user", "self"))
-                        .set("PROFILE", "")
-                        .set("TIME", TimeUtil.getTimeYmdHms())
-                        .set("TEXT", str)
+                        .set(Key.TYPE, Key.TEXT)
+                        .set(Key.FROM, User.getId())
+                        .set(Key.NAME, User.getUser())
+                        .set(Key.PROFILE, "")
+                        .set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
+                        .set(Key.TEXT, str)
                         ;
 
                 addMsg(bean);
 //            NAME TEXT
 //            ID KEY
 //            {type:message,to:"all_socket",from:222,data:{type:txt,body:hello} }
-               sendSocket("message",acData.get("NAME", ""), new Bean().set("type", "txt").set("body", str));
+               sendSocket(Plugin.KEY_MESSAGE, acData.get(Key.NAME, ""), new Bean().set(Key.TYPE, Key.TEXT).set(Key.TEXT, str));
 
                sendAuto(str);
 
@@ -246,14 +254,14 @@ public class ActivityChat extends AcBase {
     @Override
     public void OnHandler(String type, String msg) {
         super.OnHandler(type, msg);
-        if(type.equals("auto")){
+        if(type.equals(Key.AUTO)){
             Bean bean = new Bean()
-                    .set("TYPE", "text")
-                    .set("SELF", false)
-                    .set("USERNAME", "dd")
-                    .set("PROFILE", "")
-                    .set("TIME", TimeUtil.getTimeYmdHms())
-                    .set("TEXT", msg)
+                    .set(Key.TYPE, Key.TEXT)
+                    .set(Key.FROM, Key.DD)
+                    .set(Key.NAME, Key.DD)
+                    .set(Key.PROFILE, "")
+                    .set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
+                    .set(Key.TEXT, msg)
                     ;
             addMsg(bean);
         }
@@ -288,7 +296,7 @@ public class ActivityChat extends AcBase {
                 out("onResponse", str);
                 String res=RobotAuto.parseTencentRes(str);
                 out(res);
-                sendHandler("auto", res);
+                sendHandler(Key.AUTO, res);
             }
         });
     }

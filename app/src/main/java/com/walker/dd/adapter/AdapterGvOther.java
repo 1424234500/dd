@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
 import com.walker.dd.util.AndroidTools;
+import com.walker.socket.server_1.Key;
 
 import org.w3c.dom.Text;
 
@@ -56,7 +57,7 @@ public class AdapterGvOther extends BaseAdapter{
 //        viewHolder.iv.setImageResource(R.drawable.profile);
 
         viewHolder.iv.setBackgroundColor(AndroidTools.getRandomColor());
-        viewHolder.tv.setText(bean.get("TEXT", ""));
+        viewHolder.tv.setText(bean.get(Key.TEXT, ""));
 
 		
 		return convertView; 

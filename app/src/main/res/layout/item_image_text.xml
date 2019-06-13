@@ -12,16 +12,17 @@
 
         <ImageView
             android:id="@+id/iv"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/profile"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:layout_marginBottom="2dp"
             android:scaleType="centerCrop"
 
             />
+        <!--android:layout_marginTop="12dp"-->
+
         <!--android:background="@color/red"-->
 
     </LinearLayout>
@@ -33,8 +34,9 @@
         android:layout_alignLeft="@+id/ll"
         android:layout_alignRight="@+id/ll"
         android:layout_below="@+id/ll"
+        android:textColor="@color/black"
         android:text="findxxxxxx"
         android:gravity="center"
-        android:textSize="14dp" />
+        android:textSize="10dp" />
 
 </RelativeLayout>

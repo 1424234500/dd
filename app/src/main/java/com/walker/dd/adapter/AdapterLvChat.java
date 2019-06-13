@@ -1,17 +1,12 @@
 package com.walker.dd.adapter;
 
 
-import java.sql.Timestamp;
 import java.util.List;
-import java.util.Map;
 
 
 import android.content.Context;
-import android.graphics.drawable.AnimationDrawable;
-import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -19,8 +14,12 @@ import android.widget.TextView;
 
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
+import com.walker.dd.service.User;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.EmotionUtils;
+import com.walker.dd.util.MySP;
+import com.walker.socket.server_1.Key;
+import com.walker.dd.view.ImageText;
 
 
 /**
@@ -29,16 +28,14 @@ import com.walker.dd.util.EmotionUtils;
  * Description: 聊天消息适配器,统一群聊 私聊
  */
 public   class AdapterLvChat extends  BaseAdapter      {
+    private Context context;
 
-    //TYPE<text,voice,photo,file>
-    //SELF<true,false>
-
-    //USERNAME
-    //PROFILE
-    //TIME
-
-    //TEXT
-
+//.set(Key.TYPE, Key.TEXT)
+//.set(Key.FROM, User.getId())
+//.set(Key.NAME, User.getUser())
+//.set(Key.PROFILE, "")
+//.set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
+//.set(Key.TEXT, str)
     private List<Bean>  listItems = null; // listview的数据集合
     private LayoutInflater layoutInflater; // 视图容器
 
@@ -47,8 +44,9 @@ public   class AdapterLvChat extends  BaseAdapter      {
     //自定义控件集合  布局类型
     //头像，用户名，时间
     private  class ViewHolder{
-        public ImageView ivprofile;
-        public TextView tvusername;
+//        public ImageView ivprofile;
+//        public TextView tvusername;
+        public ImageText it;
         public TextView tvtime;
     }
     //文本
@@ -94,7 +92,7 @@ public   class AdapterLvChat extends  BaseAdapter      {
     final int TYPE_VOICE = 4;	//自己发的语音
     final int TYPE_PHOTO = 6;	//自己发的图片
     Bean types = new Bean()
-            .set("text", TYPE_TEXT)
+            .set(Key.TEXT, TYPE_TEXT)
 //            .set("voice_true", 2)
 //            .set("voice_false", 3)
 //            .set("voice_true", 4)
@@ -108,8 +106,8 @@ public   class AdapterLvChat extends  BaseAdapter      {
         //TIME,TYPE TEXT VOICE,FROMID,TOID,PROFILEPATH
         Bean data = listItems.get(position);
 //        int type = getItemViewType(position);	//得到No.i条数据布局类型
-        int type = types.get(data.get("TYPE", "text"), TYPE_TEXT);
-        boolean ifSelf = data.get("SELF", false);
+        int type = types.get(data.get(Key.TYPE, Key.TEXT), TYPE_TEXT);
+        boolean ifSelf = data.get(Key.FROM, "").equals(User.getId());
 
         //构建或者取出可复用布局
         if (convertView == null) { //若无可复用布局
@@ -126,24 +124,32 @@ public   class AdapterLvChat extends  BaseAdapter      {
             }
             //公用视图配置
             ViewHolder viewHolder = (ViewHolder)convertView.getTag();
-            viewHolder.ivprofile = (ImageView) convertView .findViewById(R.id.ivprofile);
-            viewHolder.tvusername = (TextView) convertView .findViewById(R.id.tvusername);
+//            viewHolder.ivprofile = (ImageView) convertView .findViewById(R.id.ivprofile);
+//            viewHolder.tvusername = (TextView) convertView .findViewById(R.id.tvusername);
+            viewHolder.it = (ImageText) convertView .findViewById(R.id.it);
             viewHolder.tvtime = (TextView) convertView .findViewById(R.id.tvtime);
 
         }
 
         ViewHolder viewHolder = (ViewHolder) convertView.getTag();
 
-        //共用属性设置
-        viewHolder.tvusername.setText( data.get("USERNAME", "username")) ;
-        viewHolder.tvtime.setText( data.get("TIME", "time")) ;
-//        NetImage.loadProfile(context, MapListUtil.getList(listItems, position, "PROFILEPATH").toString(), viewHolderTextSelf.ivprofile);
 
+//.set(Key.TYPE, Key.TEXT)
+//.set(Key.FROM, User.getId())
+//.set(Key.NAME, User.getUser())
+//.set(Key.PROFILE, "")
+//.set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
+//.set(Key.TEXT, str)
+        //共用属性设置
+        viewHolder.tvtime.setText( data.get(Key.TIME, Key.TIME)) ;
+//        NetImage.loadProfile(context, MapListUtil.getList(listItems, position, "PROFILEPATH").toString(), viewHolderTextSelf.ivprofile);
+//        viewHolder.tvusername.setText( data.get("USERNAME", "username")) ;
+        viewHolder.it.setText(data.get(Key.NAME, Key.NAME), R.color.black, R.color.blue);
         //私有属性设置
         switch (type){
             case TYPE_TEXT:
                 ViewHolderText viewHolderText = (ViewHolderText) viewHolder;
-                viewHolderText.tvtext.setText(EmotionUtils.getEmotionContent(convertView.getContext(),viewHolderText.tvtext,data.get("TEXT", "")));
+                viewHolderText.tvtext.setText(EmotionUtils.getEmotionContent(convertView.getContext(),viewHolderText.tvtext,data.get(Key.TEXT, "")));
                 break;
             default:
                 AndroidTools.log("未明确的类型适配????");
@@ -162,15 +168,16 @@ public   class AdapterLvChat extends  BaseAdapter      {
     @Override
     public int getItemViewType(int position) {
         Bean bean = listItems.get(position);
-        String key = bean.get("TYPE", "text");
-        return types.get(key, 0) * 2 + (bean.get("SELF", false)? 1 : 0);
+        String key = bean.get(Key.TYPE, Key.TEXT);
+        boolean ifSelf = bean.get(Key.FROM, "").equals(User.getId());
+        return types.get(key, 0) * 2 + (ifSelf ? 1 : 0);
     }
 
 
     public AdapterLvChat(Context context, List<Bean> listItems) {
         layoutInflater = LayoutInflater.from(context); // 创建视图容器并设置上下文
         this.listItems = listItems;
-
+        this.context = context;
     }
 
     @Override

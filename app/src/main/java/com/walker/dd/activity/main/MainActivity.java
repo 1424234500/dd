@@ -11,15 +11,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.walker.common.util.Bean;
-import com.walker.common.util.JsonUtil;
 import com.walker.common.util.TimeUtil;
 import com.walker.core.encode.Pinyin;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
+import com.walker.dd.service.User;
 import com.walker.dd.util.AndroidTools;
-import com.walker.dd.util.MySP;
+import com.walker.socket.server_1.Key;
 import com.walker.dd.view.NavigationBar;
 import com.walker.dd.view.NavigationImageTextView;
+import com.walker.socket.server_1.Msg;
+import com.walker.socket.server_1.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,17 +38,15 @@ public class MainActivity extends AcBase {
 
     //所有fragment的数据都用static共用数据
     FragmentBase fragmentChat;
-    /**
-     * NAME TEXT TIME NUM
-     */
+
     List<Bean> listItemChat = new ArrayList<>();
     Comparator<Bean> sessionCompare = new Comparator<Bean>() {
         @Override
         public int compare(Bean o1, Bean o2) {
-            return o1.get("NAME", "").compareTo(o2.get("NAME", ""));
+            return o1.get(Key.FROM, "").compareTo(o2.get(Key.FROM, ""));
         }
     };
-    FragmentBase fragmentList;
+    FragmentBase fragmentSession;
 
     FragmentBase fragmentOther;
     List<Bean> listItemOther = new ArrayList<>();
@@ -72,7 +72,7 @@ public class MainActivity extends AcBase {
                 case R.id.itcontact:
 //                    mTextMessage.setText(R.string.title_dashboard);
                     nb.setTitle(R.string.contact);
-                    turnToFragment(fragmentList);
+                    turnToFragment(fragmentSession);
                     return true;
                 case R.id.itdollar:
 //                    mTextMessage.setText(R.string.title_notifications);
@@ -130,7 +130,7 @@ public class MainActivity extends AcBase {
 
         fragmentChat = new FragmentSession();
         fragmentChat.setData(listItemChat);
-        fragmentList = new FragmentContact();
+        fragmentSession = new FragmentContact();
         fragmentOther = new FragmentOther();
         fragmentOther.setData(listItemOther);
 
@@ -144,25 +144,25 @@ public class MainActivity extends AcBase {
 
     }
     public void login(boolean ifnew) {
-        String user = MySP.get(getContext(), "user", Pinyin.getChinese());
-        String pwd = MySP.get(getContext(), "pwd", (int) (Math.random() * 1000) + "");
+        String user = User.getUser(Pinyin.getChinese());
+        String pwd = User.getPwd();
 
         if (user.length() > 0 && !ifnew) {
-            sendSocket("login", new Bean().put("user", user).put("pwd", pwd));
+            sendSocket(Plugin.KEY_LOGIN, new Bean().put(Key.USER, user).put(Key.PWD, pwd));
         } else {
             final EditText etuser = new EditText(getContext());
             final EditText etpwd = new EditText(getContext());
-            etuser.setText(MySP.get(getContext(), "user", user));
-            etpwd.setText(MySP.get(getContext(), "pwd", pwd));
+            etuser.setText(User.getUser());
+            etpwd.setText(User.getPwd());
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle("登录用户名").setIcon(android.R.drawable.ic_dialog_info).setView(etuser).setNegativeButton("Cancel", null);
             builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     String user = etuser.getText().toString();
                     String pwd = etuser.getText().toString();
-                    MySP.put(getContext(), "user", user);
-                    MySP.put(getContext(), "pwd", pwd);
-                    sendSocket("login", new Bean().put("user", user).put("pwd", pwd));
+                    User.setUser(user);
+                    User.setPwd(pwd);
+                    sendSocket(Plugin.KEY_LOGIN, new Bean().put(Key.USER, user).put(Key.PWD, pwd));
                 }
             });
         builder.show();
@@ -180,73 +180,83 @@ public class MainActivity extends AcBase {
     /**
      * 收到广播处理
      *
-     * @param msg
+     * @param msgJson
      */
     @Override
-    public void OnReceive(String msg) {
+    public void OnReceive(String msgJson) {
         if(fragmentNow != null){
-            Bean bean = JsonUtil.get(msg);
-            String plugin = bean.get("type", "message");
-            if(plugin.equals("login")){
-                Bean data = bean.get("data", new Bean());
-                //session: user pwd time key
-                //action pwd user
-                MySP.put(getContext(), "user", data.get("user", ""));
-                MySP.put(getContext(), "pwd", data.get("pwd", ""));
-                nb.setTitle(data.get("user", ""));
-                toast("login ok", msg);
-                sendSocket("session", new Bean());
+            Msg msg = new Msg(msgJson);
+            String plugin = msg.getType();
+            int status = msg.getStatus();
+            if(plugin.equals(Plugin.KEY_LOGIN)){
+                if(status == 0) {
+                    Bean data = msg.getData();
+                    User.setId(data.get(Key.ID, ""));
+                    User.setUser(data.get(Key.USER, ""));
+                    nb.setTitle(data.get(Key.USER, ""));
+                    toast("login ok", data);
+                    sendSocket(Plugin.KEY_SESSION, new Bean());
+                }else{
+                    toast(msg.getInfo());
+                    login(true);
+                }
             }
-            if(plugin.equals("message")){
-// {"time_client":1560235377468,"time_do":1560235377498,"
-// data":{"type":"txt","body":"看看"},
-// "sfrom":"223.104.210.192:27959","wait_size":0,
-// "from":"洋","to":"洋",
-// "time_reveive":1560235377469,"type":"message",
-// "sto":"223.104.210.192:27959"}
-                Bean data = bean.get("data", new Bean());
+            else if(plugin.equals(Plugin.KEY_MESSAGE)){
+//{"TD":1560423391906,"ST":"223.104.213.19:13523",
+// "STATUS":1,"SF":"223.104.213.19:13523","DATA":[
+// {"TIME":"","ID":"223.104.213.19:13523","USER":""}
+// ],"TO":"","FROM":"","WS":0,"TYPE":"session","TR":1560423391901,"TC":1560423391883}
+                Bean data = msg.getData();
 
                 Bean item = new Bean()
-                        .set("MSG", "TEXT")
-                        .set("NAME", bean.get("from", "name?"))
-                        .set("TEXT", data.get("body", "text?"))
-                        .set("TIME", TimeUtil.format(bean.get("time_do", 0L), "yyyy-MM-dd HH:mm:ss"))
-                        .set("NUM", 1)
-                        .set("PROFILEPATH", "");
+                        .set(Key.TYPE, Key.TEXT)
+                        .set(Key.ID, msg.getFrom())
+                        .set(Key.NAME, msg.getUserFrom())
+                        .set(Key.TEXT, data.get(Key.TEXT))
+                        .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
+                        .set(Key.NUM, 1)
+                        .set(Key.PROFILE, "");
+                if(item.get(Key.NAME, "").length() == 0 && item.get(Key.ID, "").length() != 0){
+                    item.set(Key.NAME, item.get(Key.ID, ""));
+                }
                 int i = AndroidTools.listIndex(listItemChat, item, sessionCompare);
                 if(i >= 0){
-                    item.set("NUM", listItemChat.get(i).get("NUM", 0) + 1);
+                    item.set(Key.NUM, listItemChat.get(i).get(Key.NUM, 0) + 1);
                     listItemChat.remove(i);
                 }
                 listItemChat.add(0, item);
 
                 fragmentChat.notifyDataSetChanged();
             }
-            if(plugin.equals("session")){
+            else if(plugin.equals(Plugin.KEY_SESSION)){
 //{"time_client":1560238312727,"time_do":1560238312778,
 // "data":[
-// {"TIME":"2019-06-11 14:49:59","ID":"蓼","KEY":"223.104.210.192:27961"},
-// {"TIME":"2019-06-11 15:31:18","ID":"岘","KEY":"223.104.210.192:29886"}],
+// {"TIME":"2019-06-11 14:49:59",Key.ID:"蓼","KEY":"223.104.210.192:27961"},
+// {"TIME":"2019-06-11 15:31:18",Key.ID:"岘","KEY":"223.104.210.192:29886"}],
 // "sfrom":"223.104.210.192:29886","wait_size":0,
 // "from":"岘","to":"","time_reveive":1560238312728,"type":"session","sto":"223.104.210.192:29886"}
-                List<Bean> list = bean.get("data", new ArrayList<Bean>());
+                List<Bean> list = msg.getData();
                 List<Bean> newList = new ArrayList<>();
                 for(Bean data : list) {
                     Bean item = new Bean()
-                            .set("MSG", "TEXT")
-                            .set("NAME", data.get("ID", ""))
-                            .set("TEXT", data.get("KEY", "text?"))
-                            .set("TIME", data.get("TIME", "time?"))
-                            .set("NUM", 1)
-                            .set("PROFILEPATH", "");
-                    if(item.get("NAME", "").length() == 0 && item.get("TEXT", "").length() != 0){
-                        item.set("NAME", item.get("TEXT", ""));
+                        .set(Key.TYPE, Key.TEXT)
+                        .set(Key.FROM, data.get(Key.ID, ""))
+                        .set(Key.NAME, data.get(Key.USER, ""))
+                        .set(Key.TEXT, data.get(Key.ID, ""))
+                        .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
+                        .set(Key.NUM, 1)
+                        .set(Key.PROFILE, "");
+                    if(item.get(Key.NAME, "").length() == 0 && item.get(Key.FROM, "").length() != 0){
+                        item.set(Key.NAME, item.get(Key.FROM, ""));
                     }
                     newList.add(item);
                 }
                 AndroidTools.listReplaceIndexAndAdd(0, listItemChat, newList, sessionCompare);
 //            fragmentNow.onReceive(msg);
                 fragmentChat.notifyDataSetChanged();
+            }
+            else{
+                toast(msgJson);
             }
 
         }

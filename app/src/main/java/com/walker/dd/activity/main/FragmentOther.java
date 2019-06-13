@@ -15,6 +15,7 @@ import com.walker.dd.activity.other.ActivityTestEcho;
 import com.walker.dd.activity.other.ActivityTestSocket;
 import com.walker.dd.adapter.AdapterGvOther;
 import com.walker.dd.util.AndroidTools;
+import com.walker.socket.server_1.Key;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,10 +35,10 @@ public class FragmentOther extends FragmentBase {
 
         View v=inflater.inflate(R.layout.main_fragment_other,container,false);
 
-        adapter = new AdapterGvOther(getContext(), listItems);
+        adapter = new AdapterGvOther(getActivity(), listItems);
 
         gv = (GridView)v.findViewById(R.id.gv);
-        gv.setNumColumns(4);
+        gv.setNumColumns(6);
         gv.setAdapter(adapter);
 
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -69,11 +70,11 @@ public class FragmentOther extends FragmentBase {
 
         this.listItems = (List<Bean>) data;
         if(this.listItems.size() <= 0){
-            listItems.add(new Bean().set("IMAGE", "").set("TEXT", "socket"));
-            listItems.add(new Bean().set("IMAGE", "").set("TEXT", "compose"));
-            listItems.add(new Bean().set("IMAGE", "").set("TEXT", "autochat"));
+            listItems.add(new Bean().set(Key.PROFILE, "").set(Key.TEXT, "socket"));
+            listItems.add(new Bean().set(Key.PROFILE, "").set(Key.TEXT, "compose"));
+            listItems.add(new Bean().set(Key.PROFILE, "").set(Key.TEXT, "autochat"));
             for(int i = 0; i < 10; i++) {
-                listItems.add(new Bean().set("IMAGE", "").set("TEXT", "text" + i));
+                listItems.add(new Bean().set(Key.PROFILE, "").set(Key.TEXT, "text" + i));
             }
         }
         this.notifyDataSetChanged();
@@ -101,7 +102,7 @@ public class FragmentOther extends FragmentBase {
 
 
     public void onClick(Bean bean){
-        String text = bean.get("TEXT", "");
+        String text = bean.get(Key.TEXT, "");
         switch (text){
             case "socket":
                 startActivity(new Intent(getActivity(), ActivityTestSocket.class));

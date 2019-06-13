@@ -6,7 +6,7 @@ import java.util.Map;
 import android.content.Context;
 
 public class BaseDaoImpl implements BaseDao{
-	String dbName = "mydb";
+	String dbName = "db_walker";
 	
 	SqLiteControl sqLite;
 	 

@@ -29,7 +29,12 @@
         android:layout_below="@+id/linearlayout0"
         android:paddingLeft="10dp"
         android:layout_marginRight="50dp" >
-        <ImageView
+
+        <com.walker.dd.view.ImageText
+            android:id="@+id/it"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
+        <!--<ImageView
             android:id="@+id/ivprofile"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -48,14 +53,14 @@
             android:layout_toLeftOf="@+id/linearlayout"
             android:singleLine="true"
             android:gravity="center"
-            android:text="uu" />
+            android:text="uu" />-->
 
         <LinearLayout
             android:id="@+id/linearlayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
-            android:layout_toRightOf="@id/ivprofile"
+            android:layout_toRightOf="@id/it"
             android:background="@drawable/selector_chatfrom_bg"
             android:clickable="true"
             android:focusable="true"

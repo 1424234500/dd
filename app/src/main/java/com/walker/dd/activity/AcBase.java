@@ -9,25 +9,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.walker.common.util.Bean;
 import com.walker.common.util.Tools;
-import com.walker.dd.R;
 import com.walker.dd.database.BaseDao;
 import com.walker.dd.database.BaseDaoImpl;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
+import com.walker.socket.server_1.Key;
 import com.walker.dd.view.DialogBeats;
-import com.walker.dd.view.NavigationBar;
+import com.walker.socket.server_1.MsgBuilder;
 
 public abstract class AcBase extends Activity implements View.OnClickListener{
     /**
@@ -58,7 +52,7 @@ public abstract class AcBase extends Activity implements View.OnClickListener{
     /**
      * 收到广播处理
      */
-    public abstract void OnReceive(String msg);
+    public abstract void OnReceive(String msgJson);
 
 
 
@@ -174,8 +168,8 @@ public abstract class AcBase extends Activity implements View.OnClickListener{
     Handler handler = new Handler(){
         public void handleMessage(Message msg) {
             Bundle b = msg.getData();
-            String type = b.getString("TYPE");
-            String msg1 = b.getString("MSG");
+            String type = b.getString(Key.TYPE);
+            String msg1 = b.getString(Key.MSG);
             OnHandler(type, msg1);
         }
     };
@@ -188,8 +182,8 @@ public abstract class AcBase extends Activity implements View.OnClickListener{
     public void sendHandler(String type, String msg){
         Message message = new Message();
         Bundle b = new Bundle();
-        b.putString("TYPE", type);
-        b.putString("MSG", msg);
+        b.putString(Key.TYPE, type);
+        b.putString(Key.MSG, msg);
         message.setData(b);
         handler.sendMessage(message);
     }
@@ -209,8 +203,8 @@ public abstract class AcBase extends Activity implements View.OnClickListener{
      * @param to
      * @param data
      */
-    public void sendSocket(String plugin, String to, Bean data){
-        ((Application)getApplication()).send(new Bean().set("type", plugin).set("to", to).set("data", data).toString());
+    public void sendSocket(String plugin, String to, Object data){
+        ((Application)getApplication()).send(MsgBuilder.makeMsg(plugin, to, data).toString());
     }
 
     /**

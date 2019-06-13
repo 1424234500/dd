@@ -99,7 +99,7 @@ public class Constant {
     
     //本地文件存储路径
 // /storage/emulated/0/mycc/record/100-1493005573881.amr 
-	public static final String root = Environment.getExternalStorageDirectory() + "/mycc/";  
+	public static final String root = Environment.getExternalStorageDirectory() + "/mydd/";
 	public static final String dirVoice = root + "record/";  
 	public static final String dirPhoto =  root + "photo/";  
 	public static final String dirFile =  root + "file/";  
