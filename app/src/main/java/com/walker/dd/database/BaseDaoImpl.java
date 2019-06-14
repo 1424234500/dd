@@ -5,6 +5,8 @@ import java.util.Map;
 
 import android.content.Context;
 
+import com.walker.common.util.Bean;
+
 public class BaseDaoImpl implements BaseDao{
 	String dbName = "db_walker";
 	
@@ -16,12 +18,12 @@ public class BaseDaoImpl implements BaseDao{
  
 
 	@Override
-	public List<Map<String, Object>> queryList(String sql, Object... objects) {
+	public List<Bean> queryList(String sql, Object... objects) {
 		return sqLite.queryList(sql, objects);
 	}
 
 	@Override
-	public Map<String, Object> queryOne(String sql, Object... objects) {
+	public Bean queryOne(String sql, Object... objects) {
 		return sqLite.queryOne(sql, objects);
 	}
 

@@ -152,8 +152,8 @@ public class Constant {
 	
 	
 	//数据库信息
-	public static String LOGIN_USER = "login_user";//用户登陆信息表，成功登录记录
-	//"create table if not exists login_user (id varchar(30) primary key, pwd varchar(50), profilepath varchar(200) ) 
+	public static String LOGIN_USER = "LOGIN_USER";//用户登陆信息表，成功登录记录
+	public static String SQL_LOGIN_USER = "create table if not exists LOGIN_USER (ID varchar(30) primary key, PWD varchar(50), NAME varchar(200), PROFILE varchar(200) ) ";
 
 	public static int offlineMode = 0;	//0正常模式，1离线模式
 	protected static long sleepUpload = 2000;

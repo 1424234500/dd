@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.walker.common.util.Bean;
 import com.walker.common.util.Tools;
 
 public class SqLiteControl {
@@ -42,8 +43,8 @@ public class SqLiteControl {
 		
 	}
 	//得到list数据
-	List<Map<String, Object>> queryList(String sql, Object... objects ){
-		List<Map<String, Object>> res = new ArrayList<Map<String, Object>>();
+	List<Bean> queryList(String sql, Object... objects ){
+		List<Bean> res = new ArrayList<Bean>();
 		
 		try{
 			open();
@@ -52,7 +53,7 @@ public class SqLiteControl {
 			Cursor cursor = sqlDatabase.rawQuery(sql, objs);
 			String columnNames[] = cursor.getColumnNames();
 			while (cursor.moveToNext()) {  
-				  Map<String, Object> map = new HashMap<String, Object>();
+				  Bean map = new Bean();
 				  for(String temp : columnNames){
 					  map.put(temp, cursor.getString(cursor.getColumnIndex(temp)));
 				  }
@@ -63,7 +64,7 @@ public class SqLiteControl {
 			
 			close();
 			
-			return res.size() >= 1? res: null;
+			return res;
 			
 		}catch(Exception e){
 			out("execSQL:" + sql + " " + Tools.objects2string( objects ));
@@ -71,8 +72,8 @@ public class SqLiteControl {
 		}
 	}
 	//得到指定数据
-	Map<String, Object> queryOne(String sql, Object...objects ){
-		List<Map<String, Object>> res = queryList(sql, objects);
+	Bean queryOne(String sql, Object...objects ){
+		List<Bean> res = queryList(sql, objects);
 		if(res != null){
 			if(res.size() >= 1){
 				return res.get(0);

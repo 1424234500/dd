@@ -14,8 +14,10 @@ import android.widget.TextView;
 
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
+import com.walker.dd.service.NowUser;
 import com.walker.dd.util.EmotionUtils;
 import com.walker.socket.server_1.Key;
+import com.walker.socket.server_1.session.User;
 
 /**
  * 会话列表
@@ -24,14 +26,6 @@ import com.walker.socket.server_1.Key;
 public   class AdapterLvSession extends BaseAdapter    {
 	private Context context; // 运行上下文
 
-
-//            .set(Key.TYPE, "TEXT")
-//            .set(Key.FROM, msg.getFrom())
-//            .set(Key.NAME, msg.getUserFrom())
-//            .set(Key.TEXT, data.get(Key.TEXT))
-//            .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
-//            .set(Key.NUM, 1)
-//            .set(Key.PROFILE, "");    public static List<Bean> listItems;
 	private List<Bean>  listItems = null; // listview的数据集合
 	private LayoutInflater layoutInflater; // 视图容器
 	//控件集合实例
@@ -69,13 +63,18 @@ public   class AdapterLvSession extends BaseAdapter    {
 				viewHolder = (ViewHolder) convertView.getTag();
 		}
 		// 设置文字和图片和监听
-//            .set(Key.TYPE, "TEXT")
-//            .set(Key.ID, msg.getFrom())
-//            .set(Key.NAME, msg.getUserFrom())
-//            .set(Key.TEXT, data.get(Key.TEXT))
-//            .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
-//            .set(Key.NUM, 1)
-//            .set(Key.PROFILE, "");    public static List<Bean> listItems;
+
+        /**
+         .set(Key.ID, msg.getUserTo().equals(NowUser.getId())?from.getId() : msg.getUserTo()) //当前会话id 关联from to
+         .set(Key.NAME, "name")  //会话名 关联from to
+         .set(Key.TYPE, Key.TEXT)  //文本类型
+         .set(Key.FROM, msg.getUserFrom()) //消息来自谁发的 User[id, name, pwd]
+         .set(Key.TO, msg.getUserTo) //消息发送的目标 user id group id
+         .set(Key.TEXT, data.get(Key.TEXT))    //文本内容
+         .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))   //时间
+         .set(Key.NUM, 1)  //红点数
+         */
+//        User from = new User(bean.get(Key.FROM, new Bean()));
 
 		viewHolder.tvusername.setText(bean.get(Key.NAME, "")) ;
 		String type = bean.get(Key.TYPE, "");

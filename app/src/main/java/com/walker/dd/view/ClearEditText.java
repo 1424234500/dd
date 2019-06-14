@@ -16,12 +16,13 @@ import android.widget.EditText;
 
 import com.walker.dd.R;
 
-interface OnClear{
-    public void onClear();
-}
 public class ClearEditText extends android.support.v7.widget.AppCompatEditText implements
         OnFocusChangeListener, TextWatcher {
 
+
+    public interface OnClear{
+        public void onClear();
+    }
 
 	// 删除按钮的引用 
     private Drawable mClearDrawable; 

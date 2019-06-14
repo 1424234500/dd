@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -12,16 +13,19 @@ import android.widget.TextView;
 
 import com.walker.common.util.Bean;
 import com.walker.common.util.TimeUtil;
-import com.walker.core.encode.Pinyin;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
-import com.walker.dd.service.User;
+import com.walker.dd.service.Login;
+import com.walker.dd.service.MsgModel;
+import com.walker.dd.service.NowUser;
+import com.walker.dd.service.SocketModel;
 import com.walker.dd.util.AndroidTools;
 import com.walker.socket.server_1.Key;
 import com.walker.dd.view.NavigationBar;
 import com.walker.dd.view.NavigationImageTextView;
 import com.walker.socket.server_1.Msg;
 import com.walker.socket.server_1.plugin.Plugin;
+import com.walker.socket.server_1.session.User;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -54,7 +58,18 @@ public class MainActivity extends AcBase {
 //    android.support.v4.app.FragmentManager fragmentManager;
     FragmentBase fragmentNow;
 
-
+    //添加自动会话
+    User dd = NowUser.getDd();
+    Bean sessionDd = new Bean()
+            .set(Key.ID, dd.getId())
+            .set(Key.NAME, dd.getName())
+            .set(Key.TYPE, Key.TEXT)
+            .set(Key.FROM, dd)
+            .set(Key.TO, NowUser.getId())
+            .set(Key.TEXT, "auto echo")
+            .set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
+            .set(Key.NUM, 1)
+                ;
 
 
     private NavigationImageTextView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -102,13 +117,15 @@ public class MainActivity extends AcBase {
         nb.setOnNavigationBar(new NavigationBar.OnNavigationBar() {
             @Override
             public void onClickIvMenu(ImageView view) {
-                toast("more main");
+//                toast("more main");
+                rename();
             }
 
             @Override
             public void onClickTvReturn(TextView view) {
-                toast("return main");
-                login(true);
+//                toast("return main");
+                NowUser.setLogin(false);
+                goLogin();
             }
 
             @Override
@@ -140,33 +157,41 @@ public class MainActivity extends AcBase {
 //        turnToFragment(fragmentChat);
         mOnNavigationItemSelectedListener.onNavigationItemSelected(R.id.itmsg);
 
-        login(false);
 
-    }
-    public void login(boolean ifnew) {
-        String user = User.getUser(Pinyin.getChinese());
-        String pwd = User.getPwd();
+        addSession(dd);
 
-        if (user.length() > 0 && !ifnew) {
-            sendSocket(Plugin.KEY_LOGIN, new Bean().put(Key.USER, user).put(Key.PWD, pwd));
-        } else {
-            final EditText etuser = new EditText(getContext());
-            final EditText etpwd = new EditText(getContext());
-            etuser.setText(User.getUser());
-            etpwd.setText(User.getPwd());
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setTitle("登录用户名").setIcon(android.R.drawable.ic_dialog_info).setView(etuser).setNegativeButton("Cancel", null);
-            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    String user = etuser.getText().toString();
-                    String pwd = etuser.getText().toString();
-                    User.setUser(user);
-                    User.setPwd(pwd);
-                    sendSocket(Plugin.KEY_LOGIN, new Bean().put(Key.USER, user).put(Key.PWD, pwd));
-                }
-            });
-        builder.show();
+
+        if(!NowUser.isLogin()) {
+            if (!NowUser.isOffline()) {
+                toast("未登录");
+                goLogin();
+            }else{
+                toast("离线模式");
+            }
+        }else{
+            sendSocket(Plugin.KEY_SESSION, new Bean());
         }
+    }
+    public void goLogin(){
+        startActivity(new Intent(this, ActivityLogin.class));
+        this.finish();
+    }
+    public void rename() {
+        String name = NowUser.getName();
+
+        final EditText etuser = new EditText(getContext());
+        final EditText etpwd = new EditText(getContext());
+        etuser.setText(name);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("昵称").setIcon(android.R.drawable.ic_dialog_info).setView(etuser).setNegativeButton("Cancel", null);
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                String name = etuser.getText().toString();
+                NowUser.setName(name);
+                Login.login(MainActivity.this, NowUser.getId(), NowUser.getPwd(), name);
+            }
+        });
+        builder.show();
     }
 
     /**
@@ -188,78 +213,113 @@ public class MainActivity extends AcBase {
             Msg msg = new Msg(msgJson);
             String plugin = msg.getType();
             int status = msg.getStatus();
-            if(plugin.equals(Plugin.KEY_LOGIN)){
+            if(plugin.equals(Key.SOCKET)) {
+                loadingStop();
+                if(status == 0){
+                    toast("网络连接成功 " + SocketModel.getServerIp() + " " + SocketModel.getServerPort());
+                    SocketModel.setConn(true);
+                }else{
+                    SocketModel.setConn(false);
+                    toast("网络连接失败 " + SocketModel.getServerIp() + " " + SocketModel.getServerPort());
+                }
+            }else if(plugin.equals(Plugin.KEY_LOGIN)){
                 if(status == 0) {
                     Bean data = msg.getData();
-                    User.setId(data.get(Key.ID, ""));
-                    User.setUser(data.get(Key.USER, ""));
-                    nb.setTitle(data.get(Key.USER, ""));
+                    NowUser.setId(data.get(Key.ID, ""));
+                    NowUser.setName(data.get(Key.NAME, ""));
+                    nb.setTitle(data.get(Key.NAME, ""));
                     toast("login ok", data);
                     sendSocket(Plugin.KEY_SESSION, new Bean());
                 }else{
                     toast(msg.getInfo());
-                    login(true);
+                    rename();
                 }
             }
             else if(plugin.equals(Plugin.KEY_MESSAGE)){
-//{"TD":1560423391906,"ST":"223.104.213.19:13523",
-// "STATUS":1,"SF":"223.104.213.19:13523","DATA":[
-// {"TIME":"","ID":"223.104.213.19:13523","USER":""}
-// ],"TO":"","FROM":"","WS":0,"TYPE":"session","TR":1560423391901,"TC":1560423391883}
+                MsgModel.addMsg();  //存储消息
+
                 Bean data = msg.getData();
+                User from = msg.getUserFrom();
+                String id = "";
+                String name = "";
+                if(msg.getUserTo()[0].equals(NowUser.getId())){
+                    id = from.getId();
+                    name = from.getName();
+                }else{
+                    id = msg.getUserTo()[0];
+                    name = "group name "+ id;
+                }
+                if(name.length() <= 0)name = id;
 
                 Bean item = new Bean()
+                        .set(Key.ID, id)
+                        .set(Key.NAME, name)
                         .set(Key.TYPE, Key.TEXT)
-                        .set(Key.ID, msg.getFrom())
-                        .set(Key.NAME, msg.getUserFrom())
+                        .set(Key.FROM, from)
+                        .set(Key.TO, msg.getUserTo())
                         .set(Key.TEXT, data.get(Key.TEXT))
                         .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
                         .set(Key.NUM, 1)
-                        .set(Key.PROFILE, "");
-                if(item.get(Key.NAME, "").length() == 0 && item.get(Key.ID, "").length() != 0){
-                    item.set(Key.NAME, item.get(Key.ID, ""));
-                }
-                int i = AndroidTools.listIndex(listItemChat, item, sessionCompare);
-                if(i >= 0){
-                    item.set(Key.NUM, listItemChat.get(i).get(Key.NUM, 0) + 1);
-                    listItemChat.remove(i);
-                }
-                listItemChat.add(0, item);
-
-                fragmentChat.notifyDataSetChanged();
+                        ;
+                addSession(item);
             }
             else if(plugin.equals(Plugin.KEY_SESSION)){
-//{"time_client":1560238312727,"time_do":1560238312778,
-// "data":[
-// {"TIME":"2019-06-11 14:49:59",Key.ID:"蓼","KEY":"223.104.210.192:27961"},
-// {"TIME":"2019-06-11 15:31:18",Key.ID:"岘","KEY":"223.104.210.192:29886"}],
-// "sfrom":"223.104.210.192:29886","wait_size":0,
-// "from":"岘","to":"","time_reveive":1560238312728,"type":"session","sto":"223.104.210.192:29886"}
+// {"TD":1560495038606,"STATUS":1,"SF":"117.136.8.129:29247","DATA":[
+// {"TIME":"2019-06-14 14:47:41","USER":{"ID":"walker","PWD":"123","NAME":""},"KEY":"117.136.8.129:29247"}
+// ,{"TIME":"","USER":{},"KEY":"101.230.233.82:41500"}
+// ],"TO":"","FROM":{"ID":"walker","PWD":"123","NAME":""}
+// ,"WS":0,"TYPE":"session","TR":1560495038578,"TC":1560495037721}
                 List<Bean> list = msg.getData();
                 List<Bean> newList = new ArrayList<>();
                 for(Bean data : list) {
+                    User user = new User(data.get(Key.USER, new Bean()));
+    //会话列表=在线用户给自己发一个空消息
                     Bean item = new Bean()
+                        .set(Key.ID, user.getId())
+                        .set(Key.NAME, user.getName().length()>0?user.getName():user.getId())
                         .set(Key.TYPE, Key.TEXT)
-                        .set(Key.FROM, data.get(Key.ID, ""))
-                        .set(Key.NAME, data.get(Key.USER, ""))
-                        .set(Key.TEXT, data.get(Key.ID, ""))
-                        .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
+                        .set(Key.FROM, user)
+                        .set(Key.TO, NowUser.getId())
+                        .set(Key.TEXT, data.get(Key.KEY, ""))
+                        .set(Key.TIME, data.get(Key.TIME, ""))
                         .set(Key.NUM, 1)
-                        .set(Key.PROFILE, "");
-                    if(item.get(Key.NAME, "").length() == 0 && item.get(Key.FROM, "").length() != 0){
-                        item.set(Key.NAME, item.get(Key.FROM, ""));
-                    }
+                        ;
                     newList.add(item);
                 }
-                AndroidTools.listReplaceIndexAndAdd(0, listItemChat, newList, sessionCompare);
-//            fragmentNow.onReceive(msg);
-                fragmentChat.notifyDataSetChanged();
+                addSession(newList);
             }
             else{
                 toast(msgJson);
             }
 
         }
+    }
+
+
+    /**
+    .set(Key.ID, msg.getUserTo().equals(NowUser.getId())?from.getId() : msg.getUserTo()) //当前会话id 关联from to
+    .set(Key.NAME, "name")  //会话名 关联from to
+    .set(Key.TYPE, Key.TEXT)  //文本类型
+    .set(Key.FROM, msg.getUserFrom()) //消息来自谁发的 User[id, name, pwd]
+    .set(Key.TO, msg.getUserTo) //消息发送的目标 user id group id
+    .set(Key.TEXT, data.get(Key.TEXT))    //文本内容
+    .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))   //时间
+    .set(Key.NUM, 1)  //红点数
+     */
+    private void addSession(List<Bean> newList) {
+        listItemChat.clear();
+        listItemChat.add(dd );
+        AndroidTools.listReplaceIndexAndAdd(0, listItemChat, newList, sessionCompare);
+        fragmentChat.notifyDataSetChanged();
+    }
+    private void addSession(Bean item) {
+        int i = AndroidTools.listIndex(listItemChat, item, sessionCompare);
+        if(i >= 0){
+            item.set(Key.NUM, listItemChat.get(i).get(Key.NUM, 0) + 1);
+            listItemChat.remove(i);
+        }
+        listItemChat.add(0, item);
+        fragmentChat.notifyDataSetChanged();
     }
 
     //fragmentManager.beginTransaction().replace(R.id.main_fragment, fragmentChat).commit();

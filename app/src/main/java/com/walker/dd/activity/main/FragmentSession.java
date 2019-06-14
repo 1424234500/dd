@@ -26,14 +26,6 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
     SwipeRefreshLayout srl;
 
     ListView lv;
-
-//            .set(Key.TYPE, Key.TEXT)
-//            .set(Key.FROM, msg.getFrom())
-//            .set(Key.NAME, msg.getUserFrom())
-//            .set(Key.TEXT, data.get(Key.TEXT))
-//            .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
-//            .set(Key.NUM, 1)
-//            .set(Key.PROFILE, "");
     public static List<Bean> listItems;
     AdapterLvSession adapter;
 
@@ -73,14 +65,6 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
     @Override
     public void setData(Object data) {
         this.listItems = (List<Bean>) data;
-         Bean bean = new Bean().set(Key.TYPE, Key.TEXT)
-            .set(Key.FROM, Key.DD)
-            .set(Key.NAME, Key.DD)
-            .set(Key.TEXT, "auto echo")
-            .set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
-            .set(Key.NUM, 1)
-            .set(Key.PROFILE, "");
-        this.listItems.add(bean);
         this.notifyDataSetChanged();
     }
 

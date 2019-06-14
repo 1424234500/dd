@@ -13,13 +13,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.walker.common.util.Bean;
+import com.walker.common.util.TimeUtil;
 import com.walker.dd.R;
-import com.walker.dd.service.User;
+import com.walker.dd.service.NowUser;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.EmotionUtils;
-import com.walker.dd.util.MySP;
 import com.walker.socket.server_1.Key;
 import com.walker.dd.view.ImageText;
+import com.walker.socket.server_1.session.User;
 
 
 /**
@@ -30,12 +31,6 @@ import com.walker.dd.view.ImageText;
 public   class AdapterLvChat extends  BaseAdapter      {
     private Context context;
 
-//.set(Key.TYPE, Key.TEXT)
-//.set(Key.FROM, User.getId())
-//.set(Key.NAME, User.getUser())
-//.set(Key.PROFILE, "")
-//.set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
-//.set(Key.TEXT, str)
     private List<Bean>  listItems = null; // listview的数据集合
     private LayoutInflater layoutInflater; // 视图容器
 
@@ -103,11 +98,11 @@ public   class AdapterLvChat extends  BaseAdapter      {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        //TIME,TYPE TEXT VOICE,FROMID,TOID,PROFILEPATH
-        Bean data = listItems.get(position);
+        Bean bean = listItems.get(position);
 //        int type = getItemViewType(position);	//得到No.i条数据布局类型
-        int type = types.get(data.get(Key.TYPE, Key.TEXT), TYPE_TEXT);
-        boolean ifSelf = data.get(Key.FROM, "").equals(User.getId());
+        int type = types.get(bean.get(Key.TYPE, Key.TEXT), TYPE_TEXT);
+        User user = new User(bean.get(Key.FROM, new Bean()));
+        boolean ifSelf = user.getId().equals(NowUser.getId());
 
         //构建或者取出可复用布局
         if (convertView == null) { //若无可复用布局
@@ -134,22 +129,27 @@ public   class AdapterLvChat extends  BaseAdapter      {
         ViewHolder viewHolder = (ViewHolder) convertView.getTag();
 
 
-//.set(Key.TYPE, Key.TEXT)
-//.set(Key.FROM, User.getId())
-//.set(Key.NAME, User.getUser())
-//.set(Key.PROFILE, "")
-//.set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
-//.set(Key.TEXT, str)
+        /**
+         .set(Key.ID, msgid)
+         .set(Key.TYPE, Key.TEXT)
+         .set(Key.FROM, NowUser.getUser())
+         .set(Key.TO, toid)
+         .set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
+         .set(Key.TEXT, str)
+         .set(Key.FILE, file)
+         */
         //共用属性设置
-        viewHolder.tvtime.setText( data.get(Key.TIME, Key.TIME)) ;
+        viewHolder.tvtime.setText( bean.get(Key.TIME, Key.TIME)) ;
 //        NetImage.loadProfile(context, MapListUtil.getList(listItems, position, "PROFILEPATH").toString(), viewHolderTextSelf.ivprofile);
 //        viewHolder.tvusername.setText( data.get("USERNAME", "username")) ;
-        viewHolder.it.setText(data.get(Key.NAME, Key.NAME), R.color.black, R.color.blue);
+        viewHolder.it.setText(user.getName(), R.color.black, R.color.blue);
         //私有属性设置
         switch (type){
             case TYPE_TEXT:
                 ViewHolderText viewHolderText = (ViewHolderText) viewHolder;
-                viewHolderText.tvtext.setText(EmotionUtils.getEmotionContent(convertView.getContext(),viewHolderText.tvtext,data.get(Key.TEXT, "")));
+                viewHolderText.tvtext.setText(
+                        EmotionUtils.getEmotionContent(context,
+                                viewHolderText.tvtext, bean.get(Key.TEXT, "")));
                 break;
             default:
                 AndroidTools.log("未明确的类型适配????");
@@ -169,7 +169,9 @@ public   class AdapterLvChat extends  BaseAdapter      {
     public int getItemViewType(int position) {
         Bean bean = listItems.get(position);
         String key = bean.get(Key.TYPE, Key.TEXT);
-        boolean ifSelf = bean.get(Key.FROM, "").equals(User.getId());
+
+        User user = new User(bean.get(Key.FROM, new Bean()));
+        boolean ifSelf = user.getId().equals(NowUser.getId());
         return types.get(key, 0) * 2 + (ifSelf ? 1 : 0);
     }
 

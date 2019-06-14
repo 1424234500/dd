@@ -14,13 +14,16 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.walker.common.util.Bean;
+import com.walker.common.util.JsonUtil;
 import com.walker.common.util.Tools;
 import com.walker.dd.database.BaseDao;
 import com.walker.dd.database.BaseDaoImpl;
+import com.walker.dd.service.NowUser;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.socket.server_1.Key;
 import com.walker.dd.view.DialogBeats;
+import com.walker.socket.server_1.Msg;
 import com.walker.socket.server_1.MsgBuilder;
 
 public abstract class AcBase extends Activity implements View.OnClickListener{
@@ -67,7 +70,7 @@ public abstract class AcBase extends Activity implements View.OnClickListener{
         public void onReceive(Context context, Intent intent) {
             try {
                 String msg = intent.getExtras().getString(Constant.BROAD_KEY);
-                log("BaseAc.receive." + msg);
+                log("BaseAc.receive." + JsonUtil.get(msg));
                 OnReceive(msg);
             }catch (Exception e){
                 e.printStackTrace();
@@ -190,13 +193,18 @@ public abstract class AcBase extends Activity implements View.OnClickListener{
 
     /**
      * 发送socket
+     */
+    public void sendSocket(Msg msg) {
+        getApp().send(msg.toString());
+    }
+    /**
+     * 发送socket
      * @param plugin
      * @param data
      */
     public void sendSocket(String plugin, Bean data) {
-        sendSocket(plugin, "", data);
+        sendSocket(plugin, NowUser.getId(), data);
     }
-
     /**
      * 发送socket
      * @param plugin
@@ -204,7 +212,11 @@ public abstract class AcBase extends Activity implements View.OnClickListener{
      * @param data
      */
     public void sendSocket(String plugin, String to, Object data){
-        ((Application)getApplication()).send(MsgBuilder.makeMsg(plugin, to, data).toString());
+       sendSocket(MsgBuilder.makeMsg(plugin, to, data));
+    }
+
+    public Application getApp(){
+        return ((Application)getApplication());
     }
 
     /**

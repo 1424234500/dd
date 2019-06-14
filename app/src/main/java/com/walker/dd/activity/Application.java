@@ -6,24 +6,31 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
+import android.widget.Toast;
 
-import com.walker.common.util.Tools;
+import com.walker.common.util.Bean;
 import com.walker.dd.database.BaseDao;
 import com.walker.dd.database.BaseDaoImpl;
-import com.walker.dd.service.User;
+import com.walker.dd.service.NowUser;
+import com.walker.dd.service.SocketModel;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.socket.client.Client;
 import com.walker.socket.client.ClientNetty;
 import com.walker.socket.client.OnSocket;
+import com.walker.socket.server_1.Key;
+import com.walker.socket.server_1.Msg;
+import com.walker.socket.server_1.plugin.Plugin;
 
 import java.io.File;
-import java.sql.SQLData;
 
 
 public class Application extends android.app.Application implements OnSocket {
     LocalBroadcastManager localBroadcastManager;	//本地的activity广播机制
     NotificationManager notificationManager;    //推送栏广播
+
+    Bean onConn = new Bean().put(Key.TYPE, Key.SOCKET).put(Msg.KEY_STATUS, 0);
+    Bean onDisConn = new Bean().put(Key.TYPE, Key.SOCKET).put(Msg.KEY_STATUS, 1);
 
     /**
      * socket
@@ -33,8 +40,8 @@ public class Application extends android.app.Application implements OnSocket {
         @Override
         protected Void doInBackground(Void... arg0) {
             try {
-                String ip = "39.106.111.11";
-                int port = 8093;
+                String ip = SocketModel.getServerIp();
+                int port = SocketModel.getServerPort();
 
                 client = new ClientNetty(ip, port);
                 client.setOnSocket(Application.this);
@@ -60,33 +67,39 @@ public class Application extends android.app.Application implements OnSocket {
     @Override
     public void onRead(String socket, String jsonstr) {
         out("onRead", socket, jsonstr);
-
         localBroadcastManager.sendBroadcast(new Intent(Constant.BROAD_URL).putExtra(Constant.BROAD_KEY, jsonstr)); //发送应用内广播
 //        sendBroadcast(new Intent(Constant.BROAD_URL).putExtra(Constant.BROAD_KEY, jsonstr)); //发送应用内广播
 
     }
     public void send(String jsonstr){
-        out("socket send", jsonstr);
-        if(client != null && client.isStart()) {
-            client.send(jsonstr);
-        }else{
-            out("socket no connect");
+        try {
+            out("socket send", jsonstr);
+            if (client != null && client.isStart()) {
+                client.send(jsonstr);
+            } else {
+                out("socket no connect");
+            }
+        }catch (Exception e){
+            out(e);
         }
     }
 
     @Override
     public void onSend(String s, String s1) {
-        out("socket onSend " , s, s1);
+//        out("socket onSend " , s, s1);
     }
 
     @Override
     public void onConnect(String s) {
         out( "socket onConnect", s);
+        localBroadcastManager.sendBroadcast(new Intent(Constant.BROAD_URL).putExtra(Constant.BROAD_KEY, onConn.toString())); //发送应用内广播
+
     }
 
     @Override
     public void onDisconnect(String s) {
         out("socket onDisconnect", s);
+        localBroadcastManager.sendBroadcast(new Intent(Constant.BROAD_URL).putExtra(Constant.BROAD_KEY, onDisConn.toString())); //发送应用内广播
     }
 
 
@@ -96,12 +109,13 @@ public class Application extends android.app.Application implements OnSocket {
 
 		// 初始化全局变量
 		showSystemInfo();
-		taskInitSocket.execute();
 
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);//推送栏广播
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
 
-        User.context = getApplicationContext();
+
+        initSocket();
+        NowUser.context = getApplicationContext();
 
         //初始化sharedPreference
         initSP();
@@ -112,12 +126,15 @@ public class Application extends android.app.Application implements OnSocket {
         AndroidTools.log("App.oncreate");
         //逻辑处理，若没有登陆账号则跳转到 登陆界面
     }
+    public void initSocket(){
+        taskInitSocket.execute();
+    }
 
     /**
      * 初始化
      */
     public void initSP(){
-        String user = User.getUser();
+        String user = NowUser.getName();
         if(user.length() > 0){
             AndroidTools.toast(getApplicationContext(), "当前用户 " + user);
         }
@@ -148,7 +165,7 @@ public class Application extends android.app.Application implements OnSocket {
     public void initDatabaseTable(){
         BaseDao sqlDao = new BaseDaoImpl(this);
         //sqlDao.execSQL("drop table login_user");
-        sqlDao.execSQL("create table if not exists login_user (id varchar(30) primary key, pwd varchar(50), profilepath varchar(200) ) ");
+        sqlDao.execSQL(Constant.SQL_LOGIN_USER);
 
 
 
