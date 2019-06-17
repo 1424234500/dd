@@ -10,8 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.walker.common.util.Bean;
-import com.walker.common.util.TimeUtil;
 import com.walker.dd.R;
+import com.walker.dd.activity.FragmentBase;
 import com.walker.dd.activity.chat.ActivityChat;
 import com.walker.dd.adapter.AdapterLvSession;
 import com.walker.dd.util.AndroidTools;

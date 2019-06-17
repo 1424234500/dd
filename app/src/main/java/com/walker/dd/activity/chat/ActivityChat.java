@@ -1,5 +1,6 @@
 package com.walker.dd.activity.chat;
 
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.os.Bundle;
 import android.view.View;
@@ -14,12 +15,15 @@ import com.walker.common.util.LangUtil;
 import com.walker.common.util.TimeUtil;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
+import com.walker.dd.activity.FragmentBase;
+import com.walker.dd.activity.main.FragmentSession;
 import com.walker.dd.adapter.*;
 import com.walker.dd.service.Cache;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
+import com.walker.dd.view.VoiceView;
 import com.walker.socket.server_1.Key;
 import com.walker.dd.util.RobotAuto;
 import com.walker.dd.view.NavigationBar;
@@ -29,6 +33,7 @@ import com.walker.socket.server_1.plugin.Plugin;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import okhttp3.Call;
@@ -37,6 +42,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static android.view.View.GONE;
 
 public class ActivityChat extends AcBase {
     SwipeRefreshLayout srl;
@@ -48,15 +55,70 @@ public class ActivityChat extends AcBase {
     EditText etsend;
     Bean session;
 
-    /**
-     * 导航切换聊天 语言 表情 拍照 fragment
-     */
-    NavigationImageView niv;
+
+    View viewfill;
+    FragmentVoice fragmentVoice;
+    FragmentPhoto fragmentPhoto;
+    FragmentEmoji fragmentEmoji;
+    List<Bean> listItemChat;
+
+    FragmentMore fragmentMore;
+
+    //    FragmentManager fragmentManager;
+    android.support.v4.app.FragmentManager fragmentManager;
+
+    FragmentBase fragmentNow;
+
 
     /**
      * 标题栏
      */
     NavigationBar nb;
+
+
+    /**
+     * 导航切换聊天 语言 表情 拍照 fragment
+     */
+    NavigationImageView niv;
+    private NavigationImageView.OnControl onControl = new NavigationImageView.OnControl() {
+
+        /**
+         * 0则是关闭
+         *
+         * @param id
+         */
+        @Override
+        public void onOpen(int id) {
+            switch (id) {
+                case R.id.ivvoice:
+                    turnToFragment(fragmentVoice);
+                    break;
+                case R.id.ivphoto:
+                    turnToFragment(fragmentPhoto);
+                    break;
+                case R.id.ivgraph:
+
+                    break;
+                case R.id.ivemoji:
+                    turnToFragment(fragmentEmoji);
+                    break;
+                case R.id.ivmore:
+                    turnToFragment(fragmentMore);
+                    break;
+                case 0:
+                default:
+                    //关闭
+            }
+            if(id == 0){
+                viewfill.setVisibility(GONE);
+            }else{
+                viewfill.setVisibility(View.VISIBLE);
+            }
+
+        }
+
+    };
+
     
     public void OnCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_chat);
@@ -73,10 +135,10 @@ public class ActivityChat extends AcBase {
          */
         session = AndroidTools.getMapFromIntent(this.getIntent());
 //        listItemMsg = Cache.getInstance().get(session.get(Key.ID, Key.ID), new ArrayList<Bean>());
-//        if(listItemMsg.size() <= 0)
-            listItemMsg = MsgModel.findMsg(sqlDao, session.get(Key.ID, Key.ID), TimeUtil.getTimeYmdHms(), 15);
+        listItemMsg = MsgModel.findMsg(sqlDao, session.get(Key.ID, Key.ID), TimeUtil.getTimeYmdHms(), 15);
 
 
+        viewfill = (View)findViewById(R.id.viewfill);
         srl =(SwipeRefreshLayout)findViewById(R.id.srl);
         lv = (ListView)findViewById(R.id.lv);
         adapter = new AdapterLvChat(this, listItemMsg);
@@ -113,31 +175,15 @@ public class ActivityChat extends AcBase {
             @Override
             public void onRefresh() {
                 AndroidTools.toast(getContext(), "refresh");
-                String time = listItemMsg.size() > 0 ? listItemMsg.get(0).get("TIME", "") : TimeUtil.getTimeYmdHms();
-                List<Bean> list = MsgModel.findMsg(sqlDao, session.get(Key.ID, Key.ID), time, Constant.NUM);
-                listItemMsg.addAll(0, list);
-                adapter.notifyDataSetChanged();
-
-                int sel = list.size();
-                sel = sel > 0 ? sel - 1 : 0;
-                lv.setSelection(sel);
-                srl.setRefreshing(false);
+                loadMore();
             }
         });
 
         etsend = (EditText)findViewById(R.id.etsend);
         niv = (NavigationImageView)findViewById(R.id.niv);
-        niv.setOnControl(new NavigationImageView.OnControl() {
-            @Override
-            public void onClose() {
-                AndroidTools.toast(getContext(), "onClose");
-            }
+        niv.setOnControl(onControl);
+        niv.close();
 
-            @Override
-            public void onOpen(int id) {
-                AndroidTools.toast(getContext(), "onOpen id " + id);
-            }
-        });
         nb = (NavigationBar)findViewById(R.id.nb);
         nb.setMenu(R.drawable.more);
         nb.setTitle(session.get(Key.NAME, Key.NAME));
@@ -166,16 +212,57 @@ public class ActivityChat extends AcBase {
             }
         });
 
+        fragmentVoice = new FragmentVoice();
+        fragmentVoice.setCall( new VoiceView.OnVoice() {
+            @Override
+            public void onSend(String file) {
+                toast("voice", file);
+            }
+        });
+        fragmentPhoto = new FragmentPhoto();
+        fragmentEmoji = new FragmentEmoji();
+        fragmentMore = new FragmentMore();
+
+//        fragmentManager = getFragmentManager();
+        fragmentManager = getSupportFragmentManager();  //v4
+
+//      turnToFragment(fragmentChat);
+
+
+
         //初始化数据
         addMsg(null);
 
     }
+    //fragmentManager.beginTransaction().replace(R.id.main_fragment, fragmentChat).commit();
+    public void turnToFragment(FragmentBase fragment){
+        if(fragment == fragmentNow) return;
+
+        FragmentTransaction t = fragmentManager.beginTransaction();
+        if(fragmentNow == null){
+            t.replace(R.id.main_fragment, fragment);
+        }else{
+            if(!fragment.isAdded()){
+                t.add(R.id.main_fragment, fragment);
+            }
+            t.hide(fragmentNow).show(fragment);
+        }
+        fragmentNow = fragment;
+        t.commit();
+
+    }
+
+
 
     /**
      * 回退键处理，返回false则执行finish，否则不处理
      */
     @Override
     public boolean OnBackPressed() {
+        if(niv.isOpen()){
+            niv.close();
+            return true;
+        }
         return false;
     }
 
@@ -302,6 +389,19 @@ public class ActivityChat extends AcBase {
                 sendHandler(Key.AUTO, res);
             }
         });
+    }
+
+
+    private void loadMore(){
+        String time = listItemMsg.size() > 0 ? listItemMsg.get(0).get("TIME", "") : TimeUtil.getTimeYmdHms();
+        List<Bean> list = MsgModel.findMsg(sqlDao, session.get(Key.ID, Key.ID), time, Constant.NUM);
+        listItemMsg.addAll(0, list);
+        adapter.notifyDataSetChanged();
+
+        int sel = list.size();
+        sel = sel > 0 ? sel - 1 : 0;
+        lv.setSelection(sel);
+        srl.setRefreshing(false);
     }
 
     /**

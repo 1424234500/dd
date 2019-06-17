@@ -2,7 +2,6 @@ package com.walker.dd.view;
 
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,9 +11,6 @@ import android.widget.TextView;
 
 import com.walker.dd.R;
 import com.walker.dd.util.AndroidTools;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class NavigationBar extends LinearLayout implements View.OnClickListener {
@@ -40,7 +36,7 @@ public class NavigationBar extends LinearLayout implements View.OnClickListener 
 		super(context, attrs);
 		this.context = context;
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View view = inflater.inflate(R.layout.bar_top, this, true);
+		View view = inflater.inflate(R.layout.item_navigator_bar, this, true);
         ivmenu = (ImageView)view.findViewById(R.id.ivmenu);
         tvtitle = (TextView)view.findViewById(R.id.tvtitle);
         tvreturn = (TextView)view.findViewById(R.id.tvreturn);

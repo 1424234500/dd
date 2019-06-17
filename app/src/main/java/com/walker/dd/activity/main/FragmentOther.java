@@ -10,6 +10,7 @@ import android.widget.GridView;
 
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
+import com.walker.dd.activity.FragmentBase;
 import com.walker.dd.activity.other.ActivityCompose;
 import com.walker.dd.activity.other.ActivityTestEcho;
 import com.walker.dd.activity.other.ActivityTestSocket;

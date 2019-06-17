@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.walker.dd.R;
+import com.walker.dd.activity.FragmentBase;
 
 public class FragmentContact extends FragmentBase {
 

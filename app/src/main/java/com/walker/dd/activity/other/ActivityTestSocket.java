@@ -24,6 +24,8 @@ import com.walker.dd.util.Constant;
 import com.walker.socket.client.Client;
 import com.walker.socket.client.ClientNetty;
 import com.walker.socket.client.OnSocket;
+import com.walker.socket.server_1.Key;
+import com.walker.socket.server_1.MsgBuilder;
 
 public class ActivityTestSocket extends Activity implements View.OnClickListener, OnSocket {
     private EditText ettop;
@@ -78,7 +80,7 @@ public class ActivityTestSocket extends Activity implements View.OnClickListener
                     }
                     break;
                 case R.id.login:
-                    etsend.setText("{type:login,data:{user:78,pwd:123456} }");
+                    etsend.setText(MsgBuilder.testLogin("test").toString());
                     break;
                 case R.id.tvsend:
                     if (client != null && client.isStart()) {
@@ -88,15 +90,14 @@ public class ActivityTestSocket extends Activity implements View.OnClickListener
                     }
                     break;
                 case R.id.session:
-                    etsend.setText("{type:monitor,data:{type:show} }");
+                    etsend.setText(MsgBuilder.makeSession("session").toString());
                     break;
                 case R.id.auto:
-                    etsend.setText("{type:message,to:\"all_user\",from:222,data:{type:txt,body:hello} }");
+                    etsend.setText(MsgBuilder.makeMessageTo(Key.ALL_USER, "{type:txt,body:hello}").toString());
 
                     break;
                 case R.id.other:
-                    etsend.setText("{type:message,to:\"all_socket\",from:222,data:{type:txt,body:hello} }");
-
+                    etsend.setText(MsgBuilder.makeMessageTo(Key.ALL_SOCKET, "{type:txt,body:hello}").toString());
                     break;
 
             }

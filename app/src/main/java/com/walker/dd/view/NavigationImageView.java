@@ -56,7 +56,7 @@ public class NavigationImageView extends LinearLayout implements View.OnClickLis
             if(id == ivs[i].getId()){
                 if(nowChoseId == id){//重复点，关闭
                     if(this.onControl != null){
-                        onControl.onClose();
+                        onControl.onOpen(0);
                     }
                     nowChoseId = 0;
                     ivs[i].setImageResource(img1s[i]);
@@ -90,7 +90,12 @@ public class NavigationImageView extends LinearLayout implements View.OnClickLis
         this.onControl = onControl;
     }
     public interface OnControl{
-        public void onClose();
+//        public void onClose();
+
+        /**
+         * 0则是关闭
+         * @param id
+         */
         public void onOpen(int id);
     }
    

@@ -1,11 +1,10 @@
 package com.walker.dd.activity.main;
 
 import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -15,6 +14,7 @@ import com.walker.common.util.Bean;
 import com.walker.common.util.TimeUtil;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
+import com.walker.dd.activity.FragmentBase;
 import com.walker.dd.service.LoginModel;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
@@ -40,9 +40,7 @@ public class MainActivity extends AcBase {
 
     TextView mTextMessage;
 
-    //所有fragment的数据都用static共用数据
     FragmentBase fragmentChat;
-
     List<Bean> listItemChat = new ArrayList<>();
     Comparator<Bean> sessionCompare = new Comparator<Bean>() {
         @Override
@@ -50,12 +48,15 @@ public class MainActivity extends AcBase {
             return o1.get(Key.FROM, "").compareTo(o2.get(Key.FROM, ""));
         }
     };
+
     FragmentBase fragmentSession;
 
     FragmentBase fragmentOther;
     List<Bean> listItemOther = new ArrayList<>();
-    FragmentManager fragmentManager;
-//    android.support.v4.app.FragmentManager fragmentManager;
+
+//    FragmentManager fragmentManager;
+    android.support.v4.app.FragmentManager fragmentManager;
+
     FragmentBase fragmentNow;
 
     //添加自动会话
@@ -151,8 +152,8 @@ public class MainActivity extends AcBase {
         fragmentOther = new FragmentOther();
         fragmentOther.setData(listItemOther);
 
-        fragmentManager = getFragmentManager();
-//        fragmentManager = getSupportFragmentManager();  //v4
+//        fragmentManager = getFragmentManager();
+        fragmentManager = getSupportFragmentManager();  //v4
 
 //        turnToFragment(fragmentChat);
         mOnNavigationItemSelectedListener.onNavigationItemSelected(R.id.itmsg);

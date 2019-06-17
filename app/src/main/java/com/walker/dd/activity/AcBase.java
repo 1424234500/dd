@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +27,7 @@ import com.walker.dd.view.DialogBeats;
 import com.walker.socket.server_1.Msg;
 import com.walker.socket.server_1.MsgBuilder;
 
-public abstract class AcBase extends Activity implements View.OnClickListener{
+public abstract class AcBase extends FragmentActivity implements View.OnClickListener{
     /**
      * 生命周期
      */
