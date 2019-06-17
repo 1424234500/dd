@@ -17,7 +17,6 @@ captures
 local.properties
 
 
-*.jar
 *.bak
 *.class
 *.log
