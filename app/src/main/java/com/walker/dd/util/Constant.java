@@ -8,6 +8,7 @@ public class Constant {
     public static final String BROAD_URL = "broad_url";
     public static final String BROAD_KEY = "msg";
     public static final int[] SRLColors = {android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_green_light};
+    public static final int NUM = 15;   //分页参数
     //public static String serverIp = "10.18.176.187";//校园网
 	//public static String serverIp = "192.168.253.1";	//本机360wifi作废了
 
@@ -150,14 +151,6 @@ public class Constant {
 	public static int emojiWH = 80;
 	
 	
-	
-	//数据库信息
-	public static String LOGIN_USER = "LOGIN_USER";//用户登陆信息表，成功登录记录
-	public static String SQL_LOGIN_USER = "create table if not exists LOGIN_USER (ID varchar(30) primary key, PWD varchar(50), NAME varchar(200), PROFILE varchar(200) ) ";
-
-	public static int offlineMode = 0;	//0正常模式，1离线模式
-	protected static long sleepUpload = 2000;
-
 
 	// 通过id得到映射的图片 资源
 	public static int getDrawableByTypeFile(String type) {

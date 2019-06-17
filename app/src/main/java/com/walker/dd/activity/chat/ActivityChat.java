@@ -72,8 +72,9 @@ public class ActivityChat extends AcBase {
          .set(Key.NUM, 1)  //红点数
          */
         session = AndroidTools.getMapFromIntent(this.getIntent());
-        listItemMsg = Cache.getInstance().get(session.get(Key.ID, Key.ID), new ArrayList<Bean>());
-
+//        listItemMsg = Cache.getInstance().get(session.get(Key.ID, Key.ID), new ArrayList<Bean>());
+//        if(listItemMsg.size() <= 0)
+            listItemMsg = MsgModel.findMsg(sqlDao, session.get(Key.ID, Key.ID), TimeUtil.getTimeYmdHms(), 15);
 
 
         srl =(SwipeRefreshLayout)findViewById(R.id.srl);
@@ -112,6 +113,14 @@ public class ActivityChat extends AcBase {
             @Override
             public void onRefresh() {
                 AndroidTools.toast(getContext(), "refresh");
+                String time = listItemMsg.size() > 0 ? listItemMsg.get(0).get("TIME", "") : TimeUtil.getTimeYmdHms();
+                List<Bean> list = MsgModel.findMsg(sqlDao, session.get(Key.ID, Key.ID), time, Constant.NUM);
+                listItemMsg.addAll(0, list);
+                adapter.notifyDataSetChanged();
+
+                int sel = list.size();
+                sel = sel > 0 ? sel - 1 : 0;
+                lv.setSelection(sel);
                 srl.setRefreshing(false);
             }
         });
@@ -178,23 +187,15 @@ public class ActivityChat extends AcBase {
     @Override
     public void OnReceive(String msgJson) {
         Msg msg = new Msg(msgJson);
+        Bean item = MsgModel.addMsg(sqlDao, msg);
+
         String toid = session.get(Key.ID, "");
         String plugin = msg.getType();
+
         if(!(msg.getUserFrom().getId().equals(toid)
                 || msg.getTo().equals(toid)))return;
 
         if(plugin.equals(Plugin.KEY_MESSAGE)){
-            Bean data = msg.getData();
-            Bean item = new Bean()
-                    .set(Key.ID, data.get(Key.ID, Key.ID))
-                    .set(Key.TYPE, data.get(Key.TYPE, Key.TEXT))
-                    .set(Key.FROM, msg.getUserFrom())
-                    .set(Key.TO, msg.getTo())
-                    .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
-                    .set(Key.TEXT, data.get(Key.TEXT, ""))
-                    .set(Key.FILE, data.get(Key.FILE, ""))
-                    ;
-
             addMsg(item);
         }
 
@@ -214,18 +215,21 @@ public class ActivityChat extends AcBase {
                 String toid = session.get(Key.ID, "");   //目标人 或群
                 String msgid = LangUtil.getGenerateId();
                 String file = "";
-                Bean bean = new Bean()
+                Bean data = new Bean()
                         .set(Key.ID, msgid)
                         .set(Key.TYPE, Key.TEXT)
-                        .set(Key.FROM, NowUser.getUser())
-                        .set(Key.TO, toid)
-                        .set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
                         .set(Key.TEXT, str)
                         .set(Key.FILE, file)
                         ;
-                MsgModel.addMsg();  //存储
+                Msg msg = new Msg().setUserFrom(NowUser.getUser())
+                        .setUserTo(toid)
+                        .setTimeDo(System.currentTimeMillis())
+                        ;
+                msg.setData(data);
+
+                Bean bean = MsgModel.addMsg(sqlDao, msg);  //存储
                 addMsg(bean);   //表现
-               sendSocket(Plugin.KEY_MESSAGE, session.get(Key.ID, ""), new Bean().set(Key.TYPE, Key.TEXT).set(Key.ID, msgid).set(Key.TEXT, str).set(Key.FILE, file));
+               sendSocket(Plugin.KEY_MESSAGE, toid, data);
 
                sendAuto(str);   //自动回复
 
@@ -241,23 +245,28 @@ public class ActivityChat extends AcBase {
      * handler处理器
      *
      * @param type
-     * @param msg
+     * @param str
      */
     @Override
-    public void OnHandler(String type, String msg) {
-        super.OnHandler(type, msg);
+    public void OnHandler(String type, String str) {
+        super.OnHandler(type, str);
         if(type.equals(Key.AUTO)){
             String toid = session.get(Key.ID, "");   //目标人 或群
             String msgid = LangUtil.getGenerateId();
-            Bean bean = new Bean()
+            String file = "";
+            Bean data = new Bean()
                     .set(Key.ID, msgid)
                     .set(Key.TYPE, Key.TEXT)
-                    .set(Key.FROM, NowUser.getDd())
-                    .set(Key.TO, toid)
-                    .set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
-                    .set(Key.TEXT, msg)
+                    .set(Key.TEXT, str)
+                    .set(Key.FILE, file)
                     ;
-            addMsg(bean);
+            Msg msg = new Msg().setUserFrom(NowUser.getDd())
+                    .setUserTo(toid)
+                    .setTimeDo(System.currentTimeMillis())
+                    ;
+            msg.setData(data);
+            Bean bean = MsgModel.addMsg(sqlDao, msg);  //存储
+            addMsg(bean);   //表现
         }
 
     }
@@ -307,6 +316,10 @@ public class ActivityChat extends AcBase {
     private void addMsg(Bean bean) {
         if(bean != null)
             listItemMsg.add(bean);
+        if(listItemMsg.size() >  Constant.NUM * 3){
+            listItemMsg.remove(0);
+        }
+        adapter.notifyDataSetChanged();
         lv.setSelection(listItemMsg.size());	//选中最新一条，滚动到底部
     }
 

@@ -179,12 +179,16 @@ public class RobotAuto {
     public static String parseTencentRes(String jsonstr) {
 
         String res = "";
-        Bean map = JsonUtil.get(jsonstr);
-        int code = map.get("ret", -1);
-        if (code == 0) {
-            Bean data = map.get("data", new Bean());
-            res += data.get("answer", "没有回复?");
-        }else{
+        try {
+            Bean map = JsonUtil.get(jsonstr);
+            int code = map.get("ret", -1);
+            if (code == 0) {
+                Bean data = map.get("data", new Bean());
+                res += data.get("answer", "没有回复?");
+            } else {
+                res = jsonstr;
+            }
+        }catch (Exception e){
             res = jsonstr;
         }
         return res;

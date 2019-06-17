@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.walker.common.util.Tools;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
-import com.walker.dd.service.Login;
+import com.walker.dd.service.LoginModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.view.ClearEditText;
 
@@ -92,7 +92,7 @@ public class ActivityRegiste extends AcBase implements OnClickListener {
 		if(Tools.notNull(username,pwd,repwd,email,sex) ){
 			if(repwd.equals(pwd)){
                 NowUser.setPwd(pwd);
-                Login.registe(this, username, email, sex, pwd);
+                LoginModel.registe(this, username, email, sex, pwd);
 				loadingStart();
 			}else{
 				toast("两次密码不同");

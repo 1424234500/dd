@@ -29,7 +29,7 @@ import com.walker.common.util.Bean;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
 import com.walker.dd.adapter.AdapterLvIds;
-import com.walker.dd.service.Login;
+import com.walker.dd.service.LoginModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.SocketModel;
 import com.walker.dd.util.AndroidTools;
@@ -173,7 +173,7 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 			//合法账号密码，发送登陆请求,并且本地放入本地临时账户信息记录
 			NowUser.setId(id);
 			NowUser.setPwd(pwd);
-            Login.login(this, id, pwd, NowUser.getName());
+            LoginModel.login(this, id, pwd, NowUser.getName());
 			//登陆中 提示
             loadingStart();
 		} else {
@@ -206,7 +206,7 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 
 	private void OpenIvDown(View view) {
 		// 构造需要显示的数据
-		liststr = this.sqlDao.queryList("select * from " + Constant.LOGIN_USER + " ");
+		liststr = LoginModel.finds(sqlDao);
 		if (liststr.size() <= 0)
 			return;
 
@@ -226,8 +226,8 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 
             @Override
             public void onDel(Bean res) {
-                out("del:" + res.get(Key.ID));
-                sqlDao.execSQL("delete from " + Constant.LOGIN_USER + " where ID=? ", res.get(Key.ID, ""));
+                String id = res.get(Key.ID, "");
+                LoginModel.delete(sqlDao, id);
                 liststr.remove(res);	//上下转后 这个对象还是不是list中的那个呢？能否删除
                 mAdapter.notifyDataSetChanged();// 通知ListView，数据已发生改变
                 // popupWindow.dismiss();//关闭，
@@ -257,12 +257,13 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
      */
 	@Override
 	public void afterTextChanged(Editable e) {
-		Bean llu = sqlDao.queryOne("select * from " + Constant.LOGIN_USER + " where ID=? ",  cetId.getText().toString());
+	    String id = cetId.getText().toString();
+
+		Bean llu = LoginModel.get(sqlDao, id);
 		if (llu != null){
 			String getid = llu.get(Key.ID, "");
             String getpwd = llu.get(Key.PWD, "");
             String getname = llu.get(Key.NAME, "");
-//			String getpath = llu.get(Key.PROFILE, "");
             cetPwd.setText(getpwd);
             NowUser.setName(getname);
 //            if (getpath.length() > 0) {
@@ -367,12 +368,7 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
                 NowUser.setId(id);
                 NowUser.setName(name);
 
-                Bean llu = sqlDao.queryOne("select * from " + Constant.LOGIN_USER + " where ID=? ",  id);
-                if(llu == null){
-                    sqlDao.execSQL("insert into " + Constant.LOGIN_USER + " values(?,?,?,?) ",id,pwd,name,profile);
-                }else{
-                    sqlDao.execSQL("update " + Constant.LOGIN_USER + " set ID=?,PWD=?,NAME=?,PROFILE=? where ID=? ",id,pwd,name,profile, id);
-                }
+                LoginModel.save(sqlDao, id, pwd, name, profile);
 
                 toast("login ok", data);
                 NowUser.setLogin(true);

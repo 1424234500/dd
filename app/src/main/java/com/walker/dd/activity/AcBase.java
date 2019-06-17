@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.walker.common.util.Bean;
 import com.walker.common.util.JsonUtil;
 import com.walker.common.util.Tools;
-import com.walker.dd.database.BaseDao;
+import com.walker.core.database.BaseDao;
 import com.walker.dd.database.BaseDaoImpl;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.util.AndroidTools;

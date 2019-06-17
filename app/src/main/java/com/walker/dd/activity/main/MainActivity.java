@@ -15,7 +15,7 @@ import com.walker.common.util.Bean;
 import com.walker.common.util.TimeUtil;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
-import com.walker.dd.service.Login;
+import com.walker.dd.service.LoginModel;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.SocketModel;
@@ -188,7 +188,7 @@ public class MainActivity extends AcBase {
             public void onClick(DialogInterface dialog, int which) {
                 String name = etuser.getText().toString();
                 NowUser.setName(name);
-                Login.login(MainActivity.this, NowUser.getId(), NowUser.getPwd(), name);
+                LoginModel.login(MainActivity.this, NowUser.getId(), NowUser.getPwd(), name);
             }
         });
         builder.show();
@@ -225,9 +225,13 @@ public class MainActivity extends AcBase {
             }else if(plugin.equals(Plugin.KEY_LOGIN)){
                 if(status == 0) {
                     Bean data = msg.getData();
-                    NowUser.setId(data.get(Key.ID, ""));
-                    NowUser.setName(data.get(Key.NAME, ""));
-                    nb.setTitle(data.get(Key.NAME, ""));
+                    String id = data.get(Key.ID, "");
+                    String name = data.get(Key.NAME, "");
+
+                    NowUser.setId(id);
+                    NowUser.setName(name);
+                    nb.setTitle(name);
+                    LoginModel.save(sqlDao, id, "", name, "");
                     toast("login ok", data);
                     sendSocket(Plugin.KEY_SESSION, new Bean());
                 }else{
@@ -236,7 +240,7 @@ public class MainActivity extends AcBase {
                 }
             }
             else if(plugin.equals(Plugin.KEY_MESSAGE)){
-                MsgModel.addMsg();  //存储消息
+                Bean bean = MsgModel.addMsg(sqlDao, msg);   //存储消息
 
                 Bean data = msg.getData();
                 User from = msg.getUserFrom();

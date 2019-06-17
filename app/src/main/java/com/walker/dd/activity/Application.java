@@ -9,8 +9,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import com.walker.common.util.Bean;
-import com.walker.dd.database.BaseDao;
+import com.walker.core.database.BaseDao;
 import com.walker.dd.database.BaseDaoImpl;
+import com.walker.dd.service.LoginModel;
+import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.SocketModel;
 import com.walker.dd.util.AndroidTools;
@@ -165,7 +167,8 @@ public class Application extends android.app.Application implements OnSocket {
     public void initDatabaseTable(){
         BaseDao sqlDao = new BaseDaoImpl(this);
         //sqlDao.execSQL("drop table login_user");
-        sqlDao.execSQL(Constant.SQL_LOGIN_USER);
+        sqlDao.executeSql(LoginModel.SQL_LOGIN_USER);
+        sqlDao.executeSql(MsgModel.SQL_MSG);
 
 
 
