@@ -8,10 +8,7 @@
             android:id="@+id/iv"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/profile"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="2dp"
+            android:src="@drawable/profile"
             android:scaleType="centerCrop"
 
             />

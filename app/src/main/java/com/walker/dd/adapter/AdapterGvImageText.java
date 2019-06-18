@@ -22,10 +22,14 @@ import org.w3c.dom.Text;
 /**
  * IMAGE, TEXT
  */
-public class AdapterGvOther extends BaseAdapter{
+public class AdapterGvImageText extends BaseAdapter{
     // 运行上下文
 	private Context context;
     // 数据集引用
+    /**
+     * ID           图片资源id
+     * TEXT        文本
+     */
 	private List<Bean>  listItems = null;
     // 视图容器
 	private LayoutInflater layoutInflater;
@@ -56,7 +60,7 @@ public class AdapterGvOther extends BaseAdapter{
 		// 设置属性
 //        viewHolder.iv.setImageResource(R.drawable.profile);
 
-        viewHolder.iv.setBackgroundColor(AndroidTools.getRandomColor());
+        viewHolder.iv.setImageResource(bean.get(Key.ID, AndroidTools.getRandomColor()));
         viewHolder.tv.setText(bean.get(Key.TEXT, ""));
 
 		
@@ -75,7 +79,7 @@ public class AdapterGvOther extends BaseAdapter{
 	}
 		
 	
-	public AdapterGvOther(Context context, List<Bean> listItems) {
+	public AdapterGvImageText(Context context, List<Bean> listItems) {
 		this.layoutInflater = LayoutInflater.from(context); // 创建视图容器并设置上下文
         this.context = context;
 		this.listItems = listItems;

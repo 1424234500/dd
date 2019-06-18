@@ -77,6 +77,12 @@ public class NavigationImageView extends LinearLayout implements View.OnClickLis
     public void close(){
         open(0);
     }
+    public void closeNocall(){
+        for(int i = 0; i < ivs.length; i++){
+            ivs[i].setImageResource(img1s[i]);
+        }
+        nowChoseId = 0;
+    }
     public int getNowId(){
         return nowChoseId;
     }

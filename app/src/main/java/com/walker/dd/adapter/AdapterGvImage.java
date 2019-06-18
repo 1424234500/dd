@@ -1,5 +1,6 @@
 package com.walker.dd.adapter;
 
+import java.security.Key;
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +14,9 @@ import android.widget.ImageView;
 
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
+import com.walker.dd.util.AndroidTools;
 
-public class AdapterGvEmoji extends BaseAdapter{
+public class AdapterGvImage extends BaseAdapter{
 	//private Context context; // 运行上下文
 	private List<Bean>  listItems = null; // listview的数据集合
 	private LayoutInflater listContainer; // 视图容器
@@ -36,7 +38,7 @@ public class AdapterGvEmoji extends BaseAdapter{
 		if (convertView == null) { //若无可复用布局
 			viewHolderEmoji = new ViewHolderUser();
 			convertView = listContainer.inflate(R.layout.item_image, null);	// 获取list_item布局文件的视图
-			viewHolderEmoji.ivEmoji = (ImageView) convertView .findViewById(R.id.ivemoji);
+			viewHolderEmoji.ivEmoji = (ImageView) convertView .findViewById(R.id.iv);
 			
 			convertView.setTag(viewHolderEmoji);// 设置控件集到convertView
 		} else {//若有可复用布局
@@ -44,13 +46,14 @@ public class AdapterGvEmoji extends BaseAdapter{
 		}
 		// 设置文字和图片和监听
 		//Tools.log(listItems.get(position).get("id").toString() + " | " + R.drawable.at);
-        int id =  bean.get("id", 0);
+        int id =  bean.get(com.walker.socket.server_1.Key.ID, AndroidTools.getRandomColor());
         if(id != 0) {
             viewHolderEmoji.ivEmoji.setImageResource(id);
         }
 		//viewHolderEmoji.ivEmoji.setImageResource(R.drawable.at);
+//        viewHolderEmoji.ivEmoji.setBackgroundColor(AndroidTools.getRandomColor());
 		
-		return convertView; 
+		return convertView;
 	}
 	
 	//必须实现，通知adapter有几种布局类型
@@ -65,7 +68,7 @@ public class AdapterGvEmoji extends BaseAdapter{
 	}
 		
 	
-	public AdapterGvEmoji(Context context, List<Bean> listItems) {
+	public AdapterGvImage(Context context, List<Bean> listItems) {
 		listContainer = LayoutInflater.from(context); // 创建视图容器并设置上下文
 		this.listItems = listItems;
 	}

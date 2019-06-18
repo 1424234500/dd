@@ -1,65 +1,69 @@
 package com.walker.dd.activity.chat;
- 
-import java.util.*;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import android.widget.SimpleAdapter;
 
+import com.walker.common.util.Bean;
 import com.walker.dd.R;
 import com.walker.dd.activity.FragmentBase;
+import com.walker.dd.activity.other.ActivityCompose;
+import com.walker.dd.activity.other.ActivityTestEcho;
+import com.walker.dd.activity.other.ActivityTestSocket;
+import com.walker.dd.adapter.AdapterGvImageText;
 import com.walker.dd.util.AndroidTools;
+import com.walker.socket.server_1.Key;
 
-public class FragmentMore extends FragmentBase implements  OnItemClickListener  {
-   
-    @Override  
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,  Bundle savedInstanceState) {  
-    	 View view = inflater.inflate(R.layout.layout_more, container, false);
-           
-    	   gview = (GridView) view.findViewById(R.id.gview);
-           //新建List
-           listItems = new ArrayList<HashMap<String,Object>>();
-           //获取数据
-           listItems = getData();
-           //新建适配器
-           String [] from ={"image","text"};
-           int [] to = {R.id.iv,R.id.tv};
-           sim_adapter = new SimpleAdapter(getContext(), listItems, R.layout.item_image_text, from, to);
-           //配置适配器
-           gview.setAdapter(sim_adapter);
-           gview.setOnItemClickListener(this);
-	     return view;
-    }  
-	static int ACTIVITY_RESULT_FILE = 1;
+import java.util.ArrayList;
+import java.util.List;
 
-    private GridView gview;
-    private List<HashMap<String,Object>> listItems;
-    private SimpleAdapter sim_adapter;
-    // 图片封装为一个数组
-    private int[] icon = { R.drawable.icon_filetype_dir};
-    private String[] iconName = { "文件" };
+public class FragmentMore extends FragmentBase {
 
-    public List<HashMap<String,Object>> getData(){        
-    	List<HashMap<String,Object>> listItems = new ArrayList<HashMap<String,Object>>();
 
-        //cion和iconName的长度是相同的，这里任选其一都可以
-        for(int i=0;i<icon.length;i++){
-            HashMap<String,Object> map = new HashMap<String,Object>();
-            map.put("image", icon[i]);
-            map.put("text", iconName[i]);
-            listItems.add(map);
-        }
-            
-        return listItems;
-    }
-     
-    Call call;
-    public void setCall(Call call){
-    	this.call = call;
+    GridView gv;
+    List<Bean> listItems = new ArrayList<>();
+    // * ID, TEXT
+    AdapterGvImageText adapter;
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        AndroidTools.log("FragmentMore onCreateView");
+
+        View v=inflater.inflate(R.layout.main_fragment_other,container,false);
+
+        listItems = new ArrayList<>();
+        listItems.add(new Bean().set(Key.ID, R.drawable.icon_filetype_dir).set(Key.TEXT, "文件"));
+        listItems.add(new Bean().set(Key.ID, R.drawable.icon_filetype_doc).set(Key.TEXT, "文档"));
+        listItems.add(new Bean().set(Key.ID, R.drawable.icon_filetype_music).set(Key.TEXT, "音乐"));
+
+
+        adapter = new AdapterGvImageText(getActivity(), listItems);
+
+        gv = (GridView)v.findViewById(R.id.gv);
+        gv.setNumColumns(4);
+        gv.setAdapter(adapter);
+
+        gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                AndroidTools.toast(getActivity(), "click " + listItems.get(arg2).toString());
+                onClick(listItems.get(arg2));
+            }
+        });
+        gv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,  int arg2, long arg3) {
+                AndroidTools.toast(getActivity(), "remove " + listItems.get(arg2).toString());
+                return true;
+            }
+        });
+
+        return v;
     }
 
     /**
@@ -69,16 +73,25 @@ public class FragmentMore extends FragmentBase implements  OnItemClickListener  
      */
     @Override
     public void setData(Object data) {
-        
+
+        this.listItems = (List<Bean>) data;
+        if(this.listItems.size() <= 0){
+            for(int i = 0; i < 10; i++) {
+                listItems.add(new Bean().set(Key.PROFILE, AndroidTools.getRandomColor()).set(Key.TEXT, "text" + i));
+            }
+        }
+        this.notifyDataSetChanged();
     }
 
     /**
-     * 更新数据 后 通知更新页面
+     * 更新数据
      */
     @Override
     public void notifyDataSetChanged() {
-
+        if(adapter != null)
+            adapter.notifyDataSetChanged();
     }
+
 
     /**
      * 数据广播传递 activity通过baseAc收到广播后派发给当前fragment
@@ -90,17 +103,27 @@ public class FragmentMore extends FragmentBase implements  OnItemClickListener  
 
     }
 
-    public interface Call {
-    	public void onChoseFile(String path);
+
+    public void onClick(Bean bean){
+        String text = bean.get(Key.TEXT, "");
+        switch (text){
+            case "socket":
+                startActivity(new Intent(getActivity(), ActivityTestSocket.class));
+                break;
+            case "compose":
+                startActivity(new Intent(getActivity(), ActivityCompose.class));
+                break;
+            case "autochat":
+                startActivity(new Intent(getActivity(), ActivityTestEcho.class));
+
+            default:
+                sendSocket("echo", bean);
+                break;
+        }
+
+
     }
 
-	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int i, long l) {
-		if(call != null){
-		    HashMap<String,Object> map = listItems.get(i);
-            AndroidTools.log(map.toString());
-		}
-	}
 
-  
-}  
+
+}

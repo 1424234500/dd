@@ -14,7 +14,7 @@ import com.walker.dd.activity.FragmentBase;
 import com.walker.dd.activity.other.ActivityCompose;
 import com.walker.dd.activity.other.ActivityTestEcho;
 import com.walker.dd.activity.other.ActivityTestSocket;
-import com.walker.dd.adapter.AdapterGvOther;
+import com.walker.dd.adapter.AdapterGvImageText;
 import com.walker.dd.util.AndroidTools;
 import com.walker.socket.server_1.Key;
 
@@ -27,16 +27,16 @@ public class FragmentOther extends FragmentBase {
     GridView gv;
     List<Bean> listItems = new ArrayList<>();
     // * IMAGE, TEXT
-    AdapterGvOther adapter;
+    AdapterGvImageText adapter;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        AndroidTools.log("FragmentOther onCreateView");
+        AndroidTools.log("FragmentMore onCreateView");
 
         View v=inflater.inflate(R.layout.main_fragment_other,container,false);
 
-        adapter = new AdapterGvOther(getActivity(), listItems);
+        adapter = new AdapterGvImageText(getActivity(), listItems);
 
         gv = (GridView)v.findViewById(R.id.gv);
         gv.setNumColumns(6);

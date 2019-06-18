@@ -100,15 +100,23 @@ public class Constant {
     
     //本地文件存储路径
 // /storage/emulated/0/mycc/record/100-1493005573881.amr 
-	public static final String root = Environment.getExternalStorageDirectory() + "/mydd/";
-	public static final String dirVoice = root + "record/";  
+//    public static final String root = Environment.getExternalStorageDirectory() + "/mydd/";
+    public static final String root = Environment.getDataDirectory() + "/mydd/";
+	public static final String dirVoice = root + "record/";
 	public static final String dirPhoto =  root + "photo/";  
 	public static final String dirFile =  root + "file/";  
 	public static final String dirCamera = root +  "camera/";  
 	public static final String dirProfile = root +  "profile/";  
 	public static final String dirProfileWall = root +  "profilewall/";
 
-	public static  int tvSendSize = 0;  
+    public static String TAKEPHOTO = "";  //拍照临时文件路径
+
+    public static int ACTIVITY_RESULT_PHOTP = 1;
+    public static int ACTIVITY_RESULT_CAMERA = 2;
+    public static int ACTIVITY_RESULT_FILE = 3;
+
+
+    public static  int tvSendSize = 0;
 
 	public static final String split = "OTOTO";
 

@@ -1,16 +1,16 @@
 package com.walker.dd.activity.chat;
  
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.walker.common.util.Bean;
 import com.walker.dd.activity.FragmentBase;
-import com.walker.dd.adapter.AdapterGvEmoji;
+import com.walker.dd.adapter.AdapterGvImage;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.dd.util.EmotionUtils;
+import com.walker.socket.server_1.Key;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,9 +29,9 @@ public class FragmentEmoji extends FragmentBase implements  OnItemClickListener 
   
        
     
-	//name,id
+	//ID TEXT
 	List<Bean> listEmoji;
-	AdapterGvEmoji adapterGridEmoji;
+	AdapterGvImage adapterGridEmoji;
 	
 	
 	
@@ -45,8 +45,8 @@ public class FragmentEmoji extends FragmentBase implements  OnItemClickListener 
 		 Object[] keys = emojiMap.keySet().toArray();
 		 for(int i = 0; i < keys.length; i++){
 			 map = new Bean();
-			 map.put("name", "" + keys[i] );
-			 map.put("id", "" + emojiMap.get(keys[i]));
+			 map.put(Key.TEXT, "" + keys[i] );
+			 map.put(Key.ID, "" + emojiMap.get(keys[i]));
 			 listEmoji.add(map);  
 		 }  
 		
@@ -62,7 +62,7 @@ public class FragmentEmoji extends FragmentBase implements  OnItemClickListener 
 //           mBtn = (Button) view.findViewById(R.id.id_fragment_two_btn);  
 		AndroidTools.log("FragmentEmoji onCreateView");
 
-		 AdapterGvEmoji adapterGridEmoji = new AdapterGvEmoji(getContext(), listEmoji);
+		 AdapterGvImage adapterGridEmoji = new AdapterGvImage(getContext(), listEmoji);
 //		 Tools.tip("emoji. getContext=" + (getContext()==null?"null":"not null"));
 //		 Tools.tip("emoji. getActivity=" + (getActivity()==null?"null":"not null"));
 		 
@@ -116,11 +116,11 @@ public class FragmentEmoji extends FragmentBase implements  OnItemClickListener 
 	public void onItemClick(AdapterView<?> arg0, View arg1, int i, long l) {
 		if(call != null){
 		    Bean bean = listEmoji.get(i);
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), bean.get("id", 0) );
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), bean.get(Key.ID, 0) );
             bitmap = Bitmap.createScaledBitmap(bitmap, Constant.emojiWH, Constant.emojiWH, true);
             ImageSpan imageSpan = new ImageSpan(getContext(), bitmap);
-            SpannableString spannableString = new SpannableString(bean.get("name", ""));
-            spannableString.setSpan(imageSpan, 0, bean.get("name", "").length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            SpannableString spannableString = new SpannableString(bean.get(Key.TEXT, ""));
+            spannableString.setSpan(imageSpan, 0, bean.get(Key.TEXT, "").length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
           
 			call.onCall(spannableString );
 		}

@@ -1,8 +1,11 @@
 package com.walker.dd.activity.chat;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.os.Bundle;
+import android.text.SpannableString;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.EditText;
@@ -23,7 +26,7 @@ import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
-import com.walker.dd.view.VoiceView;
+import com.walker.dd.view.EmotionKeyboard;
 import com.walker.socket.server_1.Key;
 import com.walker.dd.util.RobotAuto;
 import com.walker.dd.view.NavigationBar;
@@ -44,10 +47,11 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static android.view.View.GONE;
+import static com.walker.dd.util.Constant.ACTIVITY_RESULT_CAMERA;
 
 public class ActivityChat extends AcBase {
     SwipeRefreshLayout srl;
-
+    EmotionKeyboard ekb;
     List<Bean> listItemMsg = new ArrayList<>();
     ListView lv;
     AdapterLvChat adapter;
@@ -81,7 +85,6 @@ public class ActivityChat extends AcBase {
      */
     NavigationImageView niv;
     private NavigationImageView.OnControl onControl = new NavigationImageView.OnControl() {
-
         /**
          * 0则是关闭
          *
@@ -97,7 +100,8 @@ public class ActivityChat extends AcBase {
                     turnToFragment(fragmentPhoto);
                     break;
                 case R.id.ivgraph:
-
+                    Constant.TAKEPHOTO =  Constant.dirCamera + NowUser.getId() + "-" + TimeUtil.getTimeYmdHms()+".png";
+                    AndroidTools.takePhoto(ActivityChat.this, Constant.TAKEPHOTO, ACTIVITY_RESULT_CAMERA);
                     break;
                 case R.id.ivemoji:
                     turnToFragment(fragmentEmoji);
@@ -110,9 +114,9 @@ public class ActivityChat extends AcBase {
                     //关闭
             }
             if(id == 0){
-                viewfill.setVisibility(GONE);
+                ekb.hideViewHide(true);
             }else{
-                viewfill.setVisibility(View.VISIBLE);
+                ekb.showViewHide();
             }
 
         }
@@ -153,6 +157,7 @@ public class ActivityChat extends AcBase {
                         break;
                     case AbsListView.OnScrollListener.SCROLL_STATE_FLING://滚动状态
                         AndroidTools.out("listview 滚动，暂停加载图片");
+//                        ekb.hideViewHide(false);
 //                        NetImage.pause(getContext());
                         break;
                     case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL://触摸后滚动
@@ -180,6 +185,13 @@ public class ActivityChat extends AcBase {
         });
 
         etsend = (EditText)findViewById(R.id.etsend);
+        etsend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ekb.hideViewHide(true);
+                niv.closeNocall();
+            }
+        });
         niv = (NavigationImageView)findViewById(R.id.niv);
         niv.setOnControl(onControl);
         niv.close();
@@ -212,8 +224,14 @@ public class ActivityChat extends AcBase {
             }
         });
 
+        ekb = EmotionKeyboard.with(this)
+                .bindViewMain(srl)//绑定内容view lvChat -> 下拉布局,需要weight 1来配合ekb解决闪屏
+                .bindEditText(etsend)//EditView
+                .bindViewHide(viewfill)//绑定隐藏布局
+                .build();
+
         fragmentVoice = new FragmentVoice();
-        fragmentVoice.setCall( new VoiceView.OnVoice() {
+        fragmentVoice.setOnVoice( new FragmentVoice.OnVoice() {
             @Override
             public void onSend(String file) {
                 toast("voice", file);
@@ -221,6 +239,12 @@ public class ActivityChat extends AcBase {
         });
         fragmentPhoto = new FragmentPhoto();
         fragmentEmoji = new FragmentEmoji();
+        fragmentEmoji.setCall(new FragmentEmoji.Call() {
+            @Override
+            public void onCall(SpannableString spannableString) {
+                etsend.getText().insert(etsend.getSelectionStart(), spannableString);
+            }
+        });
         fragmentMore = new FragmentMore();
 
 //        fragmentManager = getFragmentManager();
@@ -260,7 +284,12 @@ public class ActivityChat extends AcBase {
     @Override
     public boolean OnBackPressed() {
         if(niv.isOpen()){
-            niv.close();
+            niv.closeNocall();
+            ekb.hideViewHide(true);
+            return true;
+        }
+        if(ekb.isViewHideShow()){
+            ekb.hideViewHide(false);
             return true;
         }
         return false;
@@ -434,6 +463,18 @@ public class ActivityChat extends AcBase {
     @Override
     public void OnMoreClick() {
         toast("more");
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ACTIVITY_RESULT_CAMERA && resultCode == Activity.RESULT_OK  ) {
+            String path = Constant.TAKEPHOTO;
+            toast("拍照结果"+ path);
+            List<String> list = new ArrayList<String>();
+            list.add(path);
+//            sendPhotos(list);
+        }
 
     }
+
 }
