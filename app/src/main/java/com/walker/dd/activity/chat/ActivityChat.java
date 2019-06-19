@@ -19,7 +19,6 @@ import com.walker.common.util.TimeUtil;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
 import com.walker.dd.activity.FragmentBase;
-import com.walker.dd.activity.main.FragmentSession;
 import com.walker.dd.adapter.*;
 import com.walker.dd.service.Cache;
 import com.walker.dd.service.MsgModel;
@@ -127,16 +126,13 @@ public class ActivityChat extends AcBase {
     public void OnCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_chat);
 
-        /**
-         .set(Key.ID, msg.getUserTo().equals(NowUser.getId())?from.getId() : msg.getUserTo()) //当前会话id 关联from to
-         .set(Key.NAME, "name")  //会话名 关联from to
-         .set(Key.TYPE, Key.TEXT)  //文本类型
-         .set(Key.FROM, msg.getUserFrom()) //消息来自谁发的 User[id, name, pwd]
-         .set(Key.TO, msg.getUserTo) //消息发送的目标 user id group id
-         .set(Key.TEXT, data.get(Key.TEXT))    //文本内容
-         .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))   //时间
-         .set(Key.NUM, 1)  //红点数
-         */
+/*
+                .set(Key.ID, dd.getId())
+                .set(Key.NAME, dd.getName())
+                .set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
+                .set(Key.TYPE, Key.TEXT)
+                .set(Key.TEXT, "auto echo")
+                .set(Key.NUM, 1)*/
         session = AndroidTools.getMapFromIntent(this.getIntent());
 //        listItemMsg = Cache.getInstance().get(session.get(Key.ID, Key.ID), new ArrayList<Bean>());
         listItemMsg = MsgModel.findMsg(sqlDao, session.get(Key.ID, Key.ID), TimeUtil.getTimeYmdHms(), 15);
@@ -347,7 +343,9 @@ public class ActivityChat extends AcBase {
                 addMsg(bean);   //表现
                sendSocket(Plugin.KEY_MESSAGE, toid, data);
 
-               sendAuto(str);   //自动回复
+               //自动会话才自动回复
+               if(toid.equals(NowUser.getDd().getId()))
+                   sendAuto(str);   //自动回复
 
 
                etsend.setText("");

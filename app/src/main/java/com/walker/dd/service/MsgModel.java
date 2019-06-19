@@ -22,7 +22,8 @@ public class MsgModel extends Model{
      */
     public final static String MSG = "MSG";
     public final static String SQL_MSG = "create table if not exists MSG (" +
-            "SESSION_ID varchar(200), ID varchar(30) primary key, TYPE varchar(30), " +
+            "USER_ID varchar(30), " +
+            "SESSION_ID varchar(200), MSG_ID varchar(30) primary key, TYPE varchar(30), " +
             "FROM_ID varchar(200), FROM_NAME varchar(200), " +
             "TO_ID varchar(200), TIME varchar(30), TEXT varchar(2000), FILE varchar(600) ) ";
 
@@ -30,6 +31,8 @@ public class MsgModel extends Model{
      * 存储
      */
     public static Bean addMsg(BaseDao dao, Msg msg){
+        String nowUserId = NowUser.getId();
+
         Bean data = msg.getData();
         String msgId = data.get(Key.ID, Key.ID);
         String msgType = data.get(Key.TYPE, Key.TEXT);
@@ -44,9 +47,9 @@ public class MsgModel extends Model{
         String sessionId = toUserId.equals(NowUser.getId()) ? fromUserId : toUserId;
 
         int count = -1;
-        Map<String, Object> getmap = dao.findOne("select * from " + MSG + " where ID=? ",  msgId);
+        Map<String, Object> getmap = dao.findOne("select * from " + MSG + " where MSG_ID=? and USER_ID=? ",  msgId, nowUserId);
         if(getmap == null){
-            count = dao.executeSql("insert into " + MSG + " values(?,?,?,?,?,?,?,?,?) ",sessionId,msgId, msgType, fromUserId, fromUserName, toUserId, time, text, file);
+            count = dao.executeSql("insert into " + MSG + " values(?,?,?,?,?,?,?,?,?,?) ",nowUserId,sessionId,msgId, msgType, fromUserId, fromUserName, toUserId, time, text, file);
         }else{
             Bean get = new Bean(getmap);
 
@@ -55,7 +58,7 @@ public class MsgModel extends Model{
 //                    "TO_ID varchar(200), TIME varchar(30), TEXT varchar(2000), FILE varchar(600) ) ";
 
             sessionId = nvl(sessionId, get.get("SESSION_ID"));
-            msgId = nvl(msgId, get.get("ID", ""));
+            msgId = nvl(msgId, get.get("MSG_ID", ""));
             msgType = nvl(msgType, get.get("TYPE", ""));
             fromUserId = nvl(fromUserId, get.get("FROM_ID", ""));
             fromUserName = nvl(fromUserName, get.get("FROM_NAME", ""));
@@ -64,8 +67,8 @@ public class MsgModel extends Model{
             text = nvl(text, get.get("TEXT", ""));
             file = nvl(file, get.get("FILE", ""));
 
-            count = dao.executeSql("update " + MSG + " set SESSION_ID=?,ID=?,TYPE=?,FROM_ID=?,FROM_NAME=?,TO_ID=?,TIME=?,TEXT=?,FILE=? where ID=? ",
-                    sessionId,msgId,msgType,fromUserId,fromUserName,toUserId,time,text,file, msgId);
+            count = dao.executeSql("update " + MSG + " set USER_ID=?,SESSION_ID=?,MSG_ID=?,TYPE=?,FROM_ID=?,FROM_NAME=?,TO_ID=?,TIME=?,TEXT=?,FILE=? where ID=? and USER_ID=? ",
+                    nowUserId,sessionId,msgId,msgType,fromUserId,fromUserName,toUserId,time,text,file, msgId, nowUserId);
         }
 
 
@@ -90,7 +93,7 @@ public class MsgModel extends Model{
      * @return
      */
     public static List<Bean> findMsg(BaseDao dao, String sessionId, String timeBefore, int count){
-        List<Map<String, Object>> list = dao.findPage("select * from " + MSG + " where SESSION_ID=? and time <? order by TIME DESC ", 1, count, sessionId, timeBefore);
+        List<Map<String, Object>> list = dao.findPage("select * from " + MSG + " where USER_ID=? and SESSION_ID=? and time <? order by TIME DESC ", 1, count, NowUser.getId(), sessionId, timeBefore);
         List<Bean> res = new ArrayList<>();
         for(int i = list.size() - 1; i >= 0; i--) {
 

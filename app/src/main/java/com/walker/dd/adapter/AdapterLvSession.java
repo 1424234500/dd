@@ -74,6 +74,13 @@ public   class AdapterLvSession extends BaseAdapter    {
          .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))   //时间
          .set(Key.NUM, 1)  //红点数
          */
+
+//                .set(Key.ID, toId)
+//                .set(Key.NAME, toName)
+//                .set(Key.TIME, time)
+//                .set(Key.TYPE, type)
+//                .set(Key.TEXT, text)
+//                .set(Key.NUM, num)
 //        User from = new User(bean.get(Key.FROM, new Bean()));
 
 		viewHolder.tvusername.setText(bean.get(Key.NAME, "")) ;

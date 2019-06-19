@@ -67,11 +67,11 @@ public    class NowUser {
     }
 
     public static String getId() {
-        return MySP.get(context, Key.ID, "");
+        return MySP.get(context, Key.ID, "000");
     }
 
     public static String getName() {
-        return MySP.get(context, Key.NAME, "");
+        return MySP.get(context, Key.NAME, "nobody");
     }
     public static String getName(String name) {
         return MySP.get(context, Key.NAME, name);

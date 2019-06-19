@@ -14,6 +14,7 @@ import com.walker.dd.database.BaseDaoImpl;
 import com.walker.dd.service.LoginModel;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
+import com.walker.dd.service.SessionModel;
 import com.walker.dd.service.SocketModel;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
@@ -169,6 +170,7 @@ public class Application extends android.app.Application implements OnSocket {
         //sqlDao.execSQL("drop table login_user");
         sqlDao.executeSql(LoginModel.SQL_LOGIN_USER);
         sqlDao.executeSql(MsgModel.SQL_MSG);
+        sqlDao.executeSql(SessionModel.SQL_SESSION);
 
 
 

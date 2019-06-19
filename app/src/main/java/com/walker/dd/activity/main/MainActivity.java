@@ -18,6 +18,7 @@ import com.walker.dd.activity.FragmentBase;
 import com.walker.dd.service.LoginModel;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
+import com.walker.dd.service.SessionModel;
 import com.walker.dd.service.SocketModel;
 import com.walker.dd.util.AndroidTools;
 import com.walker.socket.server_1.Key;
@@ -40,16 +41,16 @@ public class MainActivity extends AcBase {
 
     TextView mTextMessage;
 
-    FragmentBase fragmentChat;
+    FragmentBase fragmentSession;
     List<Bean> listItemChat = new ArrayList<>();
     Comparator<Bean> sessionCompare = new Comparator<Bean>() {
         @Override
         public int compare(Bean o1, Bean o2) {
-            return o1.get(Key.FROM, "").compareTo(o2.get(Key.FROM, ""));
+            return o1.get(Key.ID, "").compareTo(o2.get(Key.ID, ""));
         }
     };
 
-    FragmentBase fragmentSession;
+    FragmentBase fragmentContact;
 
     FragmentBase fragmentOther;
     List<Bean> listItemOther = new ArrayList<>();
@@ -59,18 +60,7 @@ public class MainActivity extends AcBase {
 
     FragmentBase fragmentNow;
 
-    //添加自动会话
-    User dd = NowUser.getDd();
-    Bean sessionDd = new Bean()
-            .set(Key.ID, dd.getId())
-            .set(Key.NAME, dd.getName())
-            .set(Key.TYPE, Key.TEXT)
-            .set(Key.FROM, dd)
-            .set(Key.TO, NowUser.getId())
-            .set(Key.TEXT, "auto echo")
-            .set(Key.TIME, TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"))
-            .set(Key.NUM, 1)
-                ;
+
 
 
     private NavigationImageTextView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -83,12 +73,12 @@ public class MainActivity extends AcBase {
                 case R.id.itmsg:
 //                    mTextMessage.setText(R.string.title_home);
                     nb.setTitle(R.string.msg);
-                    turnToFragment(fragmentChat);
+                    turnToFragment(fragmentSession);
                     return true;
                 case R.id.itcontact:
 //                    mTextMessage.setText(R.string.title_dashboard);
                     nb.setTitle(R.string.contact);
-                    turnToFragment(fragmentSession);
+                    turnToFragment(fragmentContact);
                     return true;
                 case R.id.itdollar:
 //                    mTextMessage.setText(R.string.title_notifications);
@@ -146,20 +136,20 @@ public class MainActivity extends AcBase {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
 
-        fragmentChat = new FragmentSession();
-        fragmentChat.setData(listItemChat);
-        fragmentSession = new FragmentContact();
+        fragmentSession = new FragmentSession();
+        fragmentSession.setData(listItemChat);
+        fragmentContact = new FragmentContact();
         fragmentOther = new FragmentOther();
         fragmentOther.setData(listItemOther);
 
 //        fragmentManager = getFragmentManager();
         fragmentManager = getSupportFragmentManager();  //v4
 
-//        turnToFragment(fragmentChat);
+//        turnToFragment(fragmentSession);
         mOnNavigationItemSelectedListener.onNavigationItemSelected(R.id.itmsg);
 
 
-        addSession(dd);
+        addSession(SessionModel.getDd());
 
 
         if(!NowUser.isLogin()) {
@@ -168,9 +158,11 @@ public class MainActivity extends AcBase {
                 goLogin();
             }else{
                 toast("离线模式");
+                addSession(SessionModel.finds(sqlDao, NowUser.getId(), 10));
             }
         }else{
-            sendSocket(Plugin.KEY_SESSION, new Bean());
+            addSession(SessionModel.finds(sqlDao, NowUser.getId(), 10));
+//            sendSocket(Plugin.KEY_SESSION, new Bean());
         }
     }
     public void goLogin(){
@@ -237,7 +229,7 @@ public class MainActivity extends AcBase {
                     sendSocket(Plugin.KEY_SESSION, new Bean());
                 }else{
                     toast(msg.getInfo());
-                    rename();
+                    goLogin();
                 }
             }
             else if(plugin.equals(Plugin.KEY_MESSAGE)){
@@ -245,27 +237,23 @@ public class MainActivity extends AcBase {
 
                 Bean data = msg.getData();
                 User from = msg.getUserFrom();
-                String id = "";
-                String name = "";
+                String toId = "";
+                String toName = "";
                 if(msg.getUserTo()[0].equals(NowUser.getId())){
-                    id = from.getId();
-                    name = from.getName();
+                    toId = from.getId();
+                    toName = from.getName();
                 }else{
-                    id = msg.getUserTo()[0];
-                    name = "group name "+ id;
+                    toId = msg.getUserTo()[0];
+                    toName = "group name "+ toId;
                 }
-                if(name.length() <= 0)name = id;
+                User user = new User(data.get(Key.USER, new Bean()));
+                String type = bean.get(Key.TYPE, Key.TEXT);
+                String time = bean.get(Key.TIME, "");
+                String text = bean.get(Key.TEXT, "");
+                Bean item = SessionModel.save(sqlDao, NowUser.getId(), toId, toName, time, type, text, "");
+                int num = item.get(Key.NUM, 0) + 1;
+                item = SessionModel.save(sqlDao, NowUser.getId(), toId, toName, time, type, text, num + "");
 
-                Bean item = new Bean()
-                        .set(Key.ID, id)
-                        .set(Key.NAME, name)
-                        .set(Key.TYPE, Key.TEXT)
-                        .set(Key.FROM, from)
-                        .set(Key.TO, msg.getUserTo())
-                        .set(Key.TEXT, data.get(Key.TEXT))
-                        .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))
-                        .set(Key.NUM, 1)
-                        ;
                 addSession(item);
             }
             else if(plugin.equals(Plugin.KEY_SESSION)){
@@ -278,17 +266,13 @@ public class MainActivity extends AcBase {
                 List<Bean> newList = new ArrayList<>();
                 for(Bean data : list) {
                     User user = new User(data.get(Key.USER, new Bean()));
-    //会话列表=在线用户给自己发一个空消息
-                    Bean item = new Bean()
-                        .set(Key.ID, user.getId())
-                        .set(Key.NAME, user.getName().length()>0?user.getName():user.getId())
-                        .set(Key.TYPE, Key.TEXT)
-                        .set(Key.FROM, user)
-                        .set(Key.TO, NowUser.getId())
-                        .set(Key.TEXT, data.get(Key.KEY, ""))
-                        .set(Key.TIME, data.get(Key.TIME, ""))
-                        .set(Key.NUM, 1)
-                        ;
+                    String toId = user.getId();
+                    String toName = user.getName();
+                    String type = Key.TEXT;
+                    String time = data.get(Key.TIME, "");
+                    String text = "ip:" + data.get(Key.KEY, "");
+                    String num = "1";
+                    Bean item = SessionModel.save(sqlDao, NowUser.getId(), toId, toName, time, type, text, num);
                     newList.add(item);
                 }
                 addSession(newList);
@@ -312,10 +296,11 @@ public class MainActivity extends AcBase {
     .set(Key.NUM, 1)  //红点数
      */
     private void addSession(List<Bean> newList) {
+        if(newList.size() <= 0) return;
         listItemChat.clear();
-        listItemChat.add(dd );
+        listItemChat.add( SessionModel.getDd() );
         AndroidTools.listReplaceIndexAndAdd(0, listItemChat, newList, sessionCompare);
-        fragmentChat.notifyDataSetChanged();
+        fragmentSession.notifyDataSetChanged();
     }
     private void addSession(Bean item) {
         int i = AndroidTools.listIndex(listItemChat, item, sessionCompare);
@@ -324,10 +309,10 @@ public class MainActivity extends AcBase {
             listItemChat.remove(i);
         }
         listItemChat.add(0, item);
-        fragmentChat.notifyDataSetChanged();
+        fragmentSession.notifyDataSetChanged();
     }
 
-    //fragmentManager.beginTransaction().replace(R.id.main_fragment, fragmentChat).commit();
+    //fragmentManager.beginTransaction().replace(R.id.main_fragment, fragmentSession).commit();
     public void turnToFragment(FragmentBase fragment){
         if(fragment == fragmentNow) return;
 
