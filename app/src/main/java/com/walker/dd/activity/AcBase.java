@@ -169,7 +169,7 @@ public abstract class AcBase extends FragmentActivity implements View.OnClickLis
     /**
      *     handler异步刷新界面
      */
-    Handler handler = new Handler(){
+    protected Handler handler = new Handler(){
         public void handleMessage(Message msg) {
             Bundle b = msg.getData();
             String type = b.getString(Key.TYPE);

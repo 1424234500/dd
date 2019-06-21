@@ -107,14 +107,12 @@ public class FragmentMore extends FragmentBase {
     public void onClick(Bean bean){
         String text = bean.get(Key.TEXT, "");
         switch (text){
-            case "socket":
-                startActivity(new Intent(getActivity(), ActivityTestSocket.class));
+            case "文件":
+                AndroidTools.choseFile(getActivity(), "");
                 break;
-            case "compose":
-                startActivity(new Intent(getActivity(), ActivityCompose.class));
+            case "文档":
                 break;
-            case "autochat":
-                startActivity(new Intent(getActivity(), ActivityTestEcho.class));
+            case "音乐":
 
             default:
                 sendSocket("echo", bean);

@@ -149,38 +149,6 @@ public class AndroidTools {
         ac.startActivityForResult(it, code);
     }
 
-    /**
-     * Date 2017-5-7 下午6:15:52
-     * Desc: 选择文件调用
-     *
-     * @param ac
-     * @param code
-     */
-    public static void choseFile(Activity ac, int code) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("*/*");
-        ac.startActivityForResult(Intent.createChooser(intent, "选择文件"), code);
-    }
-
-    public static String uri2FilePath(final Context context, final Uri uri) {
-        if ("content".equalsIgnoreCase(uri.getScheme())) {
-            String[] projection = {"_data"};
-            Cursor cursor = null;
-            try {
-                cursor = context.getContentResolver().query(uri, projection, null, null, null);
-                int column_index = cursor.getColumnIndexOrThrow("_data");
-                if (cursor.moveToFirst()) {
-                    return cursor.getString(column_index);
-                }
-            } catch (Exception e) {
-                // Eat it  Or Log it.
-            }
-        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            return uri.getPath();
-        }
-        return null;
-    }
 
 
     public static Bitmap getCircleBitmap(Bitmap bitmap, int pixels) {
@@ -885,6 +853,51 @@ public class AndroidTools {
         }
         list.addAll(index, items);
         return list.size();
+    }
+
+
+
+
+
+    /**
+     * 拍照 ACTIVITY_RESULT_TAKEPHOTO 存入path
+     * @param ac
+     * @param path
+     */
+    public static  void takePhoto(Activity ac, String path ){
+        File temp = new File(path);
+        Uri imageFileUri = Uri.fromFile(temp);//获取文件的Uri
+        Intent it = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//跳转到相机Activity
+        it.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);//告诉相机拍摄完毕输出图片到指定的Uri
+        ac.startActivityForResult(it, Constant.ACTIVITY_RESULT_TAKEPHOTO);
+    }
+
+
+    /**
+     * 选择图片  ACTIVITY_RESULT_PATH
+     * @param ac
+     */
+    public static void chosePhoto(Activity ac){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        ac.startActivityForResult(Intent.createChooser(intent, "选择图片"), Constant.ACTIVITY_RESULT_PATH );
+    }
+
+    /**
+     * 选择文件 ACTIVITY_RESULT_PATH
+     *     //intent.setType(“image/*”);//选择图片
+     *     //intent.setType(“audio/*”); //选择音频
+     *     //intent.setType(“video/*”); //选择视频 （mp4 3gp 是android支持的视频格式）
+     *     //intent.setType(“video/*;image/*”);//同时选择视频和图片
+     * @param ac
+     * @param type 类型
+     */
+    public static void choseFile(Activity ac, String type){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(type.length() > 0 ? type : "*/*");
+        ac.startActivityForResult(Intent.createChooser(intent, "选择文件"), Constant.ACTIVITY_RESULT_PATH );
     }
 
 

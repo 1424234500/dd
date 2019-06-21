@@ -1,6 +1,7 @@
 package com.walker.dd.adapter;
 
 
+import java.io.File;
 import java.util.List;
 
 
@@ -13,10 +14,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.walker.common.util.Bean;
-import com.walker.common.util.TimeUtil;
+import com.walker.common.util.FileUtil;
 import com.walker.dd.R;
+import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.util.AndroidTools;
+import com.walker.dd.util.Constant;
 import com.walker.dd.util.EmotionUtils;
 import com.walker.socket.server_1.Key;
 import com.walker.dd.view.ImageText;
@@ -42,20 +45,21 @@ public   class AdapterLvChat extends  BaseAdapter      {
 //        public ImageView ivprofile;
 //        public TextView tvusername;
         public ImageText it;
+        public ImageView ivload;
+
         public TextView tvtime;
+        public TextView tvtext;
     }
     //文本
     private class ViewHolderText extends ViewHolder{
-        public TextView tvtext;
     }
     private final class ViewHolderTextSelf extends ViewHolderText{
     }
     private final class ViewHolderTextOther extends ViewHolderText{
     }
 
-    private class ViewHolderFile  extends ViewHolder{
-        public TextView tvdown;
-        public TextView tvtext;
+    private class ViewHolderFile  extends ViewHolderText{
+        public ImageView ivfile;
     }
     private final class ViewHolderFileSelf  extends ViewHolderFile{
     }
@@ -83,17 +87,15 @@ public   class AdapterLvChat extends  BaseAdapter      {
 
     //布局类型 0开始
     final int TYPE_TEXT = 0;	//自己发的文本
-    final int TYPE_FILE = 2;	//自己发的文件
-    final int TYPE_VOICE = 4;	//自己发的语音
-    final int TYPE_PHOTO = 6;	//自己发的图片
+    final int TYPE_FILE = 1;	//自己发的文件
+    final int TYPE_VOICE = 2;	//自己发的语音
+    final int TYPE_PHOTO = 3;	//自己发的图片
     Bean types = new Bean()
             .set(Key.TEXT, TYPE_TEXT)
-//            .set("voice_true", 2)
+            .set(Key.FILE, TYPE_FILE)
 //            .set("voice_false", 3)
 //            .set("voice_true", 4)
 //            .set("voice_flase", 5)
-//            .set("file_true", 6)
-//            .set("file_false", 7)
             ;
 
     @Override
@@ -110,10 +112,16 @@ public   class AdapterLvChat extends  BaseAdapter      {
             case TYPE_TEXT:
                 ViewHolderText viewHolderText = new ViewHolderText();
                 convertView = layoutInflater.inflate(ifSelf ? R.layout.chat_item_text_right : R.layout.chat_item_text_left, null);	// 获取list_item布局文件的视图
-                viewHolderText.tvtext = (TextView) convertView .findViewById(R.id.tvtext);
 
                 convertView.setTag(viewHolderText);// 设置控件集到convertView
             break;
+            case TYPE_FILE:
+                ViewHolderFile viewHolderFile = new ViewHolderFile();
+                convertView = layoutInflater.inflate(ifSelf ? R.layout.chat_item_file_right : R.layout.chat_item_file_left, null);	// 获取list_item布局文件的视图
+                viewHolderFile.ivfile = (ImageView) convertView .findViewById(R.id.ivfile);
+
+                convertView.setTag(viewHolderFile);// 设置控件集到convertView
+                break;
             default:
                 AndroidTools.log("未明确的类型适配????");
             }
@@ -122,7 +130,10 @@ public   class AdapterLvChat extends  BaseAdapter      {
 //            viewHolder.ivprofile = (ImageView) convertView .findViewById(R.id.ivprofile);
 //            viewHolder.tvusername = (TextView) convertView .findViewById(R.id.tvusername);
             viewHolder.it = (ImageText) convertView .findViewById(R.id.it);
+            viewHolder.ivload = (ImageView) convertView .findViewById(R.id.ivload);
             viewHolder.tvtime = (TextView) convertView .findViewById(R.id.tvtime);
+            viewHolder.tvtext = (TextView) convertView .findViewById(R.id.tvtext);
+
 
         }
 
@@ -131,6 +142,7 @@ public   class AdapterLvChat extends  BaseAdapter      {
 
         /**
          .set(Key.ID, msgid)
+         .set(Key.STA, Key.STA_LOADING)
          .set(Key.TYPE, Key.TEXT)
          .set(Key.FROM, NowUser.getUser())
          .set(Key.TO, toid)
@@ -141,21 +153,47 @@ public   class AdapterLvChat extends  BaseAdapter      {
         //共用属性设置
         viewHolder.tvtime.setText( bean.get(Key.TIME, Key.TIME)) ;
 //        NetImage.loadProfile(context, MapListUtil.getList(listItems, position, "PROFILEPATH").toString(), viewHolderTextSelf.ivprofile);
-//        viewHolder.tvusername.setText( data.get("USERNAME", "username")) ;
         viewHolder.it.setText(user.getName(), R.color.black, R.color.blue);
+        viewHolder.tvtext.setText(
+                EmotionUtils.getEmotionContent(context,
+                        viewHolder.tvtext, bean.get(Key.TEXT, "")));
+        String sta = bean.get(Key.STA, Key.STA_FALSE);
+
         //私有属性设置
         switch (type){
             case TYPE_TEXT:
                 ViewHolderText viewHolderText = (ViewHolderText) viewHolder;
-                viewHolderText.tvtext.setText(
-                        EmotionUtils.getEmotionContent(context,
-                                viewHolderText.tvtext, bean.get(Key.TEXT, "")));
+                break;
+            case TYPE_FILE:
+                ViewHolderFile viewHolderFile = (ViewHolderFile) viewHolder;
+                String path = bean.get(Key.TEXT, "");
+                switch (sta){
+                    case Key.STA_TRUE:
+                        if(new File(path).exists()){
+                            int resid = Constant.getFileImageByType(FileUtil.getFileType(path));
+                            viewHolderFile.ivfile.setImageResource(resid);
+                        }else{
+                            bean.set(Key.STA, Key.STA_FALSE);
+                        }
+                        break;
+                }
+
                 break;
             default:
                 AndroidTools.log("未明确的类型适配????");
         }
 
-
+        viewHolder.ivload.setVisibility(View.VISIBLE);
+        switch (sta){
+            case Key.STA_LOADING:
+                viewHolder.ivload.setImageResource(R.drawable.ccd);
+                break;
+            case Key.STA_FALSE:
+                viewHolder.ivload.setImageResource(R.drawable.cc);
+                break;
+            default:
+                viewHolder.ivload.setVisibility(View.INVISIBLE);
+        }
         return convertView;
     }
 

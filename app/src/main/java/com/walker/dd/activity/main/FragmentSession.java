@@ -104,7 +104,7 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Bean bean = listItems.get(position);
         AndroidTools.toast(getActivity(), "click " + bean.toString());
-        sendSocket("echo", bean);
+//        sendSocket("echo", bean);
         bean.set(Key.NUM, 0);
         notifyDataSetChanged();
         Intent intent = new Intent(getActivity(), ActivityChat.class);

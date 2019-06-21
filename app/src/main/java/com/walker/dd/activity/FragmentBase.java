@@ -39,4 +39,7 @@ public abstract class FragmentBase extends Fragment {
     public void sendSocket(String plugin, Bean data){
         ((AcBase)getActivity()).sendSocket(plugin, data);
     }
+
+
+
 }

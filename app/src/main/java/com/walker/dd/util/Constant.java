@@ -2,6 +2,7 @@ package com.walker.dd.util;
 
 import android.os.Environment;
 
+import com.walker.common.util.FileUtil;
 import com.walker.dd.R;
 
 public class Constant {
@@ -9,95 +10,8 @@ public class Constant {
     public static final String BROAD_KEY = "msg";
     public static final int[] SRLColors = {android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_green_light};
     public static final int NUM = 15;   //分页参数
-    //public static String serverIp = "10.18.176.187";//校园网
-	//public static String serverIp = "192.168.253.1";	//本机360wifi作废了
 
 
-	public static int serverPort = 8092;
-	public static String serverIpNet = "192.168.1.6";	//服务器
-	public static String serverIpLocal = "192.168.191.1";	//本机
-
-	public static String[] serverIps = {"39.107.26.100", "192.168.1.6", "192.168.191.1"};
-
-	public static String serverIp = serverIpLocal;
-
-
-
-
-
-	public static String systemKey = "";	//系统key
-	public static String systemId = "";
-	public static String systemPwd = "";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//public static String http = serverIp + ":8080/cc/";
-	//public static String httpUpload = "http://"+serverIp + ":8080/cc/UploadFile"; //服务器http上传地址
-	public static String httpUpload(){
-		return "http://"+serverIp + ":8080/cc/UploadFile"; //服务器http上传地址
-	}
-	
-	//http://10.18.176.187:8080/cc/Dispatch?type=photo&id=
-	public static String profileHttp(){
-		return "http://" + serverIp + ":8080/cc/Dispatch?type=profile&id=";
-	}
-	 
-	public static String profileWallHttp(){
-		return "http://" + serverIp + ":8080/cc/Dispatch?type=profilewall&id=";
-	}
-	 
-//	public static final String profileHttp = "http://" + serverIp + ":8080/cc/Dispatch?type=profile&id=";
-//	public static final String profileHttpDefault = "http://" + serverIp + ":8080/cc/Dispatch?type=profile&id=000";
-//	public static final String profileWallHttp = "http://" + serverIp + ":8080/cc/Dispatch?type=profilewall&id=";
-//	public static final String profileWallHttpDefault = "http://" + serverIp + ":8080/cc/Dispatch?type=profilewall&id=000";
-	
-	
-	//上传type=uploadphoto、
-	//图片访问type=profile、profilewall
-
-	//http://10.18.176.187:8080/cc/profile/yls1.png服务器图片访问方式，个人信息访问权限问题？
-	//头像可以随意访问，但是聊天图片呢？http访问图片限制验证密码or key？
-
- 
-		
-
-      
-    //Fragment的标识  
-    public static final String FRAGMENT_FLAG_MESSAGE = "消息";   
-    public static final String FRAGMENT_FLAG_CONTACTS = "联系人";   
-    public static final String FRAGMENT_FLAG_NEWS = "新闻";   
-    public static final String FRAGMENT_FLAG_SETTING = "设置";   
-    public static final String FRAGMENT_FLAG_SIMPLE = "simple";
-    
-    //重连时间
-    public static final long ReconnectTime = 3000;
-    
-    
     //本地文件存储路径
 // /storage/emulated/0/mycc/record/100-1493005573881.amr 
 //    public static final String root = Environment.getExternalStorageDirectory() + "/mydd/";
@@ -109,40 +23,27 @@ public class Constant {
 	public static final String dirProfile = root +  "profile/";  
 	public static final String dirProfileWall = root +  "profilewall/";
 
-    public static String TAKEPHOTO = "";  //拍照临时文件路径
-
-    public static int ACTIVITY_RESULT_PHOTP = 1;
-    public static int ACTIVITY_RESULT_CAMERA = 2;
-    public static int ACTIVITY_RESULT_FILE = 3;
-
-
     public static  int tvSendSize = 0;
 
 	public static final String split = "OTOTO";
 
 	protected static final int maxChatNum = 32;//最多聊天界面记录
-	
 
 
 
 
-	
-	
-	
-	
-	//暂存用户数据
-	public static String username = "Walker";
-	public static String id = "100";
-	public static String pwd = "";
-	public static String profilepath = "";
-	public static String profilepathwall = "";
-	public static String sign = "";
-	public static String email = "";
-	public static String sex = "";
-	public static String loginstaus = "";
-	public static boolean iflogin = false;
-	//doll
-	public static int ivdoll = 0;
+    public static String TAKEPHOTO = "";  //拍照临时文件路径
+
+    /**
+     * 头像选择,剪切,文件选择
+     */
+    public static final int ACTIVITY_RESULT_PROFILEWALL = 0;
+    public static final int ACTIVITY_RESULT_PROFILE = 1;
+    public static final int ACTIVITY_RESULT_PROFILEWALL_CUT = 2;
+    public static final int ACTIVITY_RESULT_PROFILE_CUT = 3;
+    public static final int ACTIVITY_RESULT_PATH = 4;		//文件路径 图片/文件选取
+    public static final int ACTIVITY_RESULT_FILE = 5;		//文件选取
+    public static final int ACTIVITY_RESULT_TAKEPHOTO = 6;	//拍照
 
 	
 	//聊天图片加载最大高度
@@ -157,12 +58,14 @@ public class Constant {
 	
 	//emoji表情大小
 	public static int emojiWH = 80;
-	
-	
 
-	// 通过id得到映射的图片 资源
-	public static int getDrawableByTypeFile(String type) {
+
+    /**
+     * 通过文件后缀或者文件名获取文件图标
+     */
+	public static int getFileImageByType(String type) {
 		type = type.toLowerCase();
+		type = FileUtil.getFileType(type);
 		int id = R.drawable.icon_filetype_unkonwn;
 		if(type.equals("apk")){
 			id = R.drawable.icon_filetype_apk;

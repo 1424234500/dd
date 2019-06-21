@@ -1,90 +1,85 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ll_item_msg"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/ll_item_msg"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:orientation="vertical"
+android:padding="1dp" >
+
+<LinearLayout
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="1dp">
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tvtime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="5dp"
+        android:text="2016/5/9"
+        android:textColor="@color/qqlittleblack"
+        android:textSize="12sp" />
+
+</LinearLayout>
+
+
+<LinearLayout
+    android:id="@+id/linearlayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="bottom|right"
+    android:orientation="horizontal"
+    android:paddingLeft="40dp">
+
+    <ImageView
+        android:id="@+id/ivload"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:baselineAlignBottom="true"
+        android:src="@drawable/ccd" />
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tvtime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="5dp"
-            android:text="2016/5/9"
-            android:textColor="@color/qqlittleblack"
-            android:textSize="12sp" />
-
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:paddingRight="10dp">
+        android:layout_weight="1"
+        android:background="@drawable/selector_chatto_bg"
+        android:clickable="true"
+        android:focusable="true">
 
         <ImageView
-            android:id="@+id/ivprofile"
+            android:id="@+id/ivfile"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="2dp"
-            android:focusable="false"
+            android:layout_gravity="center_vertical"
             android:scaleType="centerCrop"
-            android:src="@drawable/girl" />
+            android:src="@drawable/icon_filetype_zip" />
 
         <TextView
-            android:id="@+id/tvusername"
+            android:id="@+id/tvtext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/ivprofile"
-            android:layout_alignParentRight="true"
-            android:layout_toRightOf="@id/linearlayout"
-            android:gravity="center"
-            android:singleLine="true"
-            android:text="ss"
-            android:textColor="#818181" />
-
-        <LinearLayout
-            android:id="@+id/linearlayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/ivprofile"
-            android:layout_toLeftOf="@+id/ivprofile"
-            android:background="@drawable/selector_chatto_bg"
             android:clickable="true"
+            android:enabled="true"
             android:focusable="true"
-            android:minHeight="40dp">
+            android:gravity="left|center"
+            android:longClickable="true"
+            android:minHeight="30dp"
+            android:text="lkmasfladlkfjalkdfjalskdjfaklsdjfaksldjflkasdfj"
+            android:textColor="@color/white"
+            android:textIsSelectable="true"
+            android:textSize="14dp" />
+    </LinearLayout>
 
-            <ImageView
-                android:id="@+id/ivvoice"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_filetype_zip" />
 
-            <TextView
-                android:id="@+id/tvtext"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="left|center"
-                android:minHeight="40dp"
-                android:text="文件名"
-                android:textColor="@color/white"
-                android:textSize="17dp" />
-        </LinearLayout>
+    <com.walker.dd.view.ImageText
+        android:id="@+id/it"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="6dp" />
+</LinearLayout>
 
-    </RelativeLayout>
+
 
 </LinearLayout>

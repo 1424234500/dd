@@ -31,9 +31,8 @@ import com.walker.dd.activity.AcBase;
 import com.walker.dd.adapter.AdapterLvIds;
 import com.walker.dd.service.LoginModel;
 import com.walker.dd.service.NowUser;
-import com.walker.dd.service.SocketModel;
+import com.walker.dd.service.NetModel;
 import com.walker.dd.util.AndroidTools;
-import com.walker.dd.util.Constant;
 import com.walker.dd.view.ClearEditText;
 import com.walker.socket.server_1.Key;
 import com.walker.socket.server_1.Msg;
@@ -94,13 +93,13 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 			@Override
 			public boolean onLongClick(View arg0) {
 				final EditText inputServer = new EditText(ActivityLogin.this);
-				inputServer.setText(SocketModel.getServerIp());
+				inputServer.setText(NetModel.getServerIp());
 		        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityLogin.this);
 		        builder.setTitle("设置服务器IP").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer)  .setNegativeButton("Cancel", null);
 		        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 		            public void onClick(DialogInterface dialog, int which) {
 		            	String ip = inputServer.getText().toString();
-		            	SocketModel.setServerIp(ip);
+		            	NetModel.setServerIp(ip);
                         getApp().initSocket();
 		             }
 		        });
@@ -121,7 +120,7 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 		cetId.setText(id);
 		cetPwd.setText(pwd);
 
-		if(! SocketModel.isConn())
+		if(! NetModel.isConn())
 		loadingStart();//加载等待socket连接
 	}
 
@@ -347,14 +346,14 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
         if(plugin.equals(Key.SOCKET)) {
             loadingStop();
             if(status == 0){
-                toast("网络连接成功 " + SocketModel.getServerIp() + " " + SocketModel.getServerPort());
+                toast("网络连接成功 " + NetModel.getServerIp() + " " + NetModel.getServerPort());
                 if(NowUser.isAutoLogin()){
                     ClickLogin();
                 }
-                SocketModel.setConn(true);
+                NetModel.setConn(true);
             }else{
-                SocketModel.setConn(false);
-                toast("网络连接失败 " + SocketModel.getServerIp() + " " + SocketModel.getServerPort());
+                NetModel.setConn(false);
+                toast("网络连接失败 " + NetModel.getServerIp() + " " + NetModel.getServerPort());
             }
         }else if(plugin.equals(Plugin.KEY_LOGIN)){
             loadingStop();

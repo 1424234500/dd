@@ -15,8 +15,10 @@ import android.widget.TextView;
 import com.walker.common.util.Tools;
 import com.walker.dd.R;
 import com.walker.dd.activity.FragmentBase;
+import com.walker.dd.service.NowUser;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.AudioRecoderUtils;
+import com.walker.dd.util.Constant;
 import com.walker.dd.util.MyFile;
 import com.walker.dd.util.MyMediaPlayer;
 
@@ -99,7 +101,10 @@ public class FragmentVoice extends FragmentBase implements View.OnTouchListener 
 
                         //AndroidTools.systemVoiceToast(context);
                         //开始录音
-                        mAudioRecoderUtils.startRecord();
+
+                        // /sdcard/mycc/record/100-101020120120120.amr
+                        String filePath = Constant.dirVoice + NowUser.getId() + "-" + System.currentTimeMillis() + ".amr" ;
+                        mAudioRecoderUtils.startRecord(filePath);
                     }
                 }
                 break;

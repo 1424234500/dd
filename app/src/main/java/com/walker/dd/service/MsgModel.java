@@ -23,6 +23,7 @@ public class MsgModel extends Model{
     public final static String MSG = "MSG";
     public final static String SQL_MSG = "create table if not exists MSG (" +
             "USER_ID varchar(30), " +
+            "STA varchar(30), " +
             "SESSION_ID varchar(200), MSG_ID varchar(30) primary key, TYPE varchar(30), " +
             "FROM_ID varchar(200), FROM_NAME varchar(200), " +
             "TO_ID varchar(200), TIME varchar(30), TEXT varchar(2000), FILE varchar(600) ) ";
@@ -36,6 +37,12 @@ public class MsgModel extends Model{
         Bean data = msg.getData();
         String msgId = data.get(Key.ID, Key.ID);
         String msgType = data.get(Key.TYPE, Key.TEXT);
+
+
+        //聊天时收到消息 文本不涉及下载  文件类涉及下载
+        String sta = msgType.equals(Key.TEXT)? Key.STA_TRUE : data.get(Key.STA, Key.STA_DEF);
+
+
         User fromUser = msg.getUserFrom();
         String fromUserId = fromUser.getId();
         String fromUserName = fromUser.getName();
@@ -44,12 +51,12 @@ public class MsgModel extends Model{
         String text = data.get(Key.TEXT, "");
         String file = data.get(Key.FILE, "");
 
-        String sessionId = toUserId.equals(NowUser.getId()) ? fromUserId : toUserId;
+        String sessionId = toUserId.equals(nowUserId) ? fromUserId : toUserId;
 
         int count = -1;
         Map<String, Object> getmap = dao.findOne("select * from " + MSG + " where MSG_ID=? and USER_ID=? ",  msgId, nowUserId);
         if(getmap == null){
-            count = dao.executeSql("insert into " + MSG + " values(?,?,?,?,?,?,?,?,?,?) ",nowUserId,sessionId,msgId, msgType, fromUserId, fromUserName, toUserId, time, text, file);
+            count = dao.executeSql("insert into " + MSG + " values(?,?,?,?,?,?,?,?,?,?,?) ",nowUserId,sta,sessionId,msgId, msgType, fromUserId, fromUserName, toUserId, time, text, file);
         }else{
             Bean get = new Bean(getmap);
 
@@ -57,7 +64,8 @@ public class MsgModel extends Model{
 //                    "FROM_ID varchar(200), FROM_NAME varchar(200), " +
 //                    "TO_ID varchar(200), TIME varchar(30), TEXT varchar(2000), FILE varchar(600) ) ";
 
-            sessionId = nvl(sessionId, get.get("SESSION_ID"));
+            sta = nvl(sta, get.get("STA", ""));
+            sessionId = nvl(sessionId, get.get("SESSION_ID", ""));
             msgId = nvl(msgId, get.get("MSG_ID", ""));
             msgType = nvl(msgType, get.get("TYPE", ""));
             fromUserId = nvl(fromUserId, get.get("FROM_ID", ""));
@@ -67,13 +75,14 @@ public class MsgModel extends Model{
             text = nvl(text, get.get("TEXT", ""));
             file = nvl(file, get.get("FILE", ""));
 
-            count = dao.executeSql("update " + MSG + " set USER_ID=?,SESSION_ID=?,MSG_ID=?,TYPE=?,FROM_ID=?,FROM_NAME=?,TO_ID=?,TIME=?,TEXT=?,FILE=? where ID=? and USER_ID=? ",
-                    nowUserId,sessionId,msgId,msgType,fromUserId,fromUserName,toUserId,time,text,file, msgId, nowUserId);
+            count = dao.executeSql("update " + MSG + " set USER_ID=?,STA=?,SESSION_ID=?,MSG_ID=?,TYPE=?,FROM_ID=?,FROM_NAME=?,TO_ID=?,TIME=?,TEXT=?,FILE=? where MSG_ID=? and USER_ID=? ",
+                    nowUserId,sta,sessionId,msgId,msgType,fromUserId,fromUserName,toUserId,time,text,file, msgId, nowUserId);
         }
 
 
         Bean bean = new Bean()
                 .set(Key.ID, msgId)
+                .set(Key.STA, sta)
                 .set(Key.TYPE, msgType)
                 .set(Key.FROM, fromUser)
                 .set(Key.TO, toUserId)
@@ -99,7 +108,8 @@ public class MsgModel extends Model{
 
             Bean bean = new Bean(list.get(i));
 //            String sessionId = bean.get("SESSION_ID", "");
-            String msgId = bean.get("ID", "");
+            String sta = bean.get("STA", "");
+            String msgId = bean.get("MSG_ID", "");
             String msgType = bean.get("TYPE", Key.TEXT);
             User fromUser = new User();
             fromUser.setId(bean.get("FROM_ID", ""));
@@ -110,6 +120,7 @@ public class MsgModel extends Model{
             String file = bean.get("FILE", "");
             Bean item = new Bean()
                     .set(Key.ID, msgId)
+                    .set(Key.STA, sta)
                     .set(Key.TYPE, msgType)
                     .set(Key.FROM, fromUser)
                     .set(Key.TO, toUserId)

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
-import android.widget.Toast;
 
 import com.walker.common.util.Bean;
 import com.walker.core.database.BaseDao;
@@ -15,7 +14,7 @@ import com.walker.dd.service.LoginModel;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.SessionModel;
-import com.walker.dd.service.SocketModel;
+import com.walker.dd.service.NetModel;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.socket.client.Client;
@@ -23,7 +22,6 @@ import com.walker.socket.client.ClientNetty;
 import com.walker.socket.client.OnSocket;
 import com.walker.socket.server_1.Key;
 import com.walker.socket.server_1.Msg;
-import com.walker.socket.server_1.plugin.Plugin;
 
 import java.io.File;
 
@@ -43,8 +41,8 @@ public class Application extends android.app.Application implements OnSocket {
         @Override
         protected Void doInBackground(Void... arg0) {
             try {
-                String ip = SocketModel.getServerIp();
-                int port = SocketModel.getServerPort();
+                String ip = NetModel.getServerIp();
+                int port = NetModel.getServerPort();
 
                 client = new ClientNetty(ip, port);
                 client.setOnSocket(Application.this);
@@ -129,6 +127,7 @@ public class Application extends android.app.Application implements OnSocket {
         AndroidTools.log("App.oncreate");
         //逻辑处理，若没有登陆账号则跳转到 登陆界面
     }
+
     public void initSocket(){
         taskInitSocket.execute();
     }

@@ -1,17 +1,19 @@
 package com.walker.dd.activity.main;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.walker.common.util.Bean;
-import com.walker.common.util.TimeUtil;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
 import com.walker.dd.activity.FragmentBase;
@@ -19,7 +21,7 @@ import com.walker.dd.service.LoginModel;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.SessionModel;
-import com.walker.dd.service.SocketModel;
+import com.walker.dd.service.NetModel;
 import com.walker.dd.util.AndroidTools;
 import com.walker.socket.server_1.Key;
 import com.walker.dd.view.NavigationBar;
@@ -164,7 +166,29 @@ public class MainActivity extends AcBase {
             addSession(SessionModel.finds(sqlDao, NowUser.getId(), 10));
 //            sendSocket(Plugin.KEY_SESSION, new Bean());
         }
+
+        checkPermission();
     }
+
+
+    private void checkPermission() {
+        //检查权限（NEED_PERMISSION）是否被授权 PackageManager.PERMISSION_GRANTED表示同意授权
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            //用户已经拒绝过一次，再次弹出权限申请对话框需要给用户一个解释
+            if (shouldShowRequestPermissionRationale(Manifest.permission
+                    .WRITE_EXTERNAL_STORAGE)) {
+                AndroidTools.toast(this, "请开通相关权限，否则无法正常使用本应用！");
+            }
+            //申请权限
+            requestPermissions( new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+
+        } else {
+            Toast.makeText(this, "授权成功！", Toast.LENGTH_SHORT).show();
+            AndroidTools.log( "checkPermission: 已经授权！");
+        }
+    }
+
     public void goLogin(){
         startActivity(new Intent(this, ActivityLogin.class));
         this.finish();
@@ -209,11 +233,11 @@ public class MainActivity extends AcBase {
             if(plugin.equals(Key.SOCKET)) {
                 loadingStop();
                 if(status == 0){
-                    toast("网络连接成功 " + SocketModel.getServerIp() + " " + SocketModel.getServerPort());
-                    SocketModel.setConn(true);
+                    toast("网络连接成功 " + NetModel.getServerIp() + " " + NetModel.getServerPort());
+                    NetModel.setConn(true);
                 }else{
-                    SocketModel.setConn(false);
-                    toast("网络连接失败 " + SocketModel.getServerIp() + " " + SocketModel.getServerPort());
+                    NetModel.setConn(false);
+                    toast("网络连接失败 " + NetModel.getServerIp() + " " + NetModel.getServerPort());
                 }
             }else if(plugin.equals(Plugin.KEY_LOGIN)){
                 if(status == 0) {

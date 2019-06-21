@@ -15,8 +15,6 @@ public class AudioRecoderUtils {
 
     //文件路径
     private String filePath;
-    //文件夹路径
-    private String FolderPath;
 
     private MediaRecorder mMediaRecorder;
     private final String TAG = "record";
@@ -28,19 +26,8 @@ public class AudioRecoderUtils {
      * 文件存储默认sdcard/record/xxx.amr
      */
     public AudioRecoderUtils(){
-
-        //默认保存路径为/sdcard/mycc/record/下            // /sdcard/mycc/record/100-101020120120120.amr
-        this(Constant.dirVoice);
     }
 
-    public AudioRecoderUtils(String filePath) {
-
-        File path = new File(filePath);
-        if(!path.exists())
-            path.mkdirs();
-
-        this.FolderPath = filePath;
-    }
 
     private long startTime;
     private long endTime;
@@ -52,7 +39,8 @@ public class AudioRecoderUtils {
      *      录音文件
      * @return
      */
-    public void startRecord() {
+    public void startRecord(String path) {
+        this.filePath = path;
         // 开始录音
         /* ①Initial：实例化MediaRecorder对象 */
         if (mMediaRecorder == null)
@@ -67,8 +55,6 @@ public class AudioRecoderUtils {
              * ，H263视频/ARM音频编码)、MPEG-4、RAW_AMR(只支持音频且音频编码要求为AMR_NB)
              */
             mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            // /sdcard/mycc/record/100-101020120120120.amr
-            filePath = FolderPath + Constant.id + "-" + System.currentTimeMillis() + ".amr" ;
             /* ③准备 */
             mMediaRecorder.setOutputFile(filePath);
             mMediaRecorder.setMaxDuration(MAX_LENGTH);

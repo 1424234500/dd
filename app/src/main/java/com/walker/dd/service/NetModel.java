@@ -2,15 +2,17 @@ package com.walker.dd.service;
 
 import com.walker.dd.util.MySP;
 
-public class SocketModel {
-    public static String ip = "39.106.111.11";
+public class NetModel {
+//    public static String ip = "39.106.111.11";
+    public static String ip = "192.168.43.245";
+
     public static int port = 8093;
     public static boolean conn = false;
     public static boolean isConn(){
         return conn;
     }
     public static void setConn(Boolean conn){
-        SocketModel.conn = conn;
+        NetModel.conn = conn;
     }
 
     public static String getServerIp(){
@@ -28,5 +30,14 @@ public class SocketModel {
         MySP.put(NowUser.context, "PORT", port + "");
     }
 
+
+
+    /**
+     * //服务器http上传地址"/walker-web/file/uploadCmf.do";
+     * @return
+     */
+    public static String httpUpload(){
+        return "http://"+NetModel.getServerIp() + ":" + NetModel.getServerPort() + "/walker-web/file/uploadCmf.do";
+    }
 
 }
