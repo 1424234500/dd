@@ -14,8 +14,8 @@ public class Constant {
 
     //本地文件存储路径
 // /storage/emulated/0/mycc/record/100-1493005573881.amr 
-//    public static final String root = Environment.getExternalStorageDirectory() + "/mydd/";
-    public static final String root = Environment.getDataDirectory() + "/mydd/";
+    public static final String root = Environment.getExternalStorageDirectory() + "/mydd/";
+//    public static final String root = Environment.getDataDirectory() + "/mydd/";
 	public static final String dirVoice = root + "record/";
 	public static final String dirPhoto =  root + "photo/";  
 	public static final String dirFile =  root + "file/";  
@@ -23,7 +23,9 @@ public class Constant {
 	public static final String dirProfile = root +  "profile/";  
 	public static final String dirProfileWall = root +  "profilewall/";
 
-    public static  int tvSendSize = 0;
+    public static final String makeFilePathByKey(String key){
+        return dirFile + key;
+    }
 
 	public static final String split = "OTOTO";
 

@@ -41,8 +41,8 @@ public class Application extends android.app.Application implements OnSocket {
         @Override
         protected Void doInBackground(Void... arg0) {
             try {
-                String ip = NetModel.getServerIp();
-                int port = NetModel.getServerPort();
+                String ip = NetModel.getServerSocketIp();
+                int port = NetModel.getServerSocketPort();
 
                 client = new ClientNetty(ip, port);
                 client.setOnSocket(Application.this);
@@ -149,7 +149,7 @@ public class Application extends android.app.Application implements OnSocket {
 //		public static final String dirCamera = root +  "camera/";
 //		public static final String dirProfile = root +  "profile/";
 //		public static final String dirProfileWall = root +  "profilewall/";
-        String dirs[] =  {Constant.dirVoice, Constant.dirPhoto, Constant.dirFile,
+        String dirs[] =  {Constant.root, Constant.dirVoice, Constant.dirPhoto, Constant.dirFile,
                 Constant.dirCamera, Constant.dirProfile, Constant.dirProfileWall  };
         for(String str: dirs){
             File file = new File(str);

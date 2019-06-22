@@ -21,14 +21,14 @@ public class SessionModel extends Model{
      * 消息体存储查询
      */
     public final static String SESSION = "SESSION";
-    public final static String SQL_SESSION = "create table if not exists SESSION (" +
+    public final static String SQL_SESSION = "create table if not exists " + SESSION + " (" +
             "USER_ID varchar(30), " +       //当前用户
             "TO_ID varchar(200), " +        //会话目标 user/group
             "TIME varchar(30), " +          //最新消息时间
             "TYPE varchar(30), " +          //最新消息类型
-            "TEXT varchar(2000) " +         //会话显示文本    !
-            "NUM varchar(10) " +            //会话显示红点    !
-            "TO_NAME varchar(200), " +      //目标名字       ！
+            "TEXT varchar(2000), " +         //会话显示文本    !
+            "NUM varchar(10), " +            //会话显示红点    !
+            "TO_NAME varchar(200) " +      //目标名字       ！
             ") ";
     /**
      * 存储

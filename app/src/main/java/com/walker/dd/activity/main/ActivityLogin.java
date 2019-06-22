@@ -93,13 +93,13 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 			@Override
 			public boolean onLongClick(View arg0) {
 				final EditText inputServer = new EditText(ActivityLogin.this);
-				inputServer.setText(NetModel.getServerIp());
+				inputServer.setText(NetModel.getServerSocketIp());
 		        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityLogin.this);
 		        builder.setTitle("设置服务器IP").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer)  .setNegativeButton("Cancel", null);
 		        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 		            public void onClick(DialogInterface dialog, int which) {
 		            	String ip = inputServer.getText().toString();
-		            	NetModel.setServerIp(ip);
+		            	NetModel.setServerSocketIp(ip);
                         getApp().initSocket();
 		             }
 		        });
@@ -346,14 +346,14 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
         if(plugin.equals(Key.SOCKET)) {
             loadingStop();
             if(status == 0){
-                toast("网络连接成功 " + NetModel.getServerIp() + " " + NetModel.getServerPort());
+                toast("网络连接成功 " + NetModel.getServerSocketIp() + " " + NetModel.getServerSocketPort());
                 if(NowUser.isAutoLogin()){
                     ClickLogin();
                 }
                 NetModel.setConn(true);
             }else{
                 NetModel.setConn(false);
-                toast("网络连接失败 " + NetModel.getServerIp() + " " + NetModel.getServerPort());
+                toast("网络连接失败 " + NetModel.getServerSocketIp() + " " + NetModel.getServerSocketPort());
             }
         }else if(plugin.equals(Plugin.KEY_LOGIN)){
             loadingStop();

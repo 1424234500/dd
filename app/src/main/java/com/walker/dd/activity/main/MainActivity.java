@@ -44,7 +44,7 @@ public class MainActivity extends AcBase {
     TextView mTextMessage;
 
     FragmentBase fragmentSession;
-    List<Bean> listItemChat = new ArrayList<>();
+    List<Bean> listItemSession = new ArrayList<>();
     Comparator<Bean> sessionCompare = new Comparator<Bean>() {
         @Override
         public int compare(Bean o1, Bean o2) {
@@ -139,7 +139,7 @@ public class MainActivity extends AcBase {
 
 
         fragmentSession = new FragmentSession();
-        fragmentSession.setData(listItemChat);
+        fragmentSession.setData(listItemSession);
         fragmentContact = new FragmentContact();
         fragmentOther = new FragmentOther();
         fragmentOther.setData(listItemOther);
@@ -173,11 +173,9 @@ public class MainActivity extends AcBase {
 
     private void checkPermission() {
         //检查权限（NEED_PERMISSION）是否被授权 PackageManager.PERMISSION_GRANTED表示同意授权
-        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             //用户已经拒绝过一次，再次弹出权限申请对话框需要给用户一个解释
-            if (shouldShowRequestPermissionRationale(Manifest.permission
-                    .WRITE_EXTERNAL_STORAGE)) {
+            if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 AndroidTools.toast(this, "请开通相关权限，否则无法正常使用本应用！");
             }
             //申请权限
@@ -233,11 +231,11 @@ public class MainActivity extends AcBase {
             if(plugin.equals(Key.SOCKET)) {
                 loadingStop();
                 if(status == 0){
-                    toast("网络连接成功 " + NetModel.getServerIp() + " " + NetModel.getServerPort());
+                    toast("网络连接成功 " + NetModel.getServerSocketIp() + " " + NetModel.getServerSocketPort());
                     NetModel.setConn(true);
                 }else{
                     NetModel.setConn(false);
-                    toast("网络连接失败 " + NetModel.getServerIp() + " " + NetModel.getServerPort());
+                    toast("网络连接失败 " + NetModel.getServerSocketIp() + " " + NetModel.getServerSocketPort());
                 }
             }else if(plugin.equals(Plugin.KEY_LOGIN)){
                 if(status == 0) {
@@ -294,7 +292,7 @@ public class MainActivity extends AcBase {
                     String toName = user.getName();
                     String type = Key.TEXT;
                     String time = data.get(Key.TIME, "");
-                    String text = "ip:" + data.get(Key.KEY, "");
+                    String text = "ipSocket:" + data.get(Key.KEY, "");
                     String num = "1";
                     Bean item = SessionModel.save(sqlDao, NowUser.getId(), toId, toName, time, type, text, num);
                     newList.add(item);
@@ -321,18 +319,18 @@ public class MainActivity extends AcBase {
      */
     private void addSession(List<Bean> newList) {
         if(newList.size() <= 0) return;
-        listItemChat.clear();
-        listItemChat.add( SessionModel.getDd() );
-        AndroidTools.listReplaceIndexAndAdd(0, listItemChat, newList, sessionCompare);
+        listItemSession.clear();
+        listItemSession.add( SessionModel.getDd() );
+        AndroidTools.listReplaceIndexAndAdd(0, listItemSession, newList, sessionCompare);
         fragmentSession.notifyDataSetChanged();
     }
     private void addSession(Bean item) {
-        int i = AndroidTools.listIndex(listItemChat, item, sessionCompare);
+        int i = AndroidTools.listIndex(listItemSession, item, sessionCompare);
         if(i >= 0){
-            item.set(Key.NUM, listItemChat.get(i).get(Key.NUM, 0) + 1);
-            listItemChat.remove(i);
+            item.set(Key.NUM, listItemSession.get(i).get(Key.NUM, 0) + 1);
+            listItemSession.remove(i);
         }
-        listItemChat.add(0, item);
+        listItemSession.add(0, item);
         fragmentSession.notifyDataSetChanged();
     }
 

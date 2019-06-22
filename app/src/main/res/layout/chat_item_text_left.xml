@@ -29,9 +29,9 @@
         android:id="@+id/linearlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="bottom|left"
-        android:orientation="horizontal"
-        android:layout_marginRight="40dp">
+        android:layout_marginRight="40dp"
+        android:gravity="top|left"
+        android:orientation="horizontal">
 
 
         <com.walker.dd.view.ImageText
@@ -58,20 +58,22 @@
                 android:gravity="left|center"
                 android:longClickable="true"
                 android:minHeight="30dp"
-                android:text="lakjsdflkajsdlfkjadfasdlfjalskdfjasdlkfjasdklfjalsdkfj"
+                android:text="123"
                 android:textColor="@color/black"
                 android:textIsSelectable="true"
                 android:textSize="14dp" />
+
+
         </LinearLayout>
 
 
         <ImageView
             android:id="@+id/ivload"
+            android:layout_marginTop="5dp"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:baselineAlignBottom="true"
             android:src="@drawable/ccd" />
-
     </LinearLayout>
 
 

@@ -30,6 +30,8 @@ import com.walker.dd.service.NowUser;
 import com.walker.dd.service.NetModel;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
+import com.walker.dd.util.MyFile;
+import com.walker.dd.util.OkHttpUtil;
 import com.walker.dd.util.UriUtil;
 import com.walker.dd.view.EmotionKeyboard;
 import com.walker.socket.server_1.Key;
@@ -316,7 +318,6 @@ public class ActivityChat extends AcBase {
 
         String toid = session.get(Key.ID, "");
         String plugin = msg.getType();
-
         if(!(msg.getUserFrom().getId().equals(toid)
                 || msg.getTo().equals(toid)))return;
 
@@ -447,6 +448,7 @@ public class ActivityChat extends AcBase {
         Bean bean = MsgModel.addMsg(sqlDao, msg);  //存储
         addMsg(bean);   //表现
         try {
+            data.set(Key.STA, "");  //不发给其他端
             sendSocket(Plugin.KEY_MESSAGE, toid, data); //发送socket
             //成功后 更新发送状态 发送失败异常跳出
             data.set(Key.STA, Key.STA_TRUE);
@@ -495,25 +497,19 @@ public class ActivityChat extends AcBase {
         File file = new File(path);
 
         RequestBody fileBody = RequestBody.create(MediaType.parse("image/png"), file);
-
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                //可以根据自己的接口需求在这里添加上传的参数
                 .addFormDataPart("file", name, fileBody)
-                .addFormDataPart("imagetype", type)
+                .addFormDataPart("path", path)
                 .build();
-
         Request request = new Request.Builder()
                 .url(url)
                 .post(requestBody)
                 .build();
 
+        OkHttpClient okHttpClient = OkHttpUtil.getClient();
 
-        final okhttp3.OkHttpClient.Builder httpBuilder = new OkHttpClient.Builder();
-        OkHttpClient okHttpClient = httpBuilder
-            .connectTimeout(4, TimeUnit.SECONDS)
-            .writeTimeout(7, TimeUnit.SECONDS)
-            .build();
+        log(url, path, requestBody, request, okHttpClient);
         okHttpClient.newCall(request).enqueue(new Callback() {
           @Override
           public void onFailure(Call call, IOException e) {
@@ -534,24 +530,28 @@ public class ActivityChat extends AcBase {
               final String res = response.body().string();
 //              sendHandler(Key.FILE + ":true", path);
               Bean resBean = JsonUtil.get(res);
-              toast("上传成功", res);
               final String key = resBean.get("data", "");
               handler.post(new Runnable() {
                   @Override
                   public void run() {
+                      log("上传成功", res);
+                      // 消息存储该路径文件path 若有则用 若无则按照规则下载
+                      data.set(Key.FILE, key);
                       try {
+                          data.set(Key.STA, "");    //不需要发送给其他端
                           sendSocket(Plugin.KEY_MESSAGE, toid, data); //发送socket
-
                           data.set(Key.STA, Key.STA_TRUE);
-                          Bean bean = MsgModel.addMsg(sqlDao, msg);  //存储
-                          addMsg(bean);   //表现
+                          // 把被发送文件复制到 下载路径作为下载到的文件
+                          String newPath = Constant.makeFilePathByKey(key);
+//                          FileUtil.cp(path, newPath);
+                          MyFile.copyFile(path, newPath);
                       }catch (Exception e){
                             e.printStackTrace();
                             toast("发送文件消息失败", key);
-                          data.set(Key.STA, Key.STA_FALSE);
-                          Bean bean = MsgModel.addMsg(sqlDao, msg);  //存储
-                          addMsg(bean);   //表现
+                            data.set(Key.STA, Key.STA_FALSE);
                       }
+                      Bean bean = MsgModel.addMsg(sqlDao, msg);  //存储
+                      addMsg(bean);   //表现
                   }
               });
           }

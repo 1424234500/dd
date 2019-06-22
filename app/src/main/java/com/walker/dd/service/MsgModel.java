@@ -2,8 +2,11 @@ package com.walker.dd.service;
 
 
 import com.walker.common.util.Bean;
+import com.walker.common.util.FileUtil;
 import com.walker.common.util.TimeUtil;
 import com.walker.core.database.BaseDao;
+import com.walker.dd.util.AndroidTools;
+import com.walker.dd.util.Constant;
 import com.walker.socket.server_1.Key;
 import com.walker.socket.server_1.Msg;
 import com.walker.socket.server_1.session.User;
@@ -38,18 +41,36 @@ public class MsgModel extends Model{
         String msgId = data.get(Key.ID, Key.ID);
         String msgType = data.get(Key.TYPE, Key.TEXT);
 
-
-        //聊天时收到消息 文本不涉及下载  文件类涉及下载
-        String sta = msgType.equals(Key.TEXT)? Key.STA_TRUE : data.get(Key.STA, Key.STA_DEF);
-
-
         User fromUser = msg.getUserFrom();
         String fromUserId = fromUser.getId();
         String fromUserName = fromUser.getName();
         String toUserId = msg.getUserTo()[0];
         String time = TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss:SSS");
         String text = data.get(Key.TEXT, "");
-        String file = data.get(Key.FILE, "");
+        String file = data.get(Key.FILE, "");   //存储key -> 下载路径 -> 下载 或者 本地路径path
+
+        //聊天时收到消息 文本不涉及下载  文件类涉及下载
+        String sta = data.get(Key.STA, Key.STA_DEF);
+
+        //语音 文件 则 需要下载状态等操作 点击后执行
+        //检查目标文件本地是否存在
+        //文本无加载状态 图片采用网络加载 不需要状态
+        if(msgType.equals(Key.TEXT) || msgType.equals(Key.PHOTO)){
+            sta = Key.STA_TRUE;
+        }else if(sta.equals(Key.STA_FALSE)){    //只对认为失败的做文件检测 其他认为手动更新 以更新为准
+            String localPath = Constant.makeFilePathByKey(file);
+            if(FileUtil.check(localPath) == 0 ){
+                sta = Key.STA_TRUE;
+            }else{//若不存在
+                sta = Key.STA_FALSE;
+            }
+
+
+
+
+        }
+
+
 
         String sessionId = toUserId.equals(nowUserId) ? fromUserId : toUserId;
 
@@ -129,6 +150,7 @@ public class MsgModel extends Model{
                     .set(Key.FILE, file)
             ;
             res.add(item );
+            AndroidTools.log(bean.toString());
         }
         return res;
     }

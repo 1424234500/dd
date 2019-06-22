@@ -167,16 +167,8 @@ public   class AdapterLvChat extends  BaseAdapter      {
             case TYPE_FILE:
                 ViewHolderFile viewHolderFile = (ViewHolderFile) viewHolder;
                 String path = bean.get(Key.TEXT, "");
-                switch (sta){
-                    case Key.STA_TRUE:
-                        if(new File(path).exists()){
-                            int resid = Constant.getFileImageByType(FileUtil.getFileType(path));
-                            viewHolderFile.ivfile.setImageResource(resid);
-                        }else{
-                            bean.set(Key.STA, Key.STA_FALSE);
-                        }
-                        break;
-                }
+                int resid = Constant.getFileImageByType(FileUtil.getFileType(path));
+                viewHolderFile.ivfile.setImageResource(resid);
 
                 break;
             default:

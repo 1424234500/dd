@@ -129,10 +129,10 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         Bean bean = listItems.get(position);
-        AndroidTools.toast(getActivity(), "long click " + bean.toString());
+        AndroidTools.toast(getActivity(), "删除会话 " + bean.toString());
         listItems.remove(bean);
         notifyDataSetChanged();
         sendSocket(Plugin.KEY_ECHO, bean);
-        return false;
+        return true;
     }
 }

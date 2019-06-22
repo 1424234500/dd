@@ -29,12 +29,13 @@
           android:id="@+id/linearlayout"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:gravity="bottom|right"
+          android:gravity="top|right"
           android:orientation="horizontal"
           android:paddingLeft="40dp">
 
           <ImageView
               android:id="@+id/ivload"
+              android:layout_marginTop="5dp"
               android:layout_width="20dp"
               android:layout_height="20dp"
               android:baselineAlignBottom="true"

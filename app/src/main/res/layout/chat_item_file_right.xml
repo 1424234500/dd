@@ -25,60 +25,61 @@ android:padding="1dp" >
 </LinearLayout>
 
 
-<LinearLayout
-    android:id="@+id/linearlayout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="bottom|right"
-    android:orientation="horizontal"
-    android:paddingLeft="40dp">
-
-    <ImageView
-        android:id="@+id/ivload"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:baselineAlignBottom="true"
-        android:src="@drawable/ccd" />
-
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:id="@+id/linearlayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@drawable/selector_chatto_bg"
-        android:clickable="true"
-        android:focusable="true">
+        android:gravity="top|right"
+        android:orientation="horizontal"
+        android:paddingLeft="40dp">
 
         <ImageView
-            android:id="@+id/ivfile"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:scaleType="centerCrop"
-            android:src="@drawable/icon_filetype_zip" />
+            android:id="@+id/ivload"
+            android:layout_marginTop="5dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:baselineAlignBottom="true"
+            android:src="@drawable/ccd" />
 
-        <TextView
-            android:id="@+id/tvtext"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/selector_chatto_bg"
             android:clickable="true"
-            android:enabled="true"
-            android:focusable="true"
-            android:gravity="left|center"
-            android:longClickable="true"
-            android:minHeight="30dp"
-            android:text="lkmasfladlkfjalkdfjalskdjfaklsdjfaksldjflkasdfj"
-            android:textColor="@color/white"
-            android:textIsSelectable="true"
-            android:textSize="14dp" />
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/ivfile"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_filetype_zip" />
+
+            <TextView
+                android:id="@+id/tvtext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:enabled="true"
+                android:focusable="true"
+                android:gravity="left|center"
+                android:longClickable="true"
+                android:minHeight="30dp"
+                android:text="lkmasfladlkfjalkdfjalskdjfaklsdjfaksldjflkasdfj"
+                android:textColor="@color/white"
+                android:textIsSelectable="true"
+                android:textSize="14dp" />
+        </LinearLayout>
+
+
+        <com.walker.dd.view.ImageText
+            android:id="@+id/it"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="6dp" />
     </LinearLayout>
-
-
-    <com.walker.dd.view.ImageText
-        android:id="@+id/it"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="6dp" />
-</LinearLayout>
 
 
 
