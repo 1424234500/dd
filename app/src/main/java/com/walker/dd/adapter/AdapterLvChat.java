@@ -17,10 +17,12 @@ import com.walker.common.util.Bean;
 import com.walker.common.util.FileUtil;
 import com.walker.dd.R;
 import com.walker.dd.service.MsgModel;
+import com.walker.dd.service.NetModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.dd.util.EmotionUtils;
+import com.walker.dd.util.picasso.NetImage;
 import com.walker.socket.server_1.Key;
 import com.walker.dd.view.ImageText;
 import com.walker.socket.server_1.session.User;
@@ -139,7 +141,6 @@ public   class AdapterLvChat extends  BaseAdapter      {
 
         ViewHolder viewHolder = (ViewHolder) convertView.getTag();
 
-
         /**
          .set(Key.ID, msgid)
          .set(Key.STA, Key.STA_LOADING)
@@ -152,8 +153,10 @@ public   class AdapterLvChat extends  BaseAdapter      {
          */
         //共用属性设置
         viewHolder.tvtime.setText( bean.get(Key.TIME, Key.TIME)) ;
-//        NetImage.loadProfile(context, MapListUtil.getList(listItems, position, "PROFILEPATH").toString(), viewHolderTextSelf.ivprofile);
+
         viewHolder.it.setText(user.getName(), R.color.black, R.color.blue);
+        NetImage.loadProfile(context, NetModel.makeProfileById(user.getId()), viewHolder.it.iv);
+
         viewHolder.tvtext.setText(
                 EmotionUtils.getEmotionContent(context,
                         viewHolder.tvtext, bean.get(Key.TEXT, "")));

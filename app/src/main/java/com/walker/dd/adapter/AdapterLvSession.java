@@ -14,8 +14,10 @@ import android.widget.TextView;
 
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
+import com.walker.dd.service.NetModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.util.EmotionUtils;
+import com.walker.dd.util.picasso.NetImage;
 import com.walker.socket.server_1.Key;
 import com.walker.socket.server_1.session.User;
 
@@ -111,8 +113,10 @@ public   class AdapterLvSession extends BaseAdapter    {
 			viewHolder.tvnum.setVisibility(View.VISIBLE);
 		}
 //	 	NetImage.loadProfile(context, listItems.get(position, "PROFILEPATH"), viewHolder.ivprofile);
-		 
-		return convertView; 
+        NetImage.loadProfile(context, NetModel.makeProfileById(bean.get(Key.ID, "")), viewHolder.ivprofile);
+
+
+        return convertView;
 	}
 	
 	//必须实现，通知adapter有几种布局类型

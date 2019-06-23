@@ -53,4 +53,19 @@ public class NetModel {
         return "http://"+NetModel.getServerWebIp() + ":" + NetModel.getServerWebPort() + "/walker-web/file/uploadCmf.do";
     }
 
+    public static String makeProfileById(String id){
+        return "http://"+NetModel.getServerWebIp() + ":" + NetModel.getServerWebPort() + "/walker-web/file/download.do"+"?ID=" + id + ".png";
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 }

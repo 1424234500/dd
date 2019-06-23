@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.walker.dd.R;
 import com.walker.dd.util.AndroidTools;
+import com.walker.dd.util.picasso.NetImage;
 
 
 public class NavigationBar extends LinearLayout implements View.OnClickListener {
@@ -133,7 +134,8 @@ public class NavigationBar extends LinearLayout implements View.OnClickListener 
         return this;
     }
     public NavigationBar setReturnIcon(int icon){
-        ivicon.setImageResource(icon);
+//        ivicon.setImageResource(icon);
+        NetImage.loadProfile(getContext(), icon, ivicon);
 
         ivreturn.setVisibility(GONE);
         tvreturn.setVisibility(GONE);

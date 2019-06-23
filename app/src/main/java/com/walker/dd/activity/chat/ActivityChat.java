@@ -33,6 +33,7 @@ import com.walker.dd.util.Constant;
 import com.walker.dd.util.MyFile;
 import com.walker.dd.util.OkHttpUtil;
 import com.walker.dd.util.UriUtil;
+import com.walker.dd.util.picasso.NetImage;
 import com.walker.dd.view.EmotionKeyboard;
 import com.walker.socket.server_1.Key;
 import com.walker.dd.util.RobotAuto;
@@ -162,13 +163,10 @@ public class ActivityChat extends AcBase {
             public void onScrollStateChanged(AbsListView arg0, int scrollState) {
                 switch(scrollState){
                     case AbsListView.OnScrollListener.SCROLL_STATE_IDLE://空闲状态
-                        AndroidTools.out("listview 空闲，开始加载图片");
-//                        NetImage.resume(getContext());
+                        NetImage.resume(getContext());
                         break;
                     case AbsListView.OnScrollListener.SCROLL_STATE_FLING://滚动状态
-                        AndroidTools.out("listview 滚动，暂停加载图片");
-//                        ekb.hideViewHide(false);
-//                        NetImage.pause(getContext());
+                        NetImage.pause(getContext());
                         break;
                     case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL://触摸后滚动
 

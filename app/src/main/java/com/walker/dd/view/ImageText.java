@@ -49,7 +49,7 @@ public class ImageText extends LinearLayout  {
 		imgs[1] = img2;
 		if(iv != null){
 			iv.setImageResource(img1);
-            iv.setBackgroundColor(Color.argb(0, 0, 0, 0));
+//            iv.setBackgroundColor(Color.argb(0, 0, 0, 0));
 			setImageSize(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT);
 		}
 	}
@@ -64,7 +64,7 @@ public class ImageText extends LinearLayout  {
             tv.setTextColor(color1);
         }
 		if(imgs[0] == 0){
-            iv.setBackgroundColor(AndroidTools.getRandomColor());
+//            iv.setBackgroundColor(AndroidTools.getRandomColor());
         }
 	}
 	
@@ -81,9 +81,10 @@ public class ImageText extends LinearLayout  {
 	  
 	public void setChecked(boolean flag){
 		int i = flag?1:0;
-		
-		iv.setImageResource(imgs[i]);
-		setImageSize(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT);
+		if(imgs[i]  != 0) {
+            iv.setImageResource(imgs[i]);
+            setImageSize(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT);
+        }
 //		iv.setShowPoint(false);
 		tv.setTextColor( colors[i]);
 		tv.setText(text);

@@ -4,6 +4,7 @@ import android.os.Environment;
 
 import com.walker.common.util.FileUtil;
 import com.walker.dd.R;
+import com.walker.dd.service.NetModel;
 
 public class Constant {
     public static final String BROAD_URL = "broad_url";
