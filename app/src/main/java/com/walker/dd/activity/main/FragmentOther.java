@@ -13,6 +13,7 @@ import com.walker.dd.R;
 import com.walker.dd.activity.FragmentBase;
 import com.walker.dd.activity.other.ActivityCompose;
 import com.walker.dd.activity.other.ActivityTestEcho;
+import com.walker.dd.activity.other.ActivityTestOkhttp3;
 import com.walker.dd.activity.other.ActivityTestSocket;
 import com.walker.dd.adapter.AdapterGvImageText;
 import com.walker.dd.util.AndroidTools;
@@ -39,7 +40,7 @@ public class FragmentOther extends FragmentBase {
         adapter = new AdapterGvImageText(getActivity(), listItems);
 
         gv = (GridView)v.findViewById(R.id.gv);
-        gv.setNumColumns(6);
+        gv.setNumColumns(5);
         gv.setAdapter(adapter);
 
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -71,11 +72,12 @@ public class FragmentOther extends FragmentBase {
 
         this.listItems = (List<Bean>) data;
         if(this.listItems.size() <= 0){
-            listItems.add(new Bean().set(Key.PROFILE, "").set(Key.TEXT, "socket"));
-            listItems.add(new Bean().set(Key.PROFILE, "").set(Key.TEXT, "compose"));
-            listItems.add(new Bean().set(Key.PROFILE, "").set(Key.TEXT, "autochat"));
+            listItems.add(new Bean().set(Key.PROFILE, R.drawable.face0).set(Key.TEXT, "socket").set(Key.ID, "socket"));
+            listItems.add(new Bean().set(Key.PROFILE, R.drawable.face1).set(Key.TEXT, "compose").set(Key.ID, "compose"));
+            listItems.add(new Bean().set(Key.PROFILE, R.drawable.face2).set(Key.TEXT, "autochat").set(Key.ID, "autochat"));
+            listItems.add(new Bean().set(Key.PROFILE, R.drawable.face3).set(Key.TEXT, "okhttp3").set(Key.ID, "okhttp3"));
             for(int i = 0; i < 10; i++) {
-                listItems.add(new Bean().set(Key.PROFILE, "").set(Key.TEXT, "text" + i));
+                listItems.add(new Bean().set(Key.PROFILE, AndroidTools.getRandomColor()).set(Key.TEXT, "text" + i).set(Key.ID, "text" + i));
             }
         }
         this.notifyDataSetChanged();
@@ -103,7 +105,7 @@ public class FragmentOther extends FragmentBase {
 
 
     public void onClick(Bean bean){
-        String text = bean.get(Key.TEXT, "");
+        String text = bean.get(Key.ID, "");
         switch (text){
             case "socket":
                 startActivity(new Intent(getActivity(), ActivityTestSocket.class));
@@ -113,10 +115,13 @@ public class FragmentOther extends FragmentBase {
                 break;
             case "autochat":
                 startActivity(new Intent(getActivity(), ActivityTestEcho.class));
-
+                break;
+            case "okhttp3":
+                startActivity(new Intent(getActivity(), ActivityTestOkhttp3.class));
+                break;
             default:
                 sendSocket("echo", bean);
-                    break;
+                break;
         }
 
 

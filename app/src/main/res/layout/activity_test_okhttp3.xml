@@ -1,0 +1,162 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.other.ActivityTestOkhttp3">
+
+
+
+    <LinearLayout
+        android:id="@+id/viewchatmain"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/qqlightwhite"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="2dp"
+        tools:ignore="MissingConstraints">
+
+        <EditText
+            android:id="@+id/ettop"
+            android:layout_width="match_parent"
+            android:layout_height="134dp"
+            android:layout_alignParentTop="true"
+            android:hint="ip port"
+            android:onClick="onClick"
+            android:text="https://www.baidu.com/s" />
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/srl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+
+            <ScrollView
+                android:id="@+id/sv"
+                android:layout_above="@+id/tietMsg"
+                android:layout_below="@+id/tietIpPort"
+                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+
+                <TextView
+                    android:id="@+id/tvout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="out" />
+
+            </ScrollView>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <LinearLayout
+            android:id="@+id/viewbottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="0dp"
+            android:background="@color/qqmiddlewhite"
+            android:orientation="vertical"
+            android:paddingTop="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/etsend"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_toLeftOf="@+id/tvsend"
+                    android:layout_weight="1"
+                    android:background="@color/qqlightwhite"
+                    android:inputType="textMultiLine"
+                    android:maxLength="200"
+                    android:minHeight="36dp"
+                    android:onClick="onClick"
+                    android:paddingLeft="4dp"
+                    android:text="etsend"
+                    android:textSize="17dp" />
+
+                <TextView
+                    android:id="@+id/tvsend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/selector_button_login"
+                    android:onClick="onClick"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="5dp"
+                    android:text="发送"
+                    android:textColor="@color/qqlightwhite"
+                    android:textSize="20dp" />
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:id="@+id/bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginBottom="0dp"
+                android:onClick="onClick"
+
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/get"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+
+                    android:onClick="onClick"
+                    android:text="get" />
+
+                <Button
+                    android:id="@+id/post"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+
+                    android:onClick="onClick"
+                    android:text="post" />
+
+
+                <Button
+                    android:id="@+id/upload"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_weight="1"
+                    android:onClick="onClick"
+                    android:text="upload" />
+
+                <Button
+                    android:id="@+id/download"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_weight="1"
+                    android:onClick="onClick"
+                    android:text="download" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+</android.support.constraint.ConstraintLayout>

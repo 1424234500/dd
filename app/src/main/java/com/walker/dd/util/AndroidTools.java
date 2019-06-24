@@ -758,19 +758,24 @@ public class AndroidTools {
         return InetAddress.getByAddress(quads);
 
     }
-
-
+    public static void toast(Context c, Object...objects) {
+        String str = Tools.objects2string(objects);
+        toast(c, str);
+    }
     public static void toast(Context c, String str){
         Toast.makeText(c, str, Toast.LENGTH_SHORT).show();
         log("toast." + str);
     }
     public static void out(Object...objects) {
-        String str = Tools.objects2string(objects);
-        Log.e("tools", ""+ str.length() + "." + str);
+        log(objects);
     }
 
+    public static void log(Object...objects){
+        String str = Tools.objects2string(objects);
+        log(str);
+    }
     public static void log(String str) {
-        Log.e("tools.logs", str);
+        Log.e("tools.", str);
     }
 
     //指定为数序列生成器

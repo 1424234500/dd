@@ -15,11 +15,10 @@ import android.widget.TextView;
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
 import com.walker.dd.service.NetModel;
-import com.walker.dd.service.NowUser;
 import com.walker.dd.util.EmotionUtils;
+import com.walker.dd.util.KeyUtil;
 import com.walker.dd.util.picasso.NetImage;
 import com.walker.socket.server_1.Key;
-import com.walker.socket.server_1.session.User;
 
 /**
  * 会话列表
@@ -113,7 +112,7 @@ public   class AdapterLvSession extends BaseAdapter    {
 			viewHolder.tvnum.setVisibility(View.VISIBLE);
 		}
 //	 	NetImage.loadProfile(context, listItems.get(position, "PROFILEPATH"), viewHolder.ivprofile);
-        NetImage.loadProfile(context, NetModel.makeProfileById(bean.get(Key.ID, "")), viewHolder.ivprofile);
+        NetImage.loadProfile(context, NetModel.httpDownload(KeyUtil.getProfile(bean.get(Key.ID, ""))), viewHolder.ivprofile);
 
 
         return convertView;

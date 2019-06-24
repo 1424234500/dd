@@ -60,7 +60,7 @@ public class AdapterGvImageText extends BaseAdapter{
 		// 设置属性
 //        viewHolder.iv.setImageResource(R.drawable.profile);
 
-        viewHolder.iv.setImageResource(bean.get(Key.ID, AndroidTools.getRandomColor()));
+        viewHolder.iv.setImageResource(bean.get(Key.PROFILE, AndroidTools.getRandomColor()));
         viewHolder.tv.setText(bean.get(Key.TEXT, ""));
 
 		

@@ -182,12 +182,8 @@ public class RobotAuto {
         try {
             Bean map = JsonUtil.get(jsonstr);
             int code = map.get("ret", -1);
-            if (code == 0) {
-                Bean data = map.get("data", new Bean());
-                res += data.get("answer", "没有回复?");
-            } else {
-                res = jsonstr;
-            }
+            Bean data = map.get("data", new Bean());
+            res = data.get("answer", "没有回复?");
         }catch (Exception e){
             res = jsonstr;
         }

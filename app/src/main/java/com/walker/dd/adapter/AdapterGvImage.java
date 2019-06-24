@@ -46,7 +46,7 @@ public class AdapterGvImage extends BaseAdapter{
 		}
 		// 设置文字和图片和监听
 		//Tools.log(listItems.get(position).get("id").toString() + " | " + R.drawable.at);
-        int id =  bean.get(com.walker.socket.server_1.Key.ID, AndroidTools.getRandomColor());
+        int id =  bean.get(com.walker.socket.server_1.Key.PROFILE, AndroidTools.getRandomColor());
         if(id != 0) {
             viewHolderEmoji.ivEmoji.setImageResource(id);
         }

@@ -1,7 +1,6 @@
 package com.walker.dd.adapter;
 
 
-import java.io.File;
 import java.util.List;
 
 
@@ -9,19 +8,22 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.walker.common.util.Bean;
 import com.walker.common.util.FileUtil;
 import com.walker.dd.R;
-import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NetModel;
 import com.walker.dd.service.NowUser;
+import com.walker.dd.struct.Message;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.dd.util.EmotionUtils;
+import com.walker.dd.util.KeyUtil;
 import com.walker.dd.util.picasso.NetImage;
 import com.walker.socket.server_1.Key;
 import com.walker.dd.view.ImageText;
@@ -36,16 +38,26 @@ import com.walker.socket.server_1.session.User;
 public   class AdapterLvChat extends  BaseAdapter      {
     private Context context;
 
-    private List<Bean>  listItems = null; // listview的数据集合
+    private List<Message>  listItems = null; // listview的数据集合
     private LayoutInflater layoutInflater; // 视图容器
 
+
+    /**
+     * 点击无效问题
+     */
+    public interface OnClick{
+        public void onClick(int position);
+    }
+    OnClick onClick;
+    public void setOnClick(OnClick onClick) {
+        this.onClick = onClick;
+    }
 
 
     //自定义控件集合  布局类型
     //头像，用户名，时间
     private  class ViewHolder{
-//        public ImageView ivprofile;
-//        public TextView tvusername;
+        public View view;
         public ImageText it;
         public ImageView ivload;
 
@@ -62,6 +74,7 @@ public   class AdapterLvChat extends  BaseAdapter      {
 
     private class ViewHolderFile  extends ViewHolderText{
         public ImageView ivfile;
+        public ProgressBar pb;
     }
     private final class ViewHolderFileSelf  extends ViewHolderFile{
     }
@@ -102,11 +115,11 @@ public   class AdapterLvChat extends  BaseAdapter      {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        Bean bean = listItems.get(position);
+        Message bean = listItems.get(position);
 //        int type = getItemViewType(position);	//得到No.i条数据布局类型
-        int type = types.get(bean.get(Key.TYPE, Key.TEXT), TYPE_TEXT);
-        User user = new User(bean.get(Key.FROM, new Bean()));
-        boolean ifSelf = user.getId().equals(NowUser.getId());
+        int type = types.get(bean.getMsgType(), TYPE_TEXT);
+//        User user = new User(bean.get(Key.FROM, new Bean()));
+        boolean ifSelf = bean.getFromUserId().equals(NowUser.getId());
 
         //构建或者取出可复用布局
         if (convertView == null) { //若无可复用布局
@@ -121,6 +134,7 @@ public   class AdapterLvChat extends  BaseAdapter      {
                 ViewHolderFile viewHolderFile = new ViewHolderFile();
                 convertView = layoutInflater.inflate(ifSelf ? R.layout.chat_item_file_right : R.layout.chat_item_file_left, null);	// 获取list_item布局文件的视图
                 viewHolderFile.ivfile = (ImageView) convertView .findViewById(R.id.ivfile);
+                viewHolderFile.pb = (ProgressBar) convertView .findViewById(R.id.pb);
 
                 convertView.setTag(viewHolderFile);// 设置控件集到convertView
                 break;
@@ -129,8 +143,7 @@ public   class AdapterLvChat extends  BaseAdapter      {
             }
             //公用视图配置
             ViewHolder viewHolder = (ViewHolder)convertView.getTag();
-//            viewHolder.ivprofile = (ImageView) convertView .findViewById(R.id.ivprofile);
-//            viewHolder.tvusername = (TextView) convertView .findViewById(R.id.tvusername);
+            viewHolder.view = (View) convertView .findViewById(R.id.view);
             viewHolder.it = (ImageText) convertView .findViewById(R.id.it);
             viewHolder.ivload = (ImageView) convertView .findViewById(R.id.ivload);
             viewHolder.tvtime = (TextView) convertView .findViewById(R.id.tvtime);
@@ -152,15 +165,21 @@ public   class AdapterLvChat extends  BaseAdapter      {
          .set(Key.FILE, file)
          */
         //共用属性设置
-        viewHolder.tvtime.setText( bean.get(Key.TIME, Key.TIME)) ;
+        viewHolder.view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClick.onClick(position);
+            }
+        });
+        viewHolder.tvtime.setText(bean.getTime());// bean.get(Key.TIME, Key.TIME)) ;
 
-        viewHolder.it.setText(user.getName(), R.color.black, R.color.blue);
-        NetImage.loadProfile(context, NetModel.makeProfileById(user.getId()), viewHolder.it.iv);
+        viewHolder.it.setText(bean.getFromUserName(), R.color.black, R.color.blue);
+        NetImage.loadProfile(context, NetModel.httpDownload(KeyUtil.getProfile(bean.getFromUserId())), viewHolder.it.iv);
 
         viewHolder.tvtext.setText(
                 EmotionUtils.getEmotionContent(context,
-                        viewHolder.tvtext, bean.get(Key.TEXT, "")));
-        String sta = bean.get(Key.STA, Key.STA_FALSE);
+                        viewHolder.tvtext, bean.getText()));
+        String sta = bean.getSta();
 
         //私有属性设置
         switch (type){
@@ -169,9 +188,19 @@ public   class AdapterLvChat extends  BaseAdapter      {
                 break;
             case TYPE_FILE:
                 ViewHolderFile viewHolderFile = (ViewHolderFile) viewHolder;
-                String path = bean.get(Key.TEXT, "");
+                String path = bean.getFile();
                 int resid = Constant.getFileImageByType(FileUtil.getFileType(path));
                 viewHolderFile.ivfile.setImageResource(resid);
+                if(!sta.equals(Key.STA_TRUE) && !sta.equals(Key.STA_FALSE) ){
+                    viewHolderFile.pb.setVisibility(View.VISIBLE);
+                    try {
+                        viewHolderFile.pb.setProgress(Integer.valueOf(sta));
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }else{
+                    viewHolderFile.pb.setVisibility(View.GONE);
+                }
 
                 break;
             default:
@@ -180,14 +209,17 @@ public   class AdapterLvChat extends  BaseAdapter      {
 
         viewHolder.ivload.setVisibility(View.VISIBLE);
         switch (sta){
-            case Key.STA_LOADING:
-                viewHolder.ivload.setImageResource(R.drawable.ccd);
+
+            case Key.STA_TRUE:
+                viewHolder.ivload.setVisibility(View.INVISIBLE);
                 break;
             case Key.STA_FALSE:
                 viewHolder.ivload.setImageResource(R.drawable.cc);
                 break;
+            case Key.STA_LOADING:
             default:
-                viewHolder.ivload.setVisibility(View.INVISIBLE);
+                viewHolder.ivload.setImageResource(R.drawable.ccd);
+
         }
         return convertView;
     }
@@ -200,16 +232,15 @@ public   class AdapterLvChat extends  BaseAdapter      {
     //必须实现，让adapter可控布局类型
     @Override
     public int getItemViewType(int position) {
-        Bean bean = listItems.get(position);
-        String key = bean.get(Key.TYPE, Key.TEXT);
+        Message bean = listItems.get(position);
+        String key = bean.getMsgType();
 
-        User user = new User(bean.get(Key.FROM, new Bean()));
-        boolean ifSelf = user.getId().equals(NowUser.getId());
+        boolean ifSelf = bean.getFromUserId().equals(NowUser.getId());
         return types.get(key, 0) * 2 + (ifSelf ? 1 : 0);
     }
 
 
-    public AdapterLvChat(Context context, List<Bean> listItems) {
+    public AdapterLvChat(Context context, List<Message> listItems) {
         layoutInflater = LayoutInflater.from(context); // 创建视图容器并设置上下文
         this.listItems = listItems;
         this.context = context;

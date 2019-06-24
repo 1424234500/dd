@@ -43,6 +43,8 @@
         <activity android:name=".activity.other.ActivityTestSocket" />
         <activity android:name=".activity.other.ActivityTestEcho" />
         <activity android:name=".activity.other.ActivityCompose" />
+        <activity android:name=".activity.other.ActivityTestOkhttp3" />
+
         <activity android:name=".activity.chat.ActivityChat"/>
 
 

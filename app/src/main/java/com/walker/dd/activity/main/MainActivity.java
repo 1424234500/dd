@@ -22,6 +22,7 @@ import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.SessionModel;
 import com.walker.dd.service.NetModel;
+import com.walker.dd.struct.Message;
 import com.walker.dd.util.AndroidTools;
 import com.walker.socket.server_1.Key;
 import com.walker.dd.view.NavigationBar;
@@ -255,7 +256,7 @@ public class MainActivity extends AcBase {
                 }
             }
             else if(plugin.equals(Plugin.KEY_MESSAGE)){
-                Bean bean = MsgModel.addMsg(sqlDao, msg);   //存储消息
+                Message bean = MsgModel.addMsg(sqlDao, new Message(msg));   //存储消息
 
                 Bean data = msg.getData();
                 User from = msg.getUserFrom();
@@ -269,9 +270,9 @@ public class MainActivity extends AcBase {
                     toName = "group name "+ toId;
                 }
                 User user = new User(data.get(Key.USER, new Bean()));
-                String type = bean.get(Key.TYPE, Key.TEXT);
-                String time = bean.get(Key.TIME, "");
-                String text = bean.get(Key.TEXT, "");
+                String type = bean.getMsgType();//bean.get(Key.TYPE, Key.TEXT);
+                String time = bean.getTime();//bean.get(Key.TIME, "");
+                String text = bean.getText();//bean.get(Key.TEXT, "");
                 Bean item = SessionModel.save(sqlDao, NowUser.getId(), toId, toName, time, type, text, "");
                 int num = item.get(Key.NUM, 0) + 1;
                 item = SessionModel.save(sqlDao, NowUser.getId(), toId, toName, time, type, text, num + "");

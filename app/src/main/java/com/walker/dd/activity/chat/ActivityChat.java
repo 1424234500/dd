@@ -19,7 +19,6 @@ import com.walker.common.util.FileUtil;
 import com.walker.common.util.JsonUtil;
 import com.walker.common.util.LangUtil;
 import com.walker.common.util.TimeUtil;
-import com.walker.common.util.Tools;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
 import com.walker.dd.activity.FragmentBase;
@@ -28,6 +27,7 @@ import com.walker.dd.service.Cache;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.NetModel;
+import com.walker.dd.struct.Message;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.dd.util.MyFile;
@@ -45,14 +45,12 @@ import com.walker.socket.server_1.plugin.Plugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -61,11 +59,17 @@ import okhttp3.Response;
 public class ActivityChat extends AcBase {
     SwipeRefreshLayout srl;
     EmotionKeyboard ekb;
-    List<Bean> listItemMsg = new ArrayList<>();
-    Comparator<Bean> compare = new Comparator<Bean>() {
+    List<Message> listItemMsg = new ArrayList<>();
+    Comparator<Message> compare = new Comparator<Message>() {
         @Override
-        public int compare(Bean o1, Bean o2) {
-            return o1.get(Key.ID, "").compareTo(o2.get(Key.ID, ""));
+        public int compare(Message o1, Message o2) {
+            return o1.getMsgId().compareTo(o2.getMsgId());
+        }
+    };
+    Comparator<Message> compareTime = new Comparator<Message>() {
+        @Override
+        public int compare(Message o1, Message o2) {
+            return o1.getTime().compareTo(o2.getTime());
         }
     };
     ListView lv;
@@ -179,7 +183,75 @@ public class ActivityChat extends AcBase {
             }
         });
 
-//        lv.setOnItemClickListener(this);
+        adapter.setOnClick(new AdapterLvChat.OnClick() {
+            @Override
+            public void onClick(int position) {
+                final Message bean = listItemMsg.get(position);
+                String type = bean.getMsgType();//bean.get(Key.TYPE, Key.TEXT);
+                String sta = bean.getSta();//bean.get(Key.STA, Key.STA_FALSE);
+                final String file = bean.getFile();//bean.get(Key.FILE, "");
+                final String newPath = Constant.getFilePathByKey(file);
+                //文件下载
+                if(type.equals(Key.FILE)){
+                    assert file.length() > 0;
+                    if(new File(newPath).exists()){
+                        sta = Key.STA_TRUE;
+                    }else if(sta.equals(Key.STA_TRUE)){
+                        sta = Key.STA_FALSE;
+                    }
+                    if(sta.equals(Key.STA_FALSE)){  //下载文件
+                        sta = Key.STA_LOADING;
+                        OkHttpUtil.download(NetModel.httpDownload(file), newPath, new OkHttpUtil.OnHttp() {
+                            @Override
+                            public void onOk(Call call, Response response) {
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        bean.setSta(Key.STA_TRUE);
+                                        addMsg(bean);
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onLoading(final int progress) {
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        bean.setSta("" + progress);
+                                        addMsg(bean);
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                e.printStackTrace();
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        bean.setSta(Key.STA_FALSE);
+                                        addMsg(bean);
+                                        toast("下载文件失败", file);
+                                    }
+                                });
+                            }
+                        });
+                    }else if(sta.equals(Key.STA_TRUE)){  //打开文件
+                        AndroidTools.openFile(ActivityChat.this, newPath);
+                    }else{  //
+                        toast("loading...");
+                    }
+                    bean.setSta(sta);
+                    addMsg(bean);
+                }
+                //图片详情
+                //语言自动播放
+
+
+
+            }
+        });
 //        lv.setOnItemLongClickListener(this);
 
 //        /设置刷新时动画的颜色，可以设置4个
@@ -312,7 +384,7 @@ public class ActivityChat extends AcBase {
     @Override
     public void OnReceive(String msgJson) {
         Msg msg = new Msg(msgJson);
-        Bean item = MsgModel.addMsg(sqlDao, msg);
+        Message item = MsgModel.addMsg(sqlDao, new Message(msg));
 
         String toid = session.get(Key.ID, "");
         String plugin = msg.getType();
@@ -403,7 +475,7 @@ public class ActivityChat extends AcBase {
                         .setTimeDo(System.currentTimeMillis())
                         ;
                 msg.setData(data);
-                final Bean bean = MsgModel.addMsg(sqlDao, msg);  //存储
+                final Message bean = MsgModel.addMsg(sqlDao, new Message(msg));  //存储
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -441,21 +513,21 @@ public class ActivityChat extends AcBase {
         Msg msg = new Msg().setUserFrom(NowUser.getUser())
                 .setUserTo(toid)
                 .setTimeDo(System.currentTimeMillis())
+                .setData(data)
                 ;
-        msg.setData(data);
-        Bean bean = MsgModel.addMsg(sqlDao, msg);  //存储
+        Message bean = MsgModel.addMsg(sqlDao, new Message(msg));  //存储
         addMsg(bean);   //表现
         try {
             data.set(Key.STA, "");  //不发给其他端
             sendSocket(Plugin.KEY_MESSAGE, toid, data); //发送socket
             //成功后 更新发送状态 发送失败异常跳出
-            data.set(Key.STA, Key.STA_TRUE);
+            bean.setSta(Key.STA_TRUE);
         }catch (Exception e){
             e.printStackTrace();
             toast("发送失败", data);
-            data.set(Key.STA, Key.STA_FALSE);
+            bean.setSta(Key.STA_FALSE);
         }
-        bean = MsgModel.addMsg(sqlDao, msg);  //存储
+        bean = MsgModel.addMsg(sqlDao, bean);  //存储
         addMsg(bean);   //表现
         //自动会话才自动回复
         if(toid.equals(NowUser.getDd().getId()))
@@ -477,46 +549,29 @@ public class ActivityChat extends AcBase {
         final Bean data = new Bean()
                 .set(Key.ID, msgid)
                 .set(Key.TYPE, Key.FILE)
-                .set(Key.STA, Key.STA_LOADING)
+                .set(Key.STA, "1")
                 .set(Key.TEXT, name)
                 .set(Key.FILE, path)    //先暂存本地发送路径 待上传成功cp到下载路径
                 ;
         final Msg msg = new Msg().setUserFrom(NowUser.getUser())
                 .setUserTo(toid)
                 .setTimeDo(System.currentTimeMillis())
+                .setData(data)
                 ;
-        msg.setData(data);
 
-        Bean bean = MsgModel.addMsg(sqlDao, msg);  //存储
+        final Message bean = MsgModel.addMsg(sqlDao, new Message(msg));  //存储
         addMsg(bean);   //表现
 
         //上传文件拿到 文件key 把被发送文件复制到 下载路径作为下载到的文件 消息存储该路径文件path 若有则用 若无则按照规则下载
-        String url = NetModel.httpUpload();
-        File file = new File(path);
-
-        RequestBody fileBody = RequestBody.create(MediaType.parse("image/png"), file);
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("file", name, fileBody)
-                .addFormDataPart("path", path)
-                .build();
-        Request request = new Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .build();
-
-        OkHttpClient okHttpClient = OkHttpUtil.getClient();
-
-        log(url, path, requestBody, request, okHttpClient);
-        okHttpClient.newCall(request).enqueue(new Callback() {
+        OkHttpUtil.upload(path, new Callback() {
           @Override
           public void onFailure(Call call, IOException e) {
               e.printStackTrace();
               handler.post(new Runnable() {
                   @Override
                   public void run() {
-                      data.set(Key.STA, Key.STA_FALSE);
-                      Bean bean = MsgModel.addMsg(sqlDao, msg);  //存储
+                      bean.setSta(Key.STA_FALSE);
+                      MsgModel.addMsg(sqlDao, bean);  //存储
                       addMsg(bean);   //表现
                       toast("上传失败", path);
                   }
@@ -535,20 +590,21 @@ public class ActivityChat extends AcBase {
                       log("上传成功", res);
                       // 消息存储该路径文件path 若有则用 若无则按照规则下载
                       data.set(Key.FILE, key);
+                      bean.setFile(key);
                       try {
                           data.set(Key.STA, "");    //不需要发送给其他端
                           sendSocket(Plugin.KEY_MESSAGE, toid, data); //发送socket
-                          data.set(Key.STA, Key.STA_TRUE);
+                          bean.setSta(Key.STA_TRUE);
                           // 把被发送文件复制到 下载路径作为下载到的文件
-                          String newPath = Constant.makeFilePathByKey(key);
+                          String newPath = Constant.getFilePathByKey(key);
 //                          FileUtil.cp(path, newPath);
                           MyFile.copyFile(path, newPath);
                       }catch (Exception e){
                             e.printStackTrace();
                             toast("发送文件消息失败", key);
-                            data.set(Key.STA, Key.STA_FALSE);
+                            bean.setSta(Key.STA_FALSE);
                       }
-                      Bean bean = MsgModel.addMsg(sqlDao, msg);  //存储
+                      MsgModel.addMsg(sqlDao, bean);  //存储
                       addMsg(bean);   //表现
                   }
               });
@@ -565,8 +621,8 @@ public class ActivityChat extends AcBase {
 
 
     private void loadMore(){
-        String time = listItemMsg.size() > 0 ? listItemMsg.get(0).get("TIME", "") : TimeUtil.getTimeYmdHms();
-        List<Bean> list = MsgModel.findMsg(sqlDao, session.get(Key.ID, Key.ID), time, Constant.NUM);
+        String time = listItemMsg.size() > 0 ? listItemMsg.get(0).getTime(): TimeUtil.getTimeYmdHms();
+        List<Message> list = MsgModel.findMsg(sqlDao, session.get(Key.ID, Key.ID), time, Constant.NUM);
         listItemMsg.addAll(0, list);
         adapter.notifyDataSetChanged();
 
@@ -586,7 +642,7 @@ public class ActivityChat extends AcBase {
     .set(Key.TEXT, str)
     .set(Key.FILE, file)
     */
-    private void addMsg(final Bean bean) {
+    private void addMsg(final Message bean) {
         if(bean != null) {
             handler.post(new Runnable() {
                 @Override
@@ -594,7 +650,9 @@ public class ActivityChat extends AcBase {
 
                 int i = AndroidTools.listIndex(listItemMsg, bean, compare);
                 if(i >= 0){
-                    listItemMsg.get(i).putAll(bean);
+//                    listItemMsg.get(i).putAll(bean);
+                    listItemMsg.remove(i);
+                    listItemMsg.add(i, bean);
                 }else{
                     listItemMsg.add(bean);
     //                lv.setSelection(listItemMsg.size());	//选中最新一条，滚动到底部
@@ -602,6 +660,7 @@ public class ActivityChat extends AcBase {
                 if(listItemMsg.size() >  Constant.NUM * 3){
                     listItemMsg.remove(0);
                 }
+                Collections.sort(listItemMsg, compareTime);
                 adapter.notifyDataSetChanged();
                 if(i < 0){
                     lv.smoothScrollByOffset(listItemMsg.size());

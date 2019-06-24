@@ -26,7 +26,6 @@ android:padding="1dp" >
 
 
     <LinearLayout
-        android:id="@+id/linearlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="top|right"
@@ -41,7 +40,25 @@ android:padding="1dp" >
             android:baselineAlignBottom="true"
             android:src="@drawable/ccd" />
 
+
         <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            >
+
+            <ProgressBar
+                android:id="@+id/pb"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:visibility="gone"
+                android:layout_weight="1" />
+
+        <LinearLayout
+            android:id="@+id/view"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -72,7 +89,7 @@ android:padding="1dp" >
                 android:textIsSelectable="true"
                 android:textSize="14dp" />
         </LinearLayout>
-
+        </LinearLayout>
 
         <com.walker.dd.view.ImageText
             android:id="@+id/it"

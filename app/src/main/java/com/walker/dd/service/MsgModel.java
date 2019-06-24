@@ -5,6 +5,7 @@ import com.walker.common.util.Bean;
 import com.walker.common.util.FileUtil;
 import com.walker.common.util.TimeUtil;
 import com.walker.core.database.BaseDao;
+import com.walker.dd.struct.Message;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.socket.server_1.Key;
@@ -34,45 +35,40 @@ public class MsgModel extends Model{
     /**
      * 存储
      */
-    public static Bean addMsg(BaseDao dao, Msg msg){
+    public static Message addMsg(BaseDao dao, Message msg){
         String nowUserId = NowUser.getId();
 
-        Bean data = msg.getData();
-        String msgId = data.get(Key.ID, Key.ID);
-        String msgType = data.get(Key.TYPE, Key.TEXT);
+//        Bean data = msg.getData();
+        String msgId = msg.getMsgId();//data.get(Key.ID, Key.ID);
+        String msgType = msg.getMsgType();//data.get(Key.TYPE, Key.TEXT);
 
-        User fromUser = msg.getUserFrom();
-        String fromUserId = fromUser.getId();
-        String fromUserName = fromUser.getName();
-        String toUserId = msg.getUserTo()[0];
-        String time = TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss:SSS");
-        String text = data.get(Key.TEXT, "");
-        String file = data.get(Key.FILE, "");   //存储key -> 下载路径 -> 下载 或者 本地路径path
+//        User fromUser = msg.getUserFrom();
+        String fromUserId = msg.getFromUserId();//fromUser.getId();
+        String fromUserName = msg.getFromUserName();//fromUser.getName();
+        String toUserId = msg.getToUserId();//msg.getUserTo()[0];
+        String time = msg.getTime();//TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss:SSS");
+        String text = msg.getText();//data.get(Key.TEXT, "");
+        String file = msg.getFile();//data.get(Key.FILE, "");   //存储key -> 下载路径 -> 下载 或者 本地路径path
+        String sessionId = msg.getSessionId();//toUserId.equals(nowUserId) ? fromUserId : toUserId;
 
         //聊天时收到消息 文本不涉及下载  文件类涉及下载
-        String sta = data.get(Key.STA, Key.STA_DEF);
+        String sta = msg.getSta();//data.get(Key.STA, Key.STA_DEF);
 
         //语音 文件 则 需要下载状态等操作 点击后执行
         //检查目标文件本地是否存在
         //文本无加载状态 图片采用网络加载 不需要状态
         if(msgType.equals(Key.TEXT) || msgType.equals(Key.PHOTO)){
             sta = Key.STA_TRUE;
-        }else if(sta.equals(Key.STA_FALSE)){    //只对认为失败的做文件检测 其他认为手动更新 以更新为准
-            String localPath = Constant.makeFilePathByKey(file);
+        }else if(sta.equals(Key.STA_FALSE) || sta.length() == 0){    //只对认为失败的做文件检测 其他认为手动更新 以更新为准
+            String localPath = Constant.getFilePathByKey(file);
             if(FileUtil.check(localPath) == 0 ){
                 sta = Key.STA_TRUE;
             }else{//若不存在
                 sta = Key.STA_FALSE;
             }
-
-
-
-
         }
+        msg.setSta(sta);
 
-
-
-        String sessionId = toUserId.equals(nowUserId) ? fromUserId : toUserId;
 
         int count = -1;
         Map<String, Object> getmap = dao.findOne("select * from " + MSG + " where MSG_ID=? and USER_ID=? ",  msgId, nowUserId);
@@ -98,20 +94,22 @@ public class MsgModel extends Model{
 
             count = dao.executeSql("update " + MSG + " set USER_ID=?,STA=?,SESSION_ID=?,MSG_ID=?,TYPE=?,FROM_ID=?,FROM_NAME=?,TO_ID=?,TIME=?,TEXT=?,FILE=? where MSG_ID=? and USER_ID=? ",
                     nowUserId,sta,sessionId,msgId,msgType,fromUserId,fromUserName,toUserId,time,text,file, msgId, nowUserId);
+
+            msg.setSta(sta);
+            msg.setSessionId(sessionId);
+            msg.setMsgId(msgId);
+            msg.setMsgType(msgType);
+            msg.setFromUserId(fromUserId);
+            msg.setFromUserName(fromUserName);
+            msg.setToUserId(toUserId);
+            msg.setTime(time);
+            msg.setText(text);
+            msg.setFile(file);
+
         }
 
 
-        Bean bean = new Bean()
-                .set(Key.ID, msgId)
-                .set(Key.STA, sta)
-                .set(Key.TYPE, msgType)
-                .set(Key.FROM, fromUser)
-                .set(Key.TO, toUserId)
-                .set(Key.TIME, time)
-                .set(Key.TEXT, text)
-                .set(Key.FILE, file)
-        ;
-        return bean;
+        return msg;
     }
 
     /**
@@ -122,33 +120,25 @@ public class MsgModel extends Model{
      * @param count
      * @return
      */
-    public static List<Bean> findMsg(BaseDao dao, String sessionId, String timeBefore, int count){
+    public static List<Message> findMsg(BaseDao dao, String sessionId, String timeBefore, int count){
         List<Map<String, Object>> list = dao.findPage("select * from " + MSG + " where USER_ID=? and SESSION_ID=? and time <? order by TIME DESC ", 1, count, NowUser.getId(), sessionId, timeBefore);
-        List<Bean> res = new ArrayList<>();
+        List<Message> res = new ArrayList<>();
         for(int i = list.size() - 1; i >= 0; i--) {
+            Message item = new Message();
 
             Bean bean = new Bean(list.get(i));
-//            String sessionId = bean.get("SESSION_ID", "");
-            String sta = bean.get("STA", "");
-            String msgId = bean.get("MSG_ID", "");
-            String msgType = bean.get("TYPE", Key.TEXT);
-            User fromUser = new User();
-            fromUser.setId(bean.get("FROM_ID", ""));
-            fromUser.setName(bean.get("FROM_NAME", ""));
-            String toUserId = bean.get("TO_ID", "");
-            String time = bean.get("TIME", "");
-            String text = bean.get("TEXT", "");
-            String file = bean.get("FILE", "");
-            Bean item = new Bean()
-                    .set(Key.ID, msgId)
-                    .set(Key.STA, sta)
-                    .set(Key.TYPE, msgType)
-                    .set(Key.FROM, fromUser)
-                    .set(Key.TO, toUserId)
-                    .set(Key.TIME, time)
-                    .set(Key.TEXT, text)
-                    .set(Key.FILE, file)
-            ;
+
+            item.setSessionId(sessionId);
+            item.setMsgId(bean.get("MSG_ID", ""));
+            item.setSta(bean.get("STA", ""));
+            item.setMsgType(bean.get("TYPE", Key.TEXT));
+            item.setFromUserId(bean.get("FROM_ID", ""));
+            item.setFromUserName(bean.get("FROM_NAME", ""));
+            item.setToUserId(bean.get("TO_ID", ""));
+            item.setTime(bean.get("TIME", ""));
+            item.setText(bean.get("TEXT", ""));
+            item.setFile(bean.get("FILE", ""));
+
             res.add(item );
             AndroidTools.log(bean.toString());
         }

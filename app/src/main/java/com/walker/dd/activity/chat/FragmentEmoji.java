@@ -45,8 +45,9 @@ public class FragmentEmoji extends FragmentBase implements  OnItemClickListener 
 		 Object[] keys = emojiMap.keySet().toArray();
 		 for(int i = 0; i < keys.length; i++){
 			 map = new Bean();
-			 map.put(Key.TEXT, "" + keys[i] );
-			 map.put(Key.ID, "" + emojiMap.get(keys[i]));
+             map.put(Key.ID, "" + keys[i] );
+             map.put(Key.TEXT, "" + keys[i] );
+			 map.put(Key.PROFILE, "" + emojiMap.get(keys[i]));
 			 listEmoji.add(map);  
 		 }  
 		

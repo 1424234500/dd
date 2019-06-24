@@ -39,13 +39,32 @@
             android:layout_height="wrap_content"
             android:paddingTop="6dp" />
 
+
+        <LinearLayout
+
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            >
+
+            <ProgressBar
+                android:id="@+id/pb"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:visibility="gone"
+                android:layout_weight="1" />
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:id="@+id/view"
+
             android:background="@drawable/selector_chatfrom_bg"
             android:clickable="true"
             android:focusable="true">
+
 
             <ImageView
                 android:id="@+id/ivfile"
@@ -70,7 +89,7 @@
                 android:textIsSelectable="true"
                 android:textSize="14dp" />
         </LinearLayout>
-
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/ivload"
