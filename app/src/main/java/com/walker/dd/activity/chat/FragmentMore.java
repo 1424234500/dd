@@ -37,9 +37,9 @@ public class FragmentMore extends FragmentBase {
         View v=inflater.inflate(R.layout.main_fragment_other,container,false);
 
         listItems = new ArrayList<>();
-        listItems.add(new Bean().set(Key.ID, R.drawable.icon_filetype_dir).set(Key.TEXT, "文件"));
-        listItems.add(new Bean().set(Key.ID, R.drawable.icon_filetype_doc).set(Key.TEXT, "文档"));
-        listItems.add(new Bean().set(Key.ID, R.drawable.icon_filetype_music).set(Key.TEXT, "音乐"));
+        listItems.add(new Bean().set(Key.PROFILE, R.drawable.icon_filetype_dir).set(Key.TEXT, "文件").set(Key.ID, "file"));
+        listItems.add(new Bean().set(Key.PROFILE, R.drawable.icon_filetype_doc).set(Key.TEXT, "文档").set(Key.ID, "doc"));
+        listItems.add(new Bean().set(Key.PROFILE, R.drawable.icon_filetype_music).set(Key.TEXT, "音乐").set(Key.TEXT, "music"));
 
 
         adapter = new AdapterGvImageText(getActivity(), listItems);

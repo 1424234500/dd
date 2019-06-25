@@ -33,6 +33,8 @@ import com.walker.dd.service.LoginModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.NetModel;
 import com.walker.dd.util.AndroidTools;
+import com.walker.dd.util.KeyUtil;
+import com.walker.dd.util.picasso.NetImage;
 import com.walker.dd.view.ClearEditText;
 import com.walker.socket.server_1.Key;
 import com.walker.socket.server_1.Msg;
@@ -115,10 +117,11 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 		
 		//初始化账号密码
 		String id = NowUser.getId();
-		String pwd = NowUser.getPwd();
+        String pwd = NowUser.getPwd();
 
 		cetId.setText(id);
 		cetPwd.setText(pwd);
+        NetImage.loadProfile(getContext(), id, ivprofile);
 
 		if(! NetModel.isConn())
 		loadingStart();//加载等待socket连接
@@ -220,6 +223,8 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
                 out("chose id=" + res.get(Key.ID) + " pwd=" + res.get(Key.PWD));
                 cetId.setText( res.get(Key.ID).toString());
                 cetPwd.setText(res.get(Key.PWD).toString());
+                NetImage.loadProfile(getContext(), res.get(Key.ID).toString(), ivprofile);
+
                 popupWindow.dismiss();// 关闭
             }
 

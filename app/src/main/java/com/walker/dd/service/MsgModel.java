@@ -8,6 +8,7 @@ import com.walker.core.database.BaseDao;
 import com.walker.dd.struct.Message;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
+import com.walker.dd.util.KeyUtil;
 import com.walker.socket.server_1.Key;
 import com.walker.socket.server_1.Msg;
 import com.walker.socket.server_1.session.User;
@@ -60,7 +61,7 @@ public class MsgModel extends Model{
         if(msgType.equals(Key.TEXT) || msgType.equals(Key.PHOTO)){
             sta = Key.STA_TRUE;
         }else if(sta.equals(Key.STA_FALSE) || sta.length() == 0){    //只对认为失败的做文件检测 其他认为手动更新 以更新为准
-            String localPath = Constant.getFilePathByKey(file);
+            String localPath = KeyUtil.getFileLocal(file);
             if(FileUtil.check(localPath) == 0 ){
                 sta = Key.STA_TRUE;
             }else{//若不存在

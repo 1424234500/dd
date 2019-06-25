@@ -19,6 +19,7 @@ import com.walker.common.util.FileUtil;
 import com.walker.common.util.JsonUtil;
 import com.walker.common.util.LangUtil;
 import com.walker.common.util.TimeUtil;
+import com.walker.common.util.Tools;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
 import com.walker.dd.activity.FragmentBase;
@@ -26,14 +27,16 @@ import com.walker.dd.adapter.*;
 import com.walker.dd.service.Cache;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
-import com.walker.dd.service.NetModel;
 import com.walker.dd.struct.Message;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
+import com.walker.dd.util.KeyUtil;
 import com.walker.dd.util.MyFile;
+import com.walker.dd.util.MyImage;
 import com.walker.dd.util.OkHttpUtil;
 import com.walker.dd.util.UriUtil;
 import com.walker.dd.util.picasso.NetImage;
+import com.walker.dd.view.DialogImageShow;
 import com.walker.dd.view.EmotionKeyboard;
 import com.walker.socket.server_1.Key;
 import com.walker.dd.util.RobotAuto;
@@ -115,7 +118,8 @@ public class ActivityChat extends AcBase {
                     turnToFragment(fragmentVoice);
                     break;
                 case R.id.ivphoto:
-                    turnToFragment(fragmentPhoto);
+//                    turnToFragment(fragmentPhoto);
+                    AndroidTools.chosePhoto(ActivityChat.this);
                     break;
                 case R.id.ivgraph:
                     Constant.TAKEPHOTO =  Constant.dirCamera + NowUser.getId() + "-" + TimeUtil.getTimeYmdHms()+".png";
@@ -189,11 +193,11 @@ public class ActivityChat extends AcBase {
                 final Message bean = listItemMsg.get(position);
                 String type = bean.getMsgType();//bean.get(Key.TYPE, Key.TEXT);
                 String sta = bean.getSta();//bean.get(Key.STA, Key.STA_FALSE);
-                final String file = bean.getFile();//bean.get(Key.FILE, "");
-                final String newPath = Constant.getFilePathByKey(file);
+                final String key = bean.getFile();//bean.get(Key.FILE, "");
+                final String newPath = KeyUtil.getFileLocal(key);
                 //文件下载
                 if(type.equals(Key.FILE)){
-                    assert file.length() > 0;
+                    assert key.length() > 0;
                     if(new File(newPath).exists()){
                         sta = Key.STA_TRUE;
                     }else if(sta.equals(Key.STA_TRUE)){
@@ -201,40 +205,31 @@ public class ActivityChat extends AcBase {
                     }
                     if(sta.equals(Key.STA_FALSE)){  //下载文件
                         sta = Key.STA_LOADING;
-                        OkHttpUtil.download(NetModel.httpDownload(file), newPath, new OkHttpUtil.OnHttp() {
+                        OkHttpUtil.download(KeyUtil.getFileHttp(key), newPath, new OkHttpUtil.OnHttp() {
                             @Override
-                            public void onOk(Call call, Response response) {
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        bean.setSta(Key.STA_TRUE);
-                                        addMsg(bean);
-                                    }
-                                });
+                            public void onOk(Call call, Response response, long length) {
+                                bean.setSta(Key.STA_TRUE);
+                                addMsg(bean);
                             }
 
                             @Override
-                            public void onLoading(final int progress) {
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        bean.setSta("" + progress);
-                                        addMsg(bean);
-                                    }
-                                });
+                            public void onLoading(final float progress, final long length, long allLength, final long sudo) {
+                                if(Integer.valueOf(bean.getSta()) !=  (int)progress) {
+                                    bean.setSta("" + (int) progress);
+                                    bean.setInfo("P " + Tools.calcSize((long) (allLength/100*progress)) + "/" + Tools.calcSize(allLength) + " " + progress + "%" + " " + Tools.calcSize(sudo) + "/s" );
+                                    out(bean.getInfo());
+                                    addMsg(bean);
+                                }
+
                             }
 
                             @Override
                             public void onError(Throwable e) {
                                 e.printStackTrace();
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        bean.setSta(Key.STA_FALSE);
-                                        addMsg(bean);
-                                        toast("下载文件失败", file);
-                                    }
-                                });
+                                FileUtil.delete(newPath);
+                                bean.setSta(Key.STA_FALSE);
+                                addMsg(bean);
+                                toast("下载文件失败", key);
                             }
                         });
                     }else if(sta.equals(Key.STA_TRUE)){  //打开文件
@@ -246,8 +241,17 @@ public class ActivityChat extends AcBase {
                     addMsg(bean);
                 }
                 //图片详情
+                else if(type.equals(Key.PHOTO)){
+                    //携带参数跳转
+                    String path = KeyUtil.getFileLocal(key);
+                    DialogImageShow dis = new DialogImageShow(ActivityChat.this, path);
+                    dis.show();
+                    dis.setCancelable(true);
+                }
                 //语言自动播放
+                else if(type.equals(Key.VOICE)){
 
+                }
 
 
             }
@@ -467,7 +471,7 @@ public class ActivityChat extends AcBase {
                 Bean data = new Bean()
                         .set(Key.ID, msgid)
                         .set(Key.TYPE, Key.TEXT)
-                        .set(Key.TEXT, str)
+                        .set(Key.TEXT, res)
                         .set(Key.FILE, file)
                         ;
                 Msg msg = new Msg().setUserFrom(NowUser.getDd())
@@ -475,13 +479,8 @@ public class ActivityChat extends AcBase {
                         .setTimeDo(System.currentTimeMillis())
                         ;
                 msg.setData(data);
-                final Message bean = MsgModel.addMsg(sqlDao, new Message(msg));  //存储
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        addMsg(bean);   //表现
-                    }
-                });
+                Message bean = MsgModel.addMsg(sqlDao, new Message(msg));  //存储
+                addMsg(bean);   //表现
 
             }
         });
@@ -492,14 +491,6 @@ public class ActivityChat extends AcBase {
      * @param str
      */
     private void sendMsg(final String str){
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                sendMsg1(str);
-            }
-        });
-    }
-    private void sendMsg1(String str){
         String toid = session.get(Key.ID, "");   //目标人 或群
         String msgid = LangUtil.getGenerateId();
         String file = "";
@@ -534,14 +525,6 @@ public class ActivityChat extends AcBase {
             sendAuto(str);   //自动回复
     }
     private void sendFile(final String path){
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                sendFile1(path);
-            }
-        });
-    }
-    private void sendFile1(final String path){
         String name = FileUtil.getFileName(path);
         String type = FileUtil.getFileType(path);
         final String toid = session.get(Key.ID, "");   //目标人 或群
@@ -584,30 +567,25 @@ public class ActivityChat extends AcBase {
 //              sendHandler(Key.FILE + ":true", path);
               Bean resBean = JsonUtil.get(res);
               final String key = resBean.get("data", "");
-              handler.post(new Runnable() {
-                  @Override
-                  public void run() {
-                      log("上传成功", res);
-                      // 消息存储该路径文件path 若有则用 若无则按照规则下载
-                      data.set(Key.FILE, key);
-                      bean.setFile(key);
-                      try {
-                          data.set(Key.STA, "");    //不需要发送给其他端
-                          sendSocket(Plugin.KEY_MESSAGE, toid, data); //发送socket
-                          bean.setSta(Key.STA_TRUE);
-                          // 把被发送文件复制到 下载路径作为下载到的文件
-                          String newPath = Constant.getFilePathByKey(key);
+                  log("上传成功", res);
+                  // 消息存储该路径文件path 若有则用 若无则按照规则下载
+                  data.set(Key.FILE, key);
+                  bean.setFile(key);
+                  try {
+                      data.set(Key.STA, "");    //不需要发送给其他端
+                      sendSocket(Plugin.KEY_MESSAGE, toid, data); //发送socket
+                      bean.setSta(Key.STA_TRUE);
+                      // 把被发送文件复制到 下载路径作为下载到的文件
+                      String newPath = KeyUtil.getFileLocal(key);
 //                          FileUtil.cp(path, newPath);
-                          MyFile.copyFile(path, newPath);
-                      }catch (Exception e){
-                            e.printStackTrace();
-                            toast("发送文件消息失败", key);
-                            bean.setSta(Key.STA_FALSE);
-                      }
-                      MsgModel.addMsg(sqlDao, bean);  //存储
-                      addMsg(bean);   //表现
+                      MyFile.copyFile(path, newPath);
+                  }catch (Exception e){
+                        e.printStackTrace();
+                        toast("发送文件消息失败", key);
+                        bean.setSta(Key.STA_FALSE);
                   }
-              });
+                  MsgModel.addMsg(sqlDao, bean);  //存储
+                  addMsg(bean);   //表现
           }
         });
 
@@ -615,9 +593,82 @@ public class ActivityChat extends AcBase {
 
 
     private void sendPhoto(final String path){
+        String name = FileUtil.getFileName(path);
+        String type = FileUtil.getFileType(path);
+
+        //图片上传 压缩的文件 控制大小在500kb以内 分辨率800
+        // 把被发送文件压缩转换 下载路径作为下载到的文件 原名
+        String tempName = "T_" + System.currentTimeMillis() + "." + type;
+        String tempPath = KeyUtil.getFileLocal(tempName);
+//        MyFile.copyFile(path, tempPath);
+        MyImage.savePNG_After(MyImage.getBitmapByDecodeFile(path), tempPath);
+
+        final String toid = session.get(Key.ID, "");   //目标人 或群
+        final String msgid = LangUtil.getGenerateId();
+        final Bean data = new Bean()
+                .set(Key.ID, msgid)
+                .set(Key.TYPE, Key.PHOTO)
+                .set(Key.STA, "1")
+                .set(Key.TEXT, name)
+                .set(Key.FILE, tempPath)    //先暂存本地发送路径 待上传成功cp到下载路径
+                ;
+        final Msg msg = new Msg().setUserFrom(NowUser.getUser())
+                .setUserTo(toid)
+                .setTimeDo(System.currentTimeMillis())
+                .setData(data)
+                ;
+
+        final Message bean = MsgModel.addMsg(sqlDao, new Message(msg));  //存储
+        addMsg(bean);   //表现
+
+        //上传文件拿到 文件key 把被发送文件复制到 下载路径作为下载到的文件 消息存储该路径文件path 若有则用 若无则按照规则下载
+        OkHttpUtil.upload(tempPath, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        bean.setSta(Key.STA_FALSE);
+                        MsgModel.addMsg(sqlDao, bean);  //存储
+                        addMsg(bean);   //表现
+                        toast("上传失败", path);
+                    }
+                });
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                final String res = response.body().string();
+//              sendHandler(Key.FILE + ":true", path);
+                Bean resBean = JsonUtil.get(res);
+                final String key = resBean.get("data", "");
+                log("上传成功", res);
+
+                String newPath = KeyUtil.getFileLocal(key);
+                new File(tempPath).renameTo(new File(newPath)); //重命名临时文件
+                // 消息存储该路径文件path 若有则用 若无则按照规则下载
+                data.set(Key.FILE, key);
+                bean.setFile(key);
+                try {
+                    data.set(Key.STA, "");    //不需要发送给其他端
+                    sendSocket(Plugin.KEY_MESSAGE, toid, data); //发送socket
+                    bean.setSta(Key.STA_TRUE);
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                    toast("发送文件消息失败", key);
+                    bean.setSta(Key.STA_FALSE);
+                }
+                MsgModel.addMsg(sqlDao, bean);  //存储
+                addMsg(bean);   //表现
+            }
+        });
+
 
 
     }
+
 
 
     private void loadMore(){
@@ -703,7 +754,11 @@ public class ActivityChat extends AcBase {
             if (requestCode == Constant.ACTIVITY_RESULT_PATH ) {
                 Uri uri = data.getData();
                 String path = UriUtil.getpath(getContext(), uri);
-                sendFile(path);
+                if(niv.getNowId() == R.id.ivphoto) {
+                    sendPhoto(path);
+                } else{
+                    sendFile(path);
+                }
             } else if (requestCode == Constant.ACTIVITY_RESULT_TAKEPHOTO  ) {
                 sendPhoto(Constant.TAKEPHOTO);
             }else{

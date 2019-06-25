@@ -4,6 +4,7 @@ package com.walker.dd.util;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -26,8 +27,10 @@ import android.net.DhcpInfo;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -206,13 +209,25 @@ public class AndroidTools {
     }
 
 
-    //打开文件时调用
+    /**
+     * 打开文件时调用
+     * 高版本api 文件权限uri转换
+     */
     public static void openFile(Activity ac, String filesPath) {
-        Uri uri = Uri.parse("file://" + filesPath);
-        Intent intent = new Intent();
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setAction(Intent.ACTION_VIEW);
-
+//        Uri uri = Uri.parse("file://" + filesPath);
+        File file = new File(filesPath);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            uri = FileProvider.getUriForFile(ac, ac.getPackageName() + ".fileprovider", file);
+            //【content://{$authority}/external/temp.apk】或【content://{$authority}/files/bqt/temp2.apk】
+        } else {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//【file:///storage/emulated/0/temp.apk】
+            uri = Uri.fromFile(file);
+        }
+        AndroidTools.log(ac, filesPath, uri);
+//        intent.setDataAndType(uri, "application/vnd.android.package-archive");
         String type = getMIMEType(filesPath);
         intent.setDataAndType(uri, type);
         if (!type.equals("*/*")) {
@@ -224,7 +239,9 @@ public class AndroidTools {
         } else {
             ac.startActivity(showOpenTypeDialog(filesPath));
         }
+
     }
+
 
     //显示打开方式
     public static void showOpenFile(Activity ac, String filesPath) {
@@ -236,7 +253,7 @@ public class AndroidTools {
     }
 
     public static Intent showOpenTypeDialog(String param) {
-        Log.e("ViChildError", "showOpenTypeDialog");
+        AndroidTools.log("showOpenTypeDialog", param);
         Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(android.content.Intent.ACTION_VIEW);
@@ -870,16 +887,24 @@ public class AndroidTools {
      * @param path
      */
     public static  void takePhoto(Activity ac, String path ){
-        File temp = new File(path);
-        Uri imageFileUri = Uri.fromFile(temp);//获取文件的Uri
-        Intent it = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//跳转到相机Activity
-        it.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);//告诉相机拍摄完毕输出图片到指定的Uri
-        ac.startActivityForResult(it, Constant.ACTIVITY_RESULT_TAKEPHOTO);
+        AndroidTools.log("takePhoto", ac, path);
+        File file = new File(path);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            String authority = ac.getPackageName() + ".fileprovider"; //【清单文件中provider的authorities属性的值】
+            uri = FileProvider.getUriForFile(ac, authority, file);
+        } else {
+            uri = Uri.fromFile(file);
+        }
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        ac.startActivityForResult(intent, Constant.ACTIVITY_RESULT_TAKEPHOTO);
+
     }
 
 
     /**
-     * 选择图片  ACTIVITY_RESULT_PATH
+     * 选择图片文件  ACTIVITY_RESULT_PATH
      * @param ac
      */
     public static void chosePhoto(Activity ac){
@@ -888,6 +913,31 @@ public class AndroidTools {
         intent.setType("image/*");
         ac.startActivityForResult(Intent.createChooser(intent, "选择图片"), Constant.ACTIVITY_RESULT_PATH );
     }
+
+    /**
+     * 查询最近10张照片路径
+     * @param ac
+     * @return
+     */
+    public static List<Bean> searchPhoto(Context ac, int count){
+        Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        Cursor mCursor = ac.getContentResolver().query(mImageUri, null,
+                MediaStore.Images.Media.MIME_TYPE + "=? or "  + MediaStore.Images.Media.MIME_TYPE + "=?",
+                new String[] { "image/jpeg", "image/png" }, MediaStore.Files.FileColumns.DATE_ADDED + " DESC");
+        if(mCursor == null){  return new ArrayList<>();   }
+        int i = 0;
+        List<Bean> list = new ArrayList<>();
+        while(mCursor.moveToNext() && i++ < count){//只显示最多30张图片
+            Bean map = new Bean();
+            map.put("chose", "false");
+            map.put("path", mCursor.getString(mCursor .getColumnIndex(MediaStore.Images.Media.DATA)));
+            list.add(map );
+        }
+        return list;
+    }
+
+
+
 
     /**
      * 选择文件 ACTIVITY_RESULT_PATH

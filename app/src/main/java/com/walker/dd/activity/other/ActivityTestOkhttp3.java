@@ -18,6 +18,7 @@ import com.walker.dd.activity.AcBase;
 import com.walker.dd.service.NetModel;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
+import com.walker.dd.util.KeyUtil;
 import com.walker.dd.util.OkHttpUtil;
 import com.walker.socket.client.Client;
 import com.walker.socket.client.ClientNetty;
@@ -48,6 +49,8 @@ public class ActivityTestOkhttp3 extends Activity implements View.OnClickListene
         ettop = (EditText) this.findViewById(R.id.ettop);
         tvout = (TextView)this.findViewById(R.id.tvout);
         etsend = (EditText)this.findViewById(R.id.etsend);
+
+
 
 
         sv = (ScrollView) findViewById(R.id.sv);
@@ -103,9 +106,11 @@ public class ActivityTestOkhttp3 extends Activity implements View.OnClickListene
                             out(response.body().toString());
                         }
                     });
+                    ettop.setText("https://mirrors.tuna.tsinghua.edu.cn/apache/tomcat/tomcat-8/v8.5.42/bin/apache-tomcat-8.5.42.tar.gz");
+
                     break;
                 case R.id.upload:
-                    String savePath1 = Constant.getFilePathByKey(data);
+                    String savePath1 = KeyUtil.getFileLocal(data);
                     out("upload", url, savePath1);
                     OkHttpUtil.upload(url, savePath1, "", new Callback() {
                         @Override
@@ -121,18 +126,33 @@ public class ActivityTestOkhttp3 extends Activity implements View.OnClickListene
                     });
                     break;
                 case R.id.download:
-                    String savePath = Constant.getFilePathByKey(data);
+                    String savePath = KeyUtil.getFileLocal(data);
                     out("download", url, savePath);
                     OkHttpUtil.download(url, savePath, new OkHttpUtil.OnHttp() {
+                        /**
+                         * 下载完毕
+                         *
+                         * @param call
+                         * @param response
+                         * @param allLength 总长度
+                         */
                         @Override
-                        public void onOk(Call call, Response response) {
-                            out("ok");
+                        public void onOk(Call call, Response response, long allLength) {
+                            out("onOk", allLength);
                             out(response.headers());
                         }
 
+                        /**
+                         * 进度
+                         *
+                         * @param progress  float   这次收到之后进度23.4%
+                         * @param length    long    这次收到的长度20byte
+                         * @param allLength
+                         * @param sudo      long 速度 这次收到和上次收到的差值耗时速度20byte/s
+                         */
                         @Override
-                        public void onLoading(int progress) {
-                            out("onLoading", progress);
+                        public void onLoading(float progress, long length, long allLength, long sudo) {
+                            out("onLoading", progress, length, allLength, sudo);
                         }
 
                         @Override

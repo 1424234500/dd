@@ -42,53 +42,59 @@ android:padding="1dp" >
 
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            >
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:id="@+id/view"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_chatto_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="right">
+
+                <ImageView
+                    android:id="@+id/ivfile"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_filetype_zip" />
+
+                <TextView
+                    android:id="@+id/tvtext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:enabled="true"
+                    android:focusable="true"
+                    android:gravity="left|center"
+                    android:longClickable="true"
+                    android:minHeight="30dp"
+                    android:text="asdfaksdofkasldfkalsdfkalsdf"
+                    android:textColor="@color/white"
+                    android:textIsSelectable="true"
+                    android:textSize="14dp" />
+            </LinearLayout>
+
 
             <ProgressBar
                 android:id="@+id/pb"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:visibility="gone"
-                android:layout_weight="1" />
-
-        <LinearLayout
-            android:id="@+id/view"
-
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/selector_chatto_bg"
-            android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:id="@+id/ivfile"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center_vertical"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_filetype_zip" />
+                android:layout_height="3dp" />
 
             <TextView
-                android:id="@+id/tvtext"
+                android:id="@+id/tvinfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:enabled="true"
-                android:focusable="true"
-                android:gravity="left|center"
-                android:longClickable="true"
-                android:minHeight="30dp"
-                android:text="lkmasfladlkfjalkdfjalskdjfaklsdjfaksldjflkasdfj"
-                android:textColor="@color/white"
-                android:textIsSelectable="true"
-                android:textSize="14dp" />
-        </LinearLayout>
+                android:text="aaaaaaaaaaaaa" />
         </LinearLayout>
 
         <com.walker.dd.view.ImageText

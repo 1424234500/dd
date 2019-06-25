@@ -117,7 +117,7 @@ public class FragmentEmoji extends FragmentBase implements  OnItemClickListener 
 	public void onItemClick(AdapterView<?> arg0, View arg1, int i, long l) {
 		if(call != null){
 		    Bean bean = listEmoji.get(i);
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), bean.get(Key.ID, 0) );
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), bean.get(Key.PROFILE, 0) );
             bitmap = Bitmap.createScaledBitmap(bitmap, Constant.emojiWH, Constant.emojiWH, true);
             ImageSpan imageSpan = new ImageSpan(getContext(), bitmap);
             SpannableString spannableString = new SpannableString(bean.get(Key.TEXT, ""));

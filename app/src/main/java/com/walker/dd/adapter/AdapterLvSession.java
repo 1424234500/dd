@@ -112,7 +112,7 @@ public   class AdapterLvSession extends BaseAdapter    {
 			viewHolder.tvnum.setVisibility(View.VISIBLE);
 		}
 //	 	NetImage.loadProfile(context, listItems.get(position, "PROFILEPATH"), viewHolder.ivprofile);
-        NetImage.loadProfile(context, NetModel.httpDownload(KeyUtil.getProfile(bean.get(Key.ID, ""))), viewHolder.ivprofile);
+        NetImage.loadProfile(context, bean.get(Key.ID, "default"), viewHolder.ivprofile);
 
 
         return convertView;

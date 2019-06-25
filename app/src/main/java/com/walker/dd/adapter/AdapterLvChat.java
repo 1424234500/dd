@@ -8,7 +8,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -17,17 +16,14 @@ import android.widget.TextView;
 import com.walker.common.util.Bean;
 import com.walker.common.util.FileUtil;
 import com.walker.dd.R;
-import com.walker.dd.service.NetModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.struct.Message;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.dd.util.EmotionUtils;
-import com.walker.dd.util.KeyUtil;
 import com.walker.dd.util.picasso.NetImage;
 import com.walker.socket.server_1.Key;
 import com.walker.dd.view.ImageText;
-import com.walker.socket.server_1.session.User;
 
 
 /**
@@ -74,20 +70,12 @@ public   class AdapterLvChat extends  BaseAdapter      {
 
     private class ViewHolderFile  extends ViewHolderText{
         public ImageView ivfile;
+        public TextView tvinfo;
         public ProgressBar pb;
     }
     private final class ViewHolderFileSelf  extends ViewHolderFile{
     }
     private final class ViewHolderFileOther  extends ViewHolderFile{
-    }
-
-
-    private class ViewHolderVoice extends ViewHolderFile{
-        public ImageView ivvoice;
-    }
-    private final class ViewHolderVoiceSelf extends ViewHolderVoice{
-    }
-    private final class ViewHolderVoiceOther extends ViewHolderVoice{
     }
 
     private  class ViewHolderPhoto  extends ViewHolderFile{
@@ -99,16 +87,26 @@ public   class AdapterLvChat extends  BaseAdapter      {
     }
 
 
+    private class ViewHolderVoice extends ViewHolderFile{
+        public ImageView ivvoice;
+    }
+    private final class ViewHolderVoiceSelf extends ViewHolderVoice{
+    }
+    private final class ViewHolderVoiceOther extends ViewHolderVoice{
+    }
+
+
+
 
     //布局类型 0开始
     final int TYPE_TEXT = 0;	//自己发的文本
     final int TYPE_FILE = 1;	//自己发的文件
-    final int TYPE_VOICE = 2;	//自己发的语音
-    final int TYPE_PHOTO = 3;	//自己发的图片
+    final int TYPE_PHOTO = 2;	//自己发的图片
+    final int TYPE_VOICE = 3;	//自己发的语音
     Bean types = new Bean()
             .set(Key.TEXT, TYPE_TEXT)
             .set(Key.FILE, TYPE_FILE)
-//            .set("voice_false", 3)
+            .set(Key.PHOTO, TYPE_PHOTO)
 //            .set("voice_true", 4)
 //            .set("voice_flase", 5)
             ;
@@ -135,8 +133,16 @@ public   class AdapterLvChat extends  BaseAdapter      {
                 convertView = layoutInflater.inflate(ifSelf ? R.layout.chat_item_file_right : R.layout.chat_item_file_left, null);	// 获取list_item布局文件的视图
                 viewHolderFile.ivfile = (ImageView) convertView .findViewById(R.id.ivfile);
                 viewHolderFile.pb = (ProgressBar) convertView .findViewById(R.id.pb);
+                viewHolderFile.tvinfo = (TextView) convertView .findViewById(R.id.tvinfo);
 
                 convertView.setTag(viewHolderFile);// 设置控件集到convertView
+                break;
+            case TYPE_PHOTO:
+                ViewHolderPhoto viewHolderPhoto = new ViewHolderPhoto();
+                convertView = layoutInflater.inflate(ifSelf ? R.layout.chat_item_photo_right : R.layout.chat_item_photo_left, null);	// 获取list_item布局文件的视图
+                viewHolderPhoto.ivphoto = (ImageView) convertView .findViewById(R.id.ivphoto);
+
+                convertView.setTag(viewHolderPhoto);// 设置控件集到convertView
                 break;
             default:
                 AndroidTools.log("未明确的类型适配????");
@@ -174,12 +180,13 @@ public   class AdapterLvChat extends  BaseAdapter      {
         viewHolder.tvtime.setText(bean.getTime());// bean.get(Key.TIME, Key.TIME)) ;
 
         viewHolder.it.setText(bean.getFromUserName(), R.color.black, R.color.blue);
-        NetImage.loadProfile(context, NetModel.httpDownload(KeyUtil.getProfile(bean.getFromUserId())), viewHolder.it.iv);
+        NetImage.loadProfile(context, bean.getFromUserId(), viewHolder.it.iv);
 
         viewHolder.tvtext.setText(
                 EmotionUtils.getEmotionContent(context,
                         viewHolder.tvtext, bean.getText()));
         String sta = bean.getSta();
+        String path = bean.getFile();
 
         //私有属性设置
         switch (type){
@@ -188,11 +195,11 @@ public   class AdapterLvChat extends  BaseAdapter      {
                 break;
             case TYPE_FILE:
                 ViewHolderFile viewHolderFile = (ViewHolderFile) viewHolder;
-                String path = bean.getFile();
-                int resid = Constant.getFileImageByType(FileUtil.getFileType(path));
-                viewHolderFile.ivfile.setImageResource(resid);
+                viewHolderFile.ivfile.setImageResource(Constant.getFileImageByType(FileUtil.getFileType(path)));
                 if(!sta.equals(Key.STA_TRUE) && !sta.equals(Key.STA_FALSE) ){
                     viewHolderFile.pb.setVisibility(View.VISIBLE);
+                    viewHolderFile.tvinfo.setVisibility(View.VISIBLE);
+                    viewHolderFile.tvinfo.setText(bean.getInfo());
                     try {
                         viewHolderFile.pb.setProgress(Integer.valueOf(sta));
                     }catch (Exception e){
@@ -200,8 +207,12 @@ public   class AdapterLvChat extends  BaseAdapter      {
                     }
                 }else{
                     viewHolderFile.pb.setVisibility(View.GONE);
+                    viewHolderFile.tvinfo.setVisibility(View.GONE);
                 }
-
+                break;
+            case TYPE_PHOTO:
+                ViewHolderPhoto viewHolderPhoto = (ViewHolderPhoto) viewHolder;
+                NetImage.load(context, path, viewHolderPhoto.ivphoto);
                 break;
             default:
                 AndroidTools.log("未明确的类型适配????");

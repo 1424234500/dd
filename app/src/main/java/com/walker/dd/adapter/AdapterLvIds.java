@@ -15,6 +15,10 @@ import android.widget.TextView;
 
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
+import com.walker.dd.service.NetModel;
+import com.walker.dd.util.Constant;
+import com.walker.dd.util.KeyUtil;
+import com.walker.dd.util.picasso.NetImage;
 import com.walker.socket.server_1.Key;
 
 /**
@@ -87,7 +91,7 @@ public class AdapterLvIds extends BaseAdapter {
 		
 		// 设置文字和图片
 	 	listItemView.tvid.setText(bean.get(Key.ID, "")) ;
-//	 	NetImage.loadProfile(context, bean.get(Key.PROFILE, ""), listItemView.ivprofile);
+	 	NetImage.loadProfile(context, bean.get(Key.ID, "default"), listItemView.ivprofile);
 
         listItemView.ivdel.setOnClickListener(new OnClickListener() {
 			@Override

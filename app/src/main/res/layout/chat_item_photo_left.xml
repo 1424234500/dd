@@ -1,79 +1,90 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll_item_msg"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:padding="1dp" >
 
     <LinearLayout
-        android:id="@+id/linearlayout0"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="vertical" >
 
         <TextView
             android:id="@+id/tvtime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center"
             android:layout_marginBottom="5dp"
             android:text="2016/5/9"
             android:textColor="@color/qqlittleblack"
             android:textSize="12sp" />
+
     </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/linearlayout0"        android:paddingLeft="10dp"
-        
-                android:layout_marginRight="50dp"
-         >
+        android:layout_marginRight="40dp"
+        android:gravity="top|left"
+        android:orientation="horizontal">
+
+
+        <com.walker.dd.view.ImageText
+            android:id="@+id/it"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="6dp" />
+
+        <LinearLayout
+            android:id="@+id/view"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_chatfrom_bg"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView
+                android:id="@+id/tvtext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:enabled="true"
+                android:focusable="true"
+                android:gravity="left|center"
+                android:longClickable="true"
+                android:minHeight="30dp"
+                android:text="123"
+                android:visibility="gone"
+                android:textColor="@color/black"
+                android:textIsSelectable="true"
+                android:textSize="14dp" />
+
+            <ImageView
+                android:id="@+id/ivphoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/loaderror" />
+
+
+        </LinearLayout>
 
 
         <ImageView
-            android:id="@+id/ivprofile"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="2dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/boy" />
+            android:id="@+id/ivload"
+            android:layout_marginTop="5dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:baselineAlignBottom="true"
+            android:src="@drawable/ccd" />
+    </LinearLayout>
 
-           <TextView
-            android:id="@+id/tvusername"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/ivprofile"
-            android:layout_toLeftOf="@+id/linearlayout"
-            android:singleLine="true"
-            android:gravity="center"
-            android:text="uu" />
 
-        <LinearLayout
-            android:id="@+id/linearlayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/ivprofile"
-            android:layout_toRightOf="@+id/ivprofile"
-            android:background="@drawable/selector_chatfrom_bg"
-            android:clickable="true"
-            android:focusable="true"
-            android:minHeight="40dp" >
 
-              <ImageView
-                  android:id="@+id/ivphoto"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center_vertical"
-                  android:adjustViewBounds="true"
-                  android:scaleType="fitXY"
-                  android:src="@drawable/loading" />
-
-        </LinearLayout>
-    </RelativeLayout>
-
-</RelativeLayout>
+</LinearLayout>

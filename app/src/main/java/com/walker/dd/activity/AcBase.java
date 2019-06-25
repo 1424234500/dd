@@ -151,7 +151,7 @@ public abstract class AcBase extends FragmentActivity implements View.OnClickLis
             }
         }, 6000);
         beatsDialog.setCancelable(true);
-        beatsDialog.setCancelable(false);
+//        beatsDialog.setCancelable(false);
     }
 
     /**
@@ -225,8 +225,14 @@ public abstract class AcBase extends FragmentActivity implements View.OnClickLis
      * @param objects
      */
     public void toast(Object...objects){
-        log(objects);
-        Toast.makeText(this, Tools.objects2string(objects), Toast.LENGTH_SHORT).show();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                log(objects);
+                Toast.makeText(AcBase.this, Tools.objects2string(objects), Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     /**

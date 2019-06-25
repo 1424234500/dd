@@ -17,6 +17,7 @@ import com.walker.dd.service.SessionModel;
 import com.walker.dd.service.NetModel;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
+import com.walker.dd.util.picasso.NetImage;
 import com.walker.socket.client.Client;
 import com.walker.socket.client.ClientNetty;
 import com.walker.socket.client.OnSocket;
@@ -117,6 +118,10 @@ public class Application extends android.app.Application implements OnSocket {
 
         initSocket();
         NowUser.context = getApplicationContext();
+
+
+        //初始化picasso 缓存
+        NetImage.init(this);
 
         //初始化sharedPreference
         initSP();

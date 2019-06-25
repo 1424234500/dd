@@ -17,6 +17,22 @@ public class Message  {
     String text;
     String file;
     String sta;
+    String sessionId;
+
+
+    /**
+     * 不存数据库
+     */
+    String info;
+
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
 
     public String getSessionId() {
         return sessionId;
@@ -26,7 +42,6 @@ public class Message  {
         this.sessionId = sessionId;
     }
 
-    String sessionId;
 
 
     public String getSta() {

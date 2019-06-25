@@ -24,9 +24,7 @@ public class Constant {
 	public static final String dirProfile = root +  "profile/";  
 	public static final String dirProfileWall = root +  "profilewall/";
 
-    public static final String getFilePathByKey(String key){
-        return dirFile + key;
-    }
+
 
 	public static final String split = "OTOTO";
 

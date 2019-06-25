@@ -63,12 +63,23 @@ public class OkHttpUtil {
     }
 
 
-
+    /**
+     * 生成命名
+     * @param path
+     * @param callback
+     */
     public static void upload(String path, Callback callback){
-        upload(NetModel.httpUpload(), path, "", callback);
+        upload(KeyUtil.getUpload(), path, "", callback);
     }
+
+    /**
+     * 指定key则按照key命名
+     * @param path
+     * @param key
+     * @param callback
+     */
     public static void upload(String path, String key, Callback callback){
-        upload(NetModel.httpUpload(), path, key, callback);
+        upload(KeyUtil.getUpload(), path, key, callback);
     }
 
     public static void upload(String url, String path, String key, Callback callback){
@@ -94,8 +105,21 @@ public class OkHttpUtil {
 
 
     public interface OnHttp {
-        void onOk(Call call, Response response);
-        void onLoading(int progress);
+        /**
+         * 下载完毕
+         * @param call
+         * @param response
+         * @param allLength    总长度
+         */
+        void onOk(Call call, Response response, long allLength);
+
+        /**
+         * 进度
+         * @param progress  float   这次收到之后进度23.4%
+         * @param length    long    这次收到的长度20byte
+         * @param sudo  long 速度 这次收到和上次收到的差值耗时速度20byte/s
+         */
+        void onLoading(float progress, long length, long allLength, long sudo);
         void onError(Throwable e);
     }
 
@@ -112,7 +136,7 @@ public class OkHttpUtil {
 
         final ProgressListener progressListener = new ProgressListener() {
             boolean firstUpdate = true;
-
+            long lastTime = System.currentTimeMillis();
             @Override public void update(long bytesRead, long contentLength, boolean done) {
                 AndroidTools.out(bytesRead, contentLength, done);
                 if (done) {
@@ -123,8 +147,10 @@ public class OkHttpUtil {
                     }
 
                     if (contentLength != -1) {
-                        long prog = (100 * bytesRead) / contentLength;
-                        listener.onLoading((int)prog);
+                        long deta = System.currentTimeMillis() - lastTime + 1;
+                        long sudo = bytesRead * 1000 / deta;
+                        float prog = ((int)((1000 * bytesRead) / contentLength)) * 1.0f / 10;
+                        listener.onLoading(prog, bytesRead, contentLength, sudo);
                     }
                 }
             }
@@ -169,7 +195,7 @@ public class OkHttpUtil {
                     }
                     fos.flush();
                     // 下载完成
-                    listener.onOk(call, response);
+                    listener.onOk(call, response, sum);
                 } catch (Exception e) {
                     listener.onError(e);
                 } finally {

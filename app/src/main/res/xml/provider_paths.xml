@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <files-path
+        name="files"
+        path="/"/>
+    <cache-path
+        name="cache"
+        path="/"/>
+    <external-path
+        name="external"
+        path="/"/>
+    <external-files-path
+        name="external_file_path"
+        path="/"/>
+    <external-cache-path
+        name="external_cache_path"
+        path="/"/>
+    <!--<external-media-path
+        name="external-media-path"
+        path=""/>-->
+</paths>
+
+    <!--配置的元素：-->
+
+    <!--files-path 对应内部存储目录 Context.getFilesDir()-->
+    <!--cache-path 对应内部存储目录 Context.getCacheDir()-->
+    <!--external-path 对应 Environment.getExternalStorageDirectory()-->
+    <!--external-files-path 对应 Context.getExternalFilesDir()-->
+    <!--external-cache-path 对应 Context.getExternalCacheDir()-->
+    <!--external-media-path 对应 Context.getExternalMediaDirs()-->
+
+<!--
+
+    很少会用到的路径：
+
+    String downloadCache = Environment.getDownloadCacheDirectory().getAbsolutePath(); //【/cache】
+    String data = Environment.getDataDirectory().getAbsolutePath(); //【/data】
+    String root = Environment.getRootDirectory().getAbsolutePath(); //【/system】
+    SD卡上的路径
+
+    String ext = Environment.getExternalStorageDirectory().getAbsolutePath(); //【/storage/emulated/0】
+    String extDowmload = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(); //【/storage/emulated/0/Download】
+    String extDcim = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath(); //【/storage/emulated/0/DCIM】
+
+
+    data/包名下的路径：
+
+    String filesPath = getFilesDir().getAbsolutePath(); //【/data/user/0/包名/files】
+    String cachePath = getCacheDir().getAbsolutePath(); //【/data/user/0/包名/cache】
+    String extCachePath = getExternalCacheDir().getAbsolutePath(); //【/storage/emulated/0/Android/data/包名/cache】
+
+    String extFileDowmloadPath = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();//【/storage/emulated/0/Android/data/包名/files/Download】
+    String extFilesDCIMPath = getExternalFilesDir(Environment.DIRECTORY_DCIM).getAbsolutePath();//【/storage/emulated/0/Android/data/包名/files/DCIM】
+
+-->

@@ -135,7 +135,7 @@ public class NavigationBar extends LinearLayout implements View.OnClickListener 
     }
     public NavigationBar setReturnIcon(int icon){
 //        ivicon.setImageResource(icon);
-        NetImage.loadProfile(getContext(), icon, ivicon);
+        NetImage.loadRound(getContext(), icon, ivicon);
 
         ivreturn.setVisibility(GONE);
         tvreturn.setVisibility(GONE);
