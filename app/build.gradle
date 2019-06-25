@@ -43,7 +43,7 @@ dependencies {
     implementation 'log4j:log4j:1.2.14'
 
     implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation'com.squareup.okhttp:okhttp:2.+'
+    implementation 'com.squareup.okhttp:okhttp:2.+'
 
 
     runtimeOnly 'org.json:json:20180813'
