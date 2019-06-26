@@ -119,7 +119,7 @@ public class ActivityChat extends AcBase {
                     break;
                 case R.id.ivphoto:
 //                    turnToFragment(fragmentPhoto);
-                    AndroidTools.chosePhoto(ActivityChat.this);
+                    AndroidTools.chosePhoto(ActivityChat.this, Constant.ACTIVITY_RESULT_PHOTO);
                     break;
                 case R.id.ivgraph:
                     Constant.TAKEPHOTO =  Constant.dirCamera + NowUser.getId() + "-" + TimeUtil.getTimeYmdHms()+".png";
@@ -610,7 +610,7 @@ public class ActivityChat extends AcBase {
                 .set(Key.TYPE, Key.PHOTO)
                 .set(Key.STA, "1")
                 .set(Key.TEXT, name)
-                .set(Key.FILE, tempPath)    //先暂存本地发送路径 待上传成功cp到下载路径
+                .set(Key.FILE, tempName)    //先暂存本地发送路径 待上传成功cp到下载路径
                 ;
         final Msg msg = new Msg().setUserFrom(NowUser.getUser())
                 .setUserTo(toid)
@@ -751,21 +751,19 @@ public class ActivityChat extends AcBase {
             return;
         }
         try{
-            if (requestCode == Constant.ACTIVITY_RESULT_PATH ) {
+            if (requestCode == Constant.ACTIVITY_RESULT_FILE ) {
                 Uri uri = data.getData();
                 String path = UriUtil.getpath(getContext(), uri);
-                if(niv.getNowId() == R.id.ivphoto) {
-                    sendPhoto(path);
-                } else{
-                    sendFile(path);
-                }
-            } else if (requestCode == Constant.ACTIVITY_RESULT_TAKEPHOTO  ) {
+                sendFile(path);
+            }else if (requestCode == Constant.ACTIVITY_RESULT_PHOTO  ) {
+                Uri uri = data.getData();
+                String path = UriUtil.getpath(getContext(), uri);
+                sendPhoto(path);
+            }else if (requestCode == Constant.ACTIVITY_RESULT_TAKEPHOTO  ) {
                 sendPhoto(Constant.TAKEPHOTO);
             }else{
                 toast("onAc " + data);
             }
-
-
         }  catch (Exception e) {
             toast(e.toString());
             e.printStackTrace();

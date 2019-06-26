@@ -123,34 +123,8 @@ public class AndroidTools {
     }
 
 
-    /**
-     * Date 2017-5-7 下午6:15:52
-     * Desc: 选择图片调用
-     *
-     * @param ac
-     * @param code
-     */
-    public static void chosePhoto(Activity ac, int code) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("image/*");
-        ac.startActivityForResult(Intent.createChooser(intent, "选择图片"), code);
-    }
 
-    /**
-     * Date 2017-5-7 下午6:15:52
-     * Desc: 选择图片调用
-     *
-     * @param ac
-     * @param code
-     */
-    public static void takePhoto(Activity ac, String path, int code) {
-        File temp = new File(path);
-        Uri imageFileUri = Uri.fromFile(temp);//获取文件的Uri
-        Intent it = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//跳转到相机Activity
-        it.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);//告诉相机拍摄完毕输出图片到指定的Uri
-        ac.startActivityForResult(it, code);
-    }
+
 
 
 
@@ -892,6 +866,7 @@ public class AndroidTools {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         Uri uri;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             String authority = ac.getPackageName() + ".fileprovider"; //【清单文件中provider的authorities属性的值】
             uri = FileProvider.getUriForFile(ac, authority, file);
         } else {
@@ -901,17 +876,18 @@ public class AndroidTools {
         ac.startActivityForResult(intent, Constant.ACTIVITY_RESULT_TAKEPHOTO);
 
     }
-
-
     /**
-     * 选择图片文件  ACTIVITY_RESULT_PATH
+     * Date 2017-5-7 下午6:15:52
+     * Desc: 选择图片调用
+     *
      * @param ac
+     * @param code
      */
-    public static void chosePhoto(Activity ac){
+    public static void chosePhoto(Activity ac, int code) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("image/*");
-        ac.startActivityForResult(Intent.createChooser(intent, "选择图片"), Constant.ACTIVITY_RESULT_PATH );
+        ac.startActivityForResult(Intent.createChooser(intent, "选择图片"), code);
     }
 
     /**

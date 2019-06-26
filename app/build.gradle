@@ -43,7 +43,8 @@ dependencies {
     implementation 'log4j:log4j:1.2.14'
 
     implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation 'com.squareup.okhttp:okhttp:2.+'
+//    implementation 'com.squareup.okhttp:okhttp:2.+'
+    implementation 'com.squareup.okhttp3:okhttp:4.0.0-RC1'
 
 
     runtimeOnly 'org.json:json:20180813'
@@ -56,5 +57,4 @@ dependencies {
     //    implementation files('libs/httpcore-4.3.2.jar')
     //    implementation files('libs/httpmime-4.3.4.jar')
     //    compile 'com.walker:walker-core:0.0.1-SNAPSHOT'
-    implementation 'com.squareup.okhttp3:okhttp:4.0.0-RC1'
 }

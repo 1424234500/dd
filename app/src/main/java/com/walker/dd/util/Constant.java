@@ -18,9 +18,11 @@ public class Constant {
     public static final String root = Environment.getExternalStorageDirectory() + "/aadd/";
 //    public static final String root = Environment.getDataDirectory() + "/mydd/";
 	public static final String dirVoice = root + "record/";
-	public static final String dirPhoto =  root + "photo/";  
-	public static final String dirFile =  root + "file/";  
-	public static final String dirCamera = root +  "camera/";  
+	public static final String dirPhoto =  root + "photo/";
+    public static final String dirFile =  root + "file/";
+    public static final String dirCache =  root + "cache/";
+
+    public static final String dirCamera = root +  "camera/";
 	public static final String dirProfile = root +  "profile/";  
 	public static final String dirProfileWall = root +  "profilewall/";
 
@@ -45,10 +47,11 @@ public class Constant {
     public static final int ACTIVITY_RESULT_PATH = 4;		//文件路径 图片/文件选取
     public static final int ACTIVITY_RESULT_FILE = 5;		//文件选取
     public static final int ACTIVITY_RESULT_TAKEPHOTO = 6;	//拍照
+    public static final int ACTIVITY_RESULT_PHOTO = 7;//图片文件
 
 	
 	//聊天图片加载最大高度
-	public static int photoMaxH = 800;
+	public static int photoMaxH = 512;
 	//发送图片压缩高度
 	public static int photoSend = 800;
 	//相册加载最大高度

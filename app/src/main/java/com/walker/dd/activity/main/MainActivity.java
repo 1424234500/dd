@@ -186,6 +186,17 @@ public class MainActivity extends AcBase {
             Toast.makeText(this, "授权成功！", Toast.LENGTH_SHORT).show();
             AndroidTools.log( "checkPermission: 已经授权！");
         }
+
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            // 进入这儿表示没有权限
+            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                // 提示已经禁止
+                AndroidTools.toast(this, "请开通相关权限，否则无法正常使用本应用！");
+            } else {
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, 100);
+            }
+        }
+
     }
 
     public void goLogin(){

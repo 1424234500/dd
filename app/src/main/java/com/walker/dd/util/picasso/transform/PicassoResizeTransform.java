@@ -9,38 +9,34 @@ import android.graphics.RectF;
 import android.graphics.PorterDuff.Mode;
 
 import com.squareup.picasso.Transformation;
+import com.walker.dd.util.MyImage;
 
 
-	//图片处理
-	public class PicassoResizeTransform implements Transformation {  
-		 
-	    @Override  
-	    public Bitmap transform(Bitmap source) {  
-	        int widthLight = source.getWidth();  
-	        int heightLight = source.getHeight();  
-	  
-	        Bitmap output = Bitmap.createBitmap(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);  
-	  
-	        Canvas canvas = new Canvas(output);  
-	        Paint paintColor = new Paint();  
-	        paintColor.setFlags(Paint.ANTI_ALIAS_FLAG);  
-	  
-	        RectF rectF = new RectF(new Rect(0, 0, widthLight, heightLight));  
-	  
-	        canvas.drawRoundRect(rectF, widthLight / 5, heightLight / 5, paintColor);  
-	  
-	        Paint paintImage = new Paint();  
-	        paintImage.setXfermode(new PorterDuffXfermode(Mode.SRC_ATOP));  
-	        canvas.drawBitmap(source, 0, 0, paintImage);  
-	        source.recycle();  
-	        return output;  
-	    }  
-	  
-	    @Override  
-	    public String key() {  
-	        return "roundcorner";  
-	    }  
-	  
-	  
+//图片处理
+	public class PicassoResizeTransform implements Transformation {
+	    int maxHeight = 200;
+	    public PicassoResizeTransform(int maxWidthOrHeight){
+	        this.maxHeight = maxWidthOrHeight;
+        }
+    @Override
+    public Bitmap transform(Bitmap source) {
+        int h = source.getHeight();
+        int w = source.getWidth();
+        float ra = MyImage.calculateInSampleSizeFloat(w, h, maxHeight, maxHeight);
+        w /= ra;
+        h /= ra;
+
+        Bitmap result = Bitmap.createScaledBitmap(source, w, h, false);
+        if (result != source) {
+            // Same bitmap is returned if sizes are the same
+            source.recycle();
+        }
+        return result;
+    }
+    @Override
+    public String key() {
+        return "resize";
+    }
+
 	  
 	}  

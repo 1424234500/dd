@@ -34,9 +34,9 @@
 
         <ImageView
             android:id="@+id/ivload"
-            android:layout_marginTop="5dp"
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:layout_marginTop="5dp"
             android:baselineAlignBottom="true"
             android:src="@drawable/ccd" />
 
@@ -60,10 +60,11 @@
                 android:longClickable="true"
                 android:minHeight="30dp"
                 android:text="123"
-                android:visibility="gone"
                 android:textColor="@color/black"
                 android:textIsSelectable="true"
-                android:textSize="14dp" />
+                android:textSize="14dp"
+                android:visibility="gone" />
+
             <ImageView
                 android:id="@+id/ivphoto"
                 android:layout_width="wrap_content"

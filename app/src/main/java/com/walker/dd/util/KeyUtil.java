@@ -20,6 +20,10 @@ public class KeyUtil {
         return Constant.dirFile + key;
     }
 
+    public static String getFileCache(String key){
+        return Constant.dirCache + key;
+    }
+
 
     public static String getUpload(){
         return NetModel.httpUpload();

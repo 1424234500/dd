@@ -2,12 +2,14 @@ package com.walker.dd.util.picasso;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.widget.ImageView;
 
 import java.io.File;
 import java.io.IOException;
 
-import com.squareup.picasso.OkHttpDownloader;
+import com.squareup.picasso.Downloader;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 import com.walker.dd.R;
@@ -16,20 +18,29 @@ import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.dd.util.KeyUtil;
 import com.walker.dd.util.MyImage;
+import com.walker.dd.util.picasso.transform.PicassoResizeTransform;
 import com.walker.dd.util.picasso.transform.PicassoRoundTransform;
+
+import okhttp3.CacheControl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+
 
 
 public class NetImage {
 
     public static void init(Application app) {
 //        String imageCacheDir = app.getExternalCacheDir().getPath()+"/image/";
-        String imageCacheDir = KeyUtil.getFileLocal("");
+        String imageCacheDir = KeyUtil.getFileCache("");
 
         Picasso picasso = new Picasso
                 .Builder(app)
-                .downloader(new OkHttpDownloader(new File(imageCacheDir)))
+                .downloader(new OkHttp3Downloader(new File(imageCacheDir)))
                 .build();
-        /**  * 左上角会显示个三角形，不同的颜色代表加载的来源* 红色：代表从网络下载的图片* 黄色：代表从磁盘缓存加载的图片* 绿色：代表从内存中加载的图片*/
+        /**  * 左上角会显示个三角形，不同的颜色代表加载的来源*
+         * 红色：代表从网络下载的图片*
+         * 黄色：代表从磁盘缓存加载的图片*
+         * 绿色：代表从内存中加载的图片*/
         picasso.setIndicatorsEnabled(true);
         Picasso.setSingletonInstance(picasso);
     }
@@ -94,12 +105,14 @@ public class NetImage {
         if(new File(path).exists()){
             AndroidTools.out("picasso local " + path);
             Picasso .with(context) .load(new File(path)).placeholder(R.drawable.loading)
+                    .transform(new PicassoResizeTransform(Constant.photoMaxH))
                     .error(R.drawable.loaderror)
                     .into(imageView);
         }else{
             String url = KeyUtil.getFileHttp(key);
             AndroidTools.out("picasso http " + url);
             Picasso .with(context) .load(url).placeholder(R.drawable.loading)
+                    .transform(new PicassoResizeTransform(Constant.photoMaxH))
                     .error(R.drawable.loaderror)
                     .into(imageView);
         }
@@ -137,27 +150,7 @@ public class NetImage {
 		.load(new File(url))
 		.placeholder(R.drawable.loading)
 	    .error(R.drawable.loaderror)
-	    .transform(new Transformation() {
-			@Override
-			public Bitmap transform(Bitmap source) {
-				int h = source.getHeight();
-				int w = source.getWidth();
-				float ra = MyImage.calculateInSampleSizeFloat(w, h, maxHeight, maxHeight);
-				w /= ra;
-				h /= ra;
-			
-	            Bitmap result = Bitmap.createScaledBitmap(source, w, h, false);
-	            if (result != source) {
-	                // Same bitmap is returned if sizes are the same
-	                source.recycle();
-	            }
-	            return result;			
-		    }
-			@Override
-			public String key() {
-				return "key";
-			}
-		})
+	    .transform(new PicassoResizeTransform(maxHeight))
 	    .into(imageView);
 	}
 	public static void loadLocalImgResize(Context context, String url, int width, int height, ImageView imageView){
@@ -195,7 +188,5 @@ public class NetImage {
 	public static void clear(Context context, String url) {
 		Picasso.with(context).invalidate(url);
 	}
-	 
-	 
-	 
+
 }
