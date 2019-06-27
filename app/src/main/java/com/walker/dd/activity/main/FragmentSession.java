@@ -16,6 +16,7 @@ import com.walker.dd.activity.FragmentBase;
 import com.walker.dd.activity.chat.ActivityChat;
 import com.walker.dd.adapter.AdapterLvSession;
 import com.walker.dd.service.MsgModel;
+import com.walker.dd.service.SessionModel;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.socket.server_1.Key;
@@ -105,9 +106,13 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Bean bean = listItems.get(position);
+        bean.set(Key.NUM, 0);
+        bean = SessionModel.save(((AcBase)getActivity()).sqlDao,bean);
+        listItems.remove(position);
+        listItems.add(position, bean);
+
         AndroidTools.toast(getActivity(), "click " + bean.toString());
 //        sendSocket("echo", bean);
-        bean.set(Key.NUM, 0);
         notifyDataSetChanged();
         Intent intent = new Intent(getActivity(), ActivityChat.class);
         AndroidTools.putMapToIntent(intent, bean);

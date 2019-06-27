@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,6 +25,7 @@ import com.walker.dd.service.SessionModel;
 import com.walker.dd.service.NetModel;
 import com.walker.dd.struct.Message;
 import com.walker.dd.util.AndroidTools;
+import com.walker.dd.util.Constant;
 import com.walker.socket.server_1.Key;
 import com.walker.dd.view.NavigationBar;
 import com.walker.dd.view.NavigationImageTextView;
@@ -36,6 +38,8 @@ import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AcBase {
+    SwipeRefreshLayout srl;
+
     /**
      * 标题栏目
      */
@@ -99,7 +103,24 @@ public class MainActivity extends AcBase {
 
         //初始化系统
         AndroidTools.init(this);
-
+//
+//        srl = (SwipeRefreshLayout)findViewById(R.id.srl);
+//        //设置刷新时动画的颜色，可以设置4个
+//        srl.setColorSchemeResources(Constant.SRLColors);
+//        srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                if (fragmentNow == fragmentSession){
+//                    sendSocket(Plugin.KEY_SESSION, new Bean());
+//               }else if(fragmentNow == fragmentOther){
+//                    AndroidTools.toast(getContext(), "refresh");
+//                }else{
+//                    AndroidTools.toast(getContext(), "refresh");
+//
+//                }
+//                srl.setRefreshing(false);
+//            }
+//        });
 
         mTextMessage = (TextView)findViewById(R.id.message);
         nb = (NavigationBar)findViewById(R.id.nb);
@@ -161,10 +182,10 @@ public class MainActivity extends AcBase {
                 goLogin();
             }else{
                 toast("离线模式");
-                addSession(SessionModel.finds(sqlDao, NowUser.getId(), 10));
+                addSession(SessionModel.finds(sqlDao, NowUser.getId(), 20));
             }
         }else{
-            addSession(SessionModel.finds(sqlDao, NowUser.getId(), 10));
+            addSession(SessionModel.finds(sqlDao, NowUser.getId(), 20));
             sendSocket(Plugin.KEY_OFFLINEMSG, new Bean().put(Key.BEFORE, MsgModel.getLastMsgTime(sqlDao)));
 
 //            sendSocket(Plugin.KEY_SESSION, new Bean());
@@ -267,9 +288,9 @@ public class MainActivity extends AcBase {
             }
             //批量离线消息
             else if(plugin.equals(Plugin.KEY_OFFLINEMSG)){
-                List<Msg> list = msg.getData();
-                for(Msg item : list){
-                    addMsg(item);
+                List<Bean> list = msg.getData();
+                for(Bean item : list){
+                    addMsg(new Msg(item));
                 }
             }
             else if(plugin.equals(Plugin.KEY_SESSION)){

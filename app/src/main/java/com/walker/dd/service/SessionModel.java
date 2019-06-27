@@ -30,6 +30,18 @@ public class SessionModel extends Model{
             "NUM varchar(10), " +            //会话显示红点    !
             "TO_NAME varchar(200) " +      //目标名字       ！
             ") ";
+
+    public static Bean save(BaseDao dao, Bean bean){
+
+        String toId = bean.get(Key.ID, "");
+        String toName = bean.get(Key.NAME, "");
+        String time = bean.get(Key.TIME, "");
+        String type = bean.get(Key.TYPE, "");
+        String text = bean.get(Key.TEXT, "");
+        String num = bean.get(Key.NUM, "");
+
+        return save(dao, NowUser.getId(), toId, toName, time, type, text, num);
+    }
     /**
      * 存储
      */
@@ -98,7 +110,7 @@ public class SessionModel extends Model{
             String time = bean.get("TIME", "");
             String type = bean.get("TYPE", "");
             String text = bean.get("TEXT", "");
-            String num = bean.get("NUN", "");
+            String num = bean.get("NUM", "");
             res.add(new Bean()
                     .set(Key.ID, toId)
                     .set(Key.NAME, toName.length() > 0 ? toName : toId)
