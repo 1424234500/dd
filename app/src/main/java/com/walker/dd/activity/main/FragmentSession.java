@@ -51,7 +51,6 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
             public void onRefresh() {
                 AndroidTools.toast(getActivity(), "refresh");
                 sendSocket(Plugin.KEY_SESSION, new Bean());
-                sendSocket(Plugin.KEY_OFFLINEMSG, new Bean().put(Key.BEFORE, MsgModel.getLastMsgTime(((AcBase)getActivity()).sqlDao)));
                 srl.setRefreshing(false);
             }
         });

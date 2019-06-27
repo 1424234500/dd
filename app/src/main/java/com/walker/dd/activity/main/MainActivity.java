@@ -165,6 +165,8 @@ public class MainActivity extends AcBase {
             }
         }else{
             addSession(SessionModel.finds(sqlDao, NowUser.getId(), 10));
+            sendSocket(Plugin.KEY_OFFLINEMSG, new Bean().put(Key.BEFORE, MsgModel.getLastMsgTime(sqlDao)));
+
 //            sendSocket(Plugin.KEY_SESSION, new Bean());
         }
 
