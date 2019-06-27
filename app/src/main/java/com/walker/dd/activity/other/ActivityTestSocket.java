@@ -80,7 +80,7 @@ public class ActivityTestSocket extends Activity implements View.OnClickListener
                     }
                     break;
                 case R.id.login:
-                    etsend.setText(MsgBuilder.testLogin("test").toString());
+                    etsend.setText(MsgBuilder.makeLogin("test", TimeUtil.getTimeYmdHmss()).toString());
                     break;
                 case R.id.tvsend:
                     if (client != null && client.isStart()) {

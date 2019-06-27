@@ -87,7 +87,7 @@ public class AndroidTools {
 
 
     /*
-     * 剪切图片
+     * 剪切图片             AndroidTools.cutPhoto(this, uri,makePhoto, ACTIVITY_RESULT_CUT_WALL, 1000, 618);
      */
     public static void cutPhoto(Activity ac, Uri uri, String file, int code) {
         cutPhoto(ac, uri, file, code, 400, 400);

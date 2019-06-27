@@ -113,6 +113,19 @@ public class MsgModel extends Model{
         return msg;
     }
 
+
+    /**
+     * 获取最新消息时间节点
+     */
+    public static String getLastMsgTime(BaseDao dao){
+        Map<String, Object> map = dao.findOne("select TIME from " + MSG + " where USER_ID=? order by TIME DESC ", NowUser.getId());
+        if(map != null){
+            return String.valueOf(map.get("TIME"));
+        }
+        return TimeUtil.getTime("yyyy-MM-dd HH:mm:ss:SSS", -1);
+
+    }
+
     /**
      * 查询时间之前的  15条 按照倒序
      * @param dao

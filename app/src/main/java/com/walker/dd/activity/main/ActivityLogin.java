@@ -30,6 +30,7 @@ import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
 import com.walker.dd.adapter.AdapterLvIds;
 import com.walker.dd.service.LoginModel;
+import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.NetModel;
 import com.walker.dd.util.AndroidTools;
@@ -175,7 +176,7 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 			//合法账号密码，发送登陆请求,并且本地放入本地临时账户信息记录
 			NowUser.setId(id);
 			NowUser.setPwd(pwd);
-            LoginModel.login(this, id, pwd, NowUser.getName());
+            LoginModel.login(this, id, pwd, NowUser.getName(), MsgModel.getLastMsgTime(sqlDao));
 			//登陆中 提示
             loadingStart();
 		} else {

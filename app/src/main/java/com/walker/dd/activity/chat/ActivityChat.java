@@ -120,10 +120,12 @@ public class ActivityChat extends AcBase {
                 case R.id.ivphoto:
 //                    turnToFragment(fragmentPhoto);
                     AndroidTools.chosePhoto(ActivityChat.this, Constant.ACTIVITY_RESULT_PHOTO);
+                    niv.close();
                     break;
                 case R.id.ivgraph:
                     Constant.TAKEPHOTO =  Constant.dirCamera + NowUser.getId() + "-" + TimeUtil.getTimeYmdHms()+".png";
                     AndroidTools.takePhoto(ActivityChat.this, Constant.TAKEPHOTO);
+                    niv.close();
                     break;
                 case R.id.ivemoji:
                     turnToFragment(fragmentEmoji);
@@ -136,7 +138,7 @@ public class ActivityChat extends AcBase {
                     //关闭
             }
             if(id == 0){
-                ekb.hideViewHide(true);
+                ekb.hideViewHide(false);
             }else{
                 ekb.showViewHide();
             }
@@ -370,7 +372,7 @@ public class ActivityChat extends AcBase {
     public boolean OnBackPressed() {
         if(niv.isOpen()){
             niv.closeNocall();
-            ekb.hideViewHide(true);
+            ekb.hideViewHide(false);
             return true;
         }
         if(ekb.isViewHideShow()){
@@ -747,8 +749,8 @@ public class ActivityChat extends AcBase {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode != Activity.RESULT_OK || data == null){
-            AndroidTools.toast(getContext(), "操作取消");
-            return;
+            log("onActivityResult 操作取消??", resultCode, data);
+//            return;
         }
         try{
             if (requestCode == Constant.ACTIVITY_RESULT_FILE ) {

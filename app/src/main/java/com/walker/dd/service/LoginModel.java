@@ -2,6 +2,7 @@ package com.walker.dd.service;
 
 import com.walker.common.util.Bean;
 import com.walker.common.util.Page;
+import com.walker.common.util.TimeUtil;
 import com.walker.core.database.BaseDao;
 import com.walker.core.database.Dao;
 import com.walker.dd.activity.AcBase;
@@ -53,10 +54,12 @@ public class LoginModel extends  Model{
     }
 
 
-    public static void login(AcBase socket, String id, String pwd, String name){
-        socket.sendSocket(Plugin.KEY_LOGIN, new Bean().put(Key.ID, id).put(Key.PWD, pwd).put(Key.NAME, name));
+    public static void login(AcBase socket, String id, String pwd, String name, String timeBefore){
+        socket.sendSocket(Plugin.KEY_LOGIN, new Bean().put(Key.ID, id).put(Key.PWD, pwd).put(Key.NAME, name).put(Key.BEFORE, timeBefore) );
     }
-
+    public static void login(AcBase socket, String id, String pwd, String name){
+        login(socket, id, pwd, name, TimeUtil.getTimeYmdHmss());
+    }
 
     public static void registe(ActivityRegiste activityRegiste, String username, String email, String sex, String pwd) {
 

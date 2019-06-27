@@ -174,26 +174,20 @@ public class MainActivity extends AcBase {
 
     private void checkPermission() {
         //检查权限（NEED_PERMISSION）是否被授权 PackageManager.PERMISSION_GRANTED表示同意授权
-        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            //用户已经拒绝过一次，再次弹出权限申请对话框需要给用户一个解释
-            if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                AndroidTools.toast(this, "请开通相关权限，否则无法正常使用本应用！");
-            }
-            //申请权限
-            requestPermissions( new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-
-        } else {
-            Toast.makeText(this, "授权成功！", Toast.LENGTH_SHORT).show();
-            AndroidTools.log( "checkPermission: 已经授权！");
-        }
-
-        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            // 进入这儿表示没有权限
-            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                // 提示已经禁止
-                AndroidTools.toast(this, "请开通相关权限，否则无法正常使用本应用！");
-            } else {
-                requestPermissions(new String[]{Manifest.permission.CAMERA}, 100);
+        String[] permissions = {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ,Manifest.permission.CAMERA
+        };
+        for(String item : permissions) {
+            if (checkSelfPermission(item) != PackageManager.PERMISSION_GRANTED) {
+//                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+//                    AndroidTools.toast(this, "请开通相关权限，否则无法正常使用本应用！");
+//                }
+                //申请权限
+                AndroidTools.log("check permissions error " + item);
+                requestPermissions( new String[]{item}, 1);
+            }else{
+                AndroidTools.log("check permissions ok " + item);
             }
         }
 
@@ -267,28 +261,14 @@ public class MainActivity extends AcBase {
                 }
             }
             else if(plugin.equals(Plugin.KEY_MESSAGE)){
-                Message bean = MsgModel.addMsg(sqlDao, new Message(msg));   //存储消息
-
-                Bean data = msg.getData();
-                User from = msg.getUserFrom();
-                String toId = "";
-                String toName = "";
-                if(msg.getUserTo()[0].equals(NowUser.getId())){
-                    toId = from.getId();
-                    toName = from.getName();
-                }else{
-                    toId = msg.getUserTo()[0];
-                    toName = "group name "+ toId;
+               addMsg(msg);
+            }
+            //批量离线消息
+            else if(plugin.equals(Plugin.KEY_OFFLINEMSG)){
+                List<Msg> list = msg.getData();
+                for(Msg item : list){
+                    addMsg(item);
                 }
-                User user = new User(data.get(Key.USER, new Bean()));
-                String type = bean.getMsgType();//bean.get(Key.TYPE, Key.TEXT);
-                String time = bean.getTime();//bean.get(Key.TIME, "");
-                String text = bean.getText();//bean.get(Key.TEXT, "");
-                Bean item = SessionModel.save(sqlDao, NowUser.getId(), toId, toName, time, type, text, "");
-                int num = item.get(Key.NUM, 0) + 1;
-                item = SessionModel.save(sqlDao, NowUser.getId(), toId, toName, time, type, text, num + "");
-
-                addSession(item);
             }
             else if(plugin.equals(Plugin.KEY_SESSION)){
 // {"TD":1560495038606,"STATUS":1,"SF":"117.136.8.129:29247","DATA":[
@@ -318,7 +298,30 @@ public class MainActivity extends AcBase {
         }
     }
 
+    private void addMsg(Msg msg){
+        Message bean = MsgModel.addMsg(sqlDao, new Message(msg));   //存储消息
 
+        Bean data = msg.getData();
+        User from = msg.getUserFrom();
+        String toId = "";
+        String toName = "";
+        if(msg.getUserTo()[0].equals(NowUser.getId())){
+            toId = from.getId();
+            toName = from.getName();
+        }else{
+            toId = msg.getUserTo()[0];
+            toName = "group name "+ toId;
+        }
+        User user = new User(data.get(Key.USER, new Bean()));
+        String type = bean.getMsgType();//bean.get(Key.TYPE, Key.TEXT);
+        String time = bean.getTime();//bean.get(Key.TIME, "");
+        String text = bean.getText();//bean.get(Key.TEXT, "");
+        Bean item = SessionModel.save(sqlDao, NowUser.getId(), toId, toName, time, type, text, "");
+        int num = item.get(Key.NUM, 0) + 1;
+        item = SessionModel.save(sqlDao, NowUser.getId(), toId, toName, time, type, text, num + "");
+
+        addSession(item);
+    }
     /**
     .set(Key.ID, msg.getUserTo().equals(NowUser.getId())?from.getId() : msg.getUserTo()) //当前会话id 关联from to
     .set(Key.NAME, "name")  //会话名 关联from to
@@ -337,13 +340,18 @@ public class MainActivity extends AcBase {
         fragmentSession.notifyDataSetChanged();
     }
     private void addSession(Bean item) {
-        int i = AndroidTools.listIndex(listItemSession, item, sessionCompare);
-        if(i >= 0){
-            item.set(Key.NUM, listItemSession.get(i).get(Key.NUM, 0) + 1);
-            listItemSession.remove(i);
-        }
-        listItemSession.add(0, item);
-        fragmentSession.notifyDataSetChanged();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                int i = AndroidTools.listIndex(listItemSession, item, sessionCompare);
+                if(i >= 0){
+                    item.set(Key.NUM, listItemSession.get(i).get(Key.NUM, 0) + 1);
+                    listItemSession.remove(i);
+                }
+                listItemSession.add(0, item);
+                fragmentSession.notifyDataSetChanged();
+            }
+        });
     }
 
     //fragmentManager.beginTransaction().replace(R.id.main_fragment, fragmentSession).commit();

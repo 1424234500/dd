@@ -11,9 +11,11 @@ import android.widget.ListView;
 
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
+import com.walker.dd.activity.AcBase;
 import com.walker.dd.activity.FragmentBase;
 import com.walker.dd.activity.chat.ActivityChat;
 import com.walker.dd.adapter.AdapterLvSession;
+import com.walker.dd.service.MsgModel;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.socket.server_1.Key;
@@ -49,6 +51,7 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
             public void onRefresh() {
                 AndroidTools.toast(getActivity(), "refresh");
                 sendSocket(Plugin.KEY_SESSION, new Bean());
+                sendSocket(Plugin.KEY_OFFLINEMSG, new Bean().put(Key.BEFORE, MsgModel.getLastMsgTime(((AcBase)getActivity()).sqlDao)));
                 srl.setRefreshing(false);
             }
         });

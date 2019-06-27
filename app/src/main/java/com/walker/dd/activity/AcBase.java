@@ -82,7 +82,7 @@ public abstract class AcBase extends FragmentActivity implements View.OnClickLis
     /**
      * 数据库处理
      */
-    protected BaseDao sqlDao ;
+    public BaseDao sqlDao ;
 
 
 
