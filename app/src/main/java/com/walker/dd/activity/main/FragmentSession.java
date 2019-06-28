@@ -16,6 +16,7 @@ import com.walker.dd.activity.FragmentBase;
 import com.walker.dd.activity.chat.ActivityChat;
 import com.walker.dd.adapter.AdapterLvSession;
 import com.walker.dd.service.MsgModel;
+import com.walker.dd.service.NowUser;
 import com.walker.dd.service.SessionModel;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
@@ -136,10 +137,10 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         Bean bean = listItems.get(position);
+        bean = SessionModel.del(((AcBase)getActivity()).sqlDao, NowUser.getId(), bean);
         AndroidTools.toast(getActivity(), "删除会话 " + bean.toString());
-        listItems.remove(bean);
+        listItems.remove(position);
         notifyDataSetChanged();
-        sendSocket(Plugin.KEY_ECHO, bean);
         return true;
     }
 }

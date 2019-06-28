@@ -820,6 +820,21 @@ public class AndroidTools {
         }
         return res;
     }
+    public static <T> int listIndexRemoveAll(List<T> list, T item, Comparator<T> compre){
+        List<T> cp = new ArrayList<>();
+        int res = -1;
+        for(int i = list.size() - 1; i >= 0; i--){
+            if(compre.compare(list.get(i), item) == 0){
+                res++;
+            }else{
+                cp.add(list.get(i));
+            }
+        }
+        list.clear();
+        cp.addAll(cp);
+        return res;
+    }
+
     public static <T> int listReplaceIndex(int index, List<T> list, T item, Comparator<T> compre){
         for(int i = list.size() - 1; i >= 0; i--){
             if(compre.compare(list.get(i), item) == 0){
@@ -839,15 +854,25 @@ public class AndroidTools {
      * @return
      */
     public static <T> int listReplaceIndexAndAdd(int index, List<T> list, List<T> items, Comparator<T> compre){
-        for(int i = list.size() - 1; i >= 0; i--){
-            for(int j = items.size() - 1; j >= 0; j--) {
-                if (compre.compare(list.get(i), items.get(j)) == 0) {
-                    list.remove(i);
-                    continue;
+        try {
+            List<T> on = new ArrayList<>();
+            for (int i = list.size() - 1; i >= 0; i--) {
+                for (int j = items.size() - 1; j >= 0; j--) {
+                    if (compre.compare(list.get(i), items.get(j)) == 0) {
+//                        list.remove(i);
+                        continue;
+                    }else{
+                        on.add(list.get(i) );
+                    }
                 }
             }
+            list.clear();
+            list.addAll(on );
+            list.addAll(index, items);
+        }catch (Exception e){
+            e.printStackTrace();
+            log("listReplaceIndexAndAdd", e.toString(), list, items, index);
         }
-        list.addAll(index, items);
         return list.size();
     }
 

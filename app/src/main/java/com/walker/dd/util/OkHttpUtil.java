@@ -27,6 +27,16 @@ import okio.Source;
 
 public class OkHttpUtil {
 
+    public static String get(String url) throws IOException {
+        AndroidTools.log("get", url);
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+        OkHttpClient okHttpClient = OkHttpUtil.getClient();
+        Response response = okHttpClient.newCall(request).execute();
+        return response.body().string();
+    }
     public static void get(String url, Callback callback){
         AndroidTools.log("get", url);
         Request request = new Request.Builder()
@@ -35,6 +45,9 @@ public class OkHttpUtil {
                 .build();
         OkHttpClient okHttpClient = OkHttpUtil.getClient();
         okHttpClient.newCall(request).enqueue(callback);
+    }
+    public static void exe(Request request, Callback callback) {
+        getClient().newCall(request).enqueue(callback);
     }
     public static void post(String url, Bean data, Callback callback){
         AndroidTools.log("get", url);

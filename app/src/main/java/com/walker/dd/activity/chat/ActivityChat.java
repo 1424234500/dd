@@ -30,6 +30,7 @@ import com.walker.dd.service.NowUser;
 import com.walker.dd.struct.Message;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
+import com.walker.dd.util.InterfaceBaidu;
 import com.walker.dd.util.KeyUtil;
 import com.walker.dd.util.MyFile;
 import com.walker.dd.util.MyImage;
@@ -442,18 +443,17 @@ public class ActivityChat extends AcBase {
      */
     private void sendAuto(String str){
 
-        String url = RobotAuto.TENCENT_URL;
-        OkHttpClient okHttpClient = new OkHttpClient();
 
-        RequestBody requestBody = RobotAuto.getTencentParamRequest(str, "dd");
+
+        String url = RobotAuto.TENCENT_URL;
+        RequestBody requestBody = RobotAuto.getTencentAutoTextRequest(str, "dd");
 //                out(url, requestBody);
 
         Request request = new Request.Builder()
                 .url(url)
                 .post(requestBody)
                 .build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
+        OkHttpUtil.getClient().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 log( "onFailure: ", e);
@@ -463,31 +463,41 @@ public class ActivityChat extends AcBase {
             public void onResponse(Call call, Response response) throws IOException {
                 final String str = response.body().string();
                 //                sendHandler(Key.AUTO, res);
-
                 out("onResponse", str);
-                final String res=RobotAuto.parseTencentRes(str);
-                out(res);
-                String toid = session.get(Key.ID, "");   //目标人 或群
-                String msgid = LangUtil.getGenerateId();
-                String file = "";
-                Bean data = new Bean()
-                        .set(Key.ID, msgid)
-                        .set(Key.TYPE, Key.TEXT)
-                        .set(Key.TEXT, res)
-                        .set(Key.FILE, file)
-                        ;
-                Msg msg = new Msg().setUserFrom(NowUser.getDd())
-                        .setUserTo(toid)
-                        .setTimeDo(System.currentTimeMillis())
-                        ;
-                msg.setData(data);
-                Message bean = MsgModel.addMsg(sqlDao, new Message(msg));  //存储
-                addMsg(bean);   //表现
+                sendAutoMsg(str);
 
             }
         });
+
+        RobotAuto.selfEcho(getContext(), str, new RobotAuto.Echo() {
+            @Override
+            public void echo(String str) {
+                sendAuto(str);
+            }
+        });
+
     }
 
+    public void sendAutoMsg(String str){
+        final String res=RobotAuto.parseTencentRes(str);
+        out(res);
+        String toid = session.get(Key.ID, "");   //目标人 或群
+        String msgid = LangUtil.getGenerateId();
+        String file = "";
+        Bean data = new Bean()
+                .set(Key.ID, msgid)
+                .set(Key.TYPE, Key.TEXT)
+                .set(Key.TEXT, res)
+                .set(Key.FILE, file)
+                ;
+        Msg msg = new Msg().setUserFrom(NowUser.getDd())
+                .setUserTo(toid)
+                .setTimeDo(System.currentTimeMillis())
+                ;
+        msg.setData(data);
+        Message bean = MsgModel.addMsg(sqlDao, new Message(msg));  //存储
+        addMsg(bean);   //表现
+    }
     /**
      * 关于异步操作 耗时socket操作 数据状态改变 及时更新listview 和 选中最新滚动的问题!
      * @param str

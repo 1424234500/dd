@@ -42,6 +42,15 @@ public class SessionModel extends Model{
 
         return save(dao, NowUser.getId(), toId, toName, time, type, text, num);
     }
+    public static Bean del(BaseDao dao, String nowUserId, Bean bean){
+
+        String toId = bean.get(Key.ID, "");
+
+        dao.executeSql("delete from " + SESSION + " where USER_ID=? and TO_ID=? ", nowUserId, toId);
+
+        return bean;
+    }
+
     /**
      * 存储
      */
@@ -91,7 +100,7 @@ public class SessionModel extends Model{
                 .set(Key.TEXT, "auto echo")
                 .set(Key.NUM, 1)
                 ;
-        return dd;
+        return sessionDd;
     }
 
 

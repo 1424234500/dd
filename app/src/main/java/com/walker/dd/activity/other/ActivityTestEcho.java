@@ -15,13 +15,15 @@ import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
+import com.walker.dd.util.InterfaceBaidu;
 import com.walker.dd.util.RobotAuto;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -110,60 +112,78 @@ public class ActivityTestEcho extends AcBase {
      */
     @Override
     public void onClick(View v) {
-        String ipport = ettop.getText().toString();
-        final String msg = etsend.getText().toString();
+        try {
+            String ipport = ettop.getText().toString();
+            final String msg = etsend.getText().toString();
 
-        if(v.getId() == R.id.sendtuling){
-            String url = RobotAuto.getUrlTuling(msg);
-            out(url);
+            if (v.getId() == R.id.sendtuling) {
+                String url = RobotAuto.getUrlTuling(msg);
+                out(url);
 
-            OkHttpClient okHttpClient = new OkHttpClient();
-            Request request = new Request.Builder()
-                    .url(url)
-                    .get()//默认就是GET请求，可以不写
-                    .build();
-            Call call = okHttpClient.newCall(request);
-            call.enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    out( "onFailure: ", e);
-                }
+                OkHttpClient okHttpClient = new OkHttpClient();
+                Request request = new Request.Builder()
+                        .url(url)
+                        .get()//默认就是GET请求，可以不写
+                        .build();
+                Call call = okHttpClient.newCall(request);
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        out("onFailure: ", e);
+                    }
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String str = response.body().string();
-                    out("onResponse", str);
-                    String res=RobotAuto.parseTulingRes(str);
-                    out(res);
-                }
-            });
-        }else  if(v.getId() == R.id.sendtencent){
-            String url = RobotAuto.TENCENT_URL;
-            OkHttpClient okHttpClient = new OkHttpClient();
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String str = response.body().string();
+                        out("onResponse", str);
+                        String res = RobotAuto.parseTulingRes(str);
+                        out(res);
+                    }
+                });
+            } else if (v.getId() == R.id.sendtencent) {
+                String url = RobotAuto.TENCENT_URL;
+                RequestBody requestBody = RobotAuto.getTencentAutoTextRequest(msg, "dd");
+                out(url, requestBody);
 
-            RequestBody requestBody = RobotAuto.getTencentParamRequest(msg, "dd");
-            out(url, requestBody);
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(requestBody)
+                        .build();
+                new OkHttpClient().newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        out("onFailure: ", e);
+                    }
 
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(requestBody)
-                    .build();
-            Call call = okHttpClient.newCall(request);
-            call.enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    out( "onFailure: ", e);
-                }
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String str = response.body().string();
+                        out("onResponse", str);
+                        String res = RobotAuto.parseTencentRes(str);
+                        out(res);
+                    }
+                });
+            } else if (v.getId() == R.id.sendbaidu) {
+                InterfaceBaidu.doTextScan(getContext(), msg, new InterfaceBaidu.OnRes() {
+                    @Override
+                    public void onException(Exception e) {
+//                        out(e.toString());
+                        out(Tools.toString(e));
+                    }
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String str = response.body().string();
-                    out("onResponse", str);
-                    String res=RobotAuto.parseTencentRes(str);
-                    out(res);
-                }
-            });
+                    @Override
+                    public void onRes(int lable, String info, List<String> list) {
+                        out(lable, info);
+                        for(int i = 0; i < list.size(); i++){
+                            out(list.get(i));
+                        }
+                    }
+                });
+
+            }
+        }catch(Exception e){
+            out(e.toString());
+            out(Tools.toString(e));
         }
-
     }
 }

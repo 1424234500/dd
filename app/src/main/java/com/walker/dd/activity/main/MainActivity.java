@@ -357,8 +357,8 @@ public class MainActivity extends AcBase {
      */
     private void addSession(List<Bean> newList) {
         if(newList.size() <= 0) return;
-        listItemSession.clear();
-        listItemSession.add( SessionModel.getDd() );
+//        listItemSession.clear();
+//        listItemSession.add( SessionModel.getDd() );
         AndroidTools.listReplaceIndexAndAdd(0, listItemSession, newList, sessionCompare);
         fragmentSession.notifyDataSetChanged();
     }
@@ -369,7 +369,7 @@ public class MainActivity extends AcBase {
                 int i = AndroidTools.listIndex(listItemSession, item, sessionCompare);
                 if(i >= 0){
                     item.set(Key.NUM, listItemSession.get(i).get(Key.NUM, 0) + 1);
-                    listItemSession.remove(i);
+                    AndroidTools.listIndexRemoveAll(listItemSession, item, sessionCompare);
                 }
                 listItemSession.add(0, item);
                 fragmentSession.notifyDataSetChanged();
