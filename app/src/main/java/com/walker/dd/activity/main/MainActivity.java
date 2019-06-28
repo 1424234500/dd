@@ -358,7 +358,7 @@ public class MainActivity extends AcBase {
     private void addSession(List<Bean> newList) {
         if(newList.size() <= 0) return;
 //        listItemSession.clear();
-//        listItemSession.add( SessionModel.getDd() );
+        newList.add(SessionModel.getDd() );
         AndroidTools.listReplaceIndexAndAdd(0, listItemSession, newList, sessionCompare);
         fragmentSession.notifyDataSetChanged();
     }

@@ -471,8 +471,9 @@ public class ActivityChat extends AcBase {
 
         RobotAuto.selfEcho(getContext(), str, new RobotAuto.Echo() {
             @Override
-            public void echo(String str) {
-                sendAuto(str);
+            public void echo(String st1r) {
+                out("selfEcho", st1r);
+                sendAutoMsg(st1r);
             }
         });
 

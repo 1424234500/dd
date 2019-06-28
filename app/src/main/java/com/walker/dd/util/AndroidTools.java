@@ -859,15 +859,13 @@ public class AndroidTools {
             for (int i = list.size() - 1; i >= 0; i--) {
                 for (int j = items.size() - 1; j >= 0; j--) {
                     if (compre.compare(list.get(i), items.get(j)) == 0) {
-//                        list.remove(i);
-                        continue;
+                        list.remove(i);
+                        break;
                     }else{
                         on.add(list.get(i) );
                     }
                 }
             }
-            list.clear();
-            list.addAll(on );
             list.addAll(index, items);
         }catch (Exception e){
             e.printStackTrace();
