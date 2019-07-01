@@ -24,6 +24,7 @@ import com.walker.dd.service.NowUser;
 import com.walker.dd.service.SessionModel;
 import com.walker.dd.service.NetModel;
 import com.walker.dd.struct.Message;
+import com.walker.dd.struct.Session;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.socket.server_1.Key;
@@ -34,6 +35,7 @@ import com.walker.socket.server_1.plugin.Plugin;
 import com.walker.socket.server_1.session.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -49,15 +51,10 @@ public class MainActivity extends AcBase {
     TextView mTextMessage;
 
     FragmentBase fragmentSession;
-    List<Bean> listItemSession = new ArrayList<>();
-    Comparator<Bean> sessionCompare = new Comparator<Bean>() {
-        @Override
-        public int compare(Bean o1, Bean o2) {
-            return o1.get(Key.ID, "").compareTo(o2.get(Key.ID, ""));
-        }
-    };
+    List<Session> listItemSession = new ArrayList<>();
 
     FragmentBase fragmentContact;
+    List<Session> listItemContact = new ArrayList<>();
 
     FragmentBase fragmentOther;
     List<Bean> listItemOther = new ArrayList<>();
@@ -163,6 +160,7 @@ public class MainActivity extends AcBase {
         fragmentSession = new FragmentSession();
         fragmentSession.setData(listItemSession);
         fragmentContact = new FragmentContact();
+        fragmentContact.setData(listItemContact);
         fragmentOther = new FragmentOther();
         fragmentOther.setData(listItemOther);
 
@@ -174,6 +172,7 @@ public class MainActivity extends AcBase {
 
 
         addSession(SessionModel.getDd());
+        addContact(SessionModel.getDd());
 
 
         if(!NowUser.isLogin()) {
@@ -187,8 +186,7 @@ public class MainActivity extends AcBase {
         }else{
             addSession(SessionModel.finds(sqlDao, NowUser.getId(), 20));
             sendSocket(Plugin.KEY_OFFLINEMSG, new Bean().put(Key.BEFORE, MsgModel.getLastMsgTime(sqlDao)));
-
-//            sendSocket(Plugin.KEY_SESSION, new Bean());
+            sendSocket(Plugin.KEY_SESSION, new Bean());
         }
 
         checkPermission();
@@ -201,17 +199,21 @@ public class MainActivity extends AcBase {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ,Manifest.permission.CAMERA
         };
+        List<String> errs = new ArrayList<>();
         for(String item : permissions) {
             if (checkSelfPermission(item) != PackageManager.PERMISSION_GRANTED) {
-//                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-//                    AndroidTools.toast(this, "请开通相关权限，否则无法正常使用本应用！");
-//                }
-                //申请权限
+                errs.add(item);
+                if (shouldShowRequestPermissionRationale(item)) {
+                    AndroidTools.toast(this, "请开通相关权限，否则无法正常使用本应用！");
+                }
                 AndroidTools.log("check permissions error " + item);
-                requestPermissions( new String[]{item}, 1);
             }else{
                 AndroidTools.log("check permissions ok " + item);
             }
+        }
+
+        if(errs.size() > 0){
+            requestPermissions(errs.toArray(new String[0]), 1);
         }
 
     }
@@ -300,19 +302,19 @@ public class MainActivity extends AcBase {
 // ],"TO":"","FROM":{"ID":"walker","PWD":"123","NAME":""}
 // ,"WS":0,"TYPE":"session","TR":1560495038578,"TC":1560495037721}
                 List<Bean> list = msg.getData();
-                List<Bean> newList = new ArrayList<>();
+                List<Session> newList = new ArrayList<>();
                 for(Bean data : list) {
                     User user = new User(data.get(Key.USER, new Bean()));
                     String toId = user.getId();
                     String toName = user.getName();
                     String type = Key.TEXT;
                     String time = data.get(Key.TIME, "");
-                    String text = "ipSocket:" + data.get(Key.KEY, "");
-                    String num = "1";
-                    Bean item = SessionModel.save(sqlDao, NowUser.getId(), toId, toName, time, type, text, num);
+                    String text = "" + data.get(Key.KEY, "");
+                    int num = 0;
+                    Session item = SessionModel.save(sqlDao, new Session(NowUser.getId(),toId, toName, time, type, text, num));
                     newList.add(item);
                 }
-                addSession(newList);
+                addContact(newList);
             }
             else{
                 toast(msgJson);
@@ -333,48 +335,64 @@ public class MainActivity extends AcBase {
             toName = from.getName();
         }else{
             toId = msg.getUserTo()[0];
-            toName = "group name "+ toId;
+            toName = "G:"+ toId;
         }
         User user = new User(data.get(Key.USER, new Bean()));
         String type = bean.getMsgType();//bean.get(Key.TYPE, Key.TEXT);
         String time = bean.getTime();//bean.get(Key.TIME, "");
         String text = bean.getText();//bean.get(Key.TEXT, "");
-        Bean item = SessionModel.save(sqlDao, NowUser.getId(), toId, toName, time, type, text, "");
-        int num = item.get(Key.NUM, 0) + 1;
-        item = SessionModel.save(sqlDao, NowUser.getId(), toId, toName, time, type, text, num + "");
+        Session item = new Session(NowUser.getId(), toId, toName, time, type, text, -1);
+        Session get = SessionModel.get(sqlDao, NowUser.getId(), toId);
+        if(get == null){
+            item.setNum(1);
+        }else{
+            item.setNum(get.getNum() + 1);
+        }
+        item = SessionModel.save(sqlDao, item);
 
         addSession(item);
     }
-    /**
-    .set(Key.ID, msg.getUserTo().equals(NowUser.getId())?from.getId() : msg.getUserTo()) //当前会话id 关联from to
-    .set(Key.NAME, "name")  //会话名 关联from to
-    .set(Key.TYPE, Key.TEXT)  //文本类型
-    .set(Key.FROM, msg.getUserFrom()) //消息来自谁发的 User[id, name, pwd]
-    .set(Key.TO, msg.getUserTo) //消息发送的目标 user id group id
-    .set(Key.TEXT, data.get(Key.TEXT))    //文本内容
-    .set(Key.TIME, TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss"))   //时间
-    .set(Key.NUM, 1)  //红点数
-     */
-    private void addSession(List<Bean> newList) {
-        if(newList.size() <= 0) return;
-//        listItemSession.clear();
-        newList.add(SessionModel.getDd() );
-        AndroidTools.listReplaceIndexAndAdd(0, listItemSession, newList, sessionCompare);
-        fragmentSession.notifyDataSetChanged();
+
+    private void addContact(Session item) {
+        List<Session> list = new ArrayList<>();
+        list.add(item);
+        addContact(list);
     }
-    private void addSession(Bean item) {
+    private void addContact(List<Session> newList){
         handler.post(new Runnable() {
             @Override
             public void run() {
-                int i = AndroidTools.listIndex(listItemSession, item, sessionCompare);
-                if(i >= 0){
-                    item.set(Key.NUM, listItemSession.get(i).get(Key.NUM, 0) + 1);
-                    AndroidTools.listIndexRemoveAll(listItemSession, item, sessionCompare);
-                }
-                listItemSession.add(0, item);
+                AndroidTools.listReplaceIndexAndAdd(0, listItemContact, newList);
+                Collections.sort(listItemContact, new Comparator<Session>() {
+                    @Override
+                    public int compare(Session o1, Session o2) {
+                        return o2.getTime().compareTo(o1.getTime());
+                    }
+                });
+                fragmentContact.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void addSession(List<Session> newList) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                AndroidTools.listReplaceIndexAndAdd(0, listItemSession, newList);
+                Collections.sort(listItemSession, new Comparator<Session>() {
+                    @Override
+                    public int compare(Session o1, Session o2) {
+                        return o2.getTime().compareTo(o1.getTime());
+                    }
+                });
                 fragmentSession.notifyDataSetChanged();
             }
         });
+    }
+    private void addSession(Session item) {
+        List<Session> list = new ArrayList<>();
+        list.add(item);
+        addSession(list);
     }
 
     //fragmentManager.beginTransaction().replace(R.id.main_fragment, fragmentSession).commit();

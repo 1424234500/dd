@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
 import com.walker.dd.service.NetModel;
+import com.walker.dd.struct.Session;
 import com.walker.dd.util.EmotionUtils;
 import com.walker.dd.util.KeyUtil;
 import com.walker.dd.util.picasso.NetImage;
@@ -27,7 +28,7 @@ import com.walker.socket.server_1.Key;
 public   class AdapterLvSession extends BaseAdapter    {
 	private Context context; // 运行上下文
 
-	private List<Bean>  listItems = null; // listview的数据集合
+	private List<Session>  listItems = null; // listview的数据集合
 	private LayoutInflater layoutInflater; // 视图容器
 	//控件集合实例
 	private ViewHolder viewHolder ;
@@ -45,7 +46,7 @@ public   class AdapterLvSession extends BaseAdapter    {
 	
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-	    Bean bean = listItems.get(position);
+	    Session bean = listItems.get(position);
 		viewHolder = null;  
 
 		//构建或者取出可复用布局
@@ -84,8 +85,8 @@ public   class AdapterLvSession extends BaseAdapter    {
 //                .set(Key.NUM, num)
 //        User from = new User(bean.get(Key.FROM, new Bean()));
 
-		viewHolder.tvusername.setText(bean.get(Key.NAME, "")) ;
-		String type = bean.get(Key.TYPE, "");
+		viewHolder.tvusername.setText(bean.getName()) ;
+		String type = bean.getType();
 		if(type.equals(Key.VOICE)){
 			viewHolder.tvmsg.setText("[语音]");
 		}else if(type.equals(Key.FILE)){
@@ -93,14 +94,14 @@ public   class AdapterLvSession extends BaseAdapter    {
 		}else if(type.equals(Key.PHOTO)){
 			viewHolder.tvmsg.setText("[图片]");
 		}else {
-            SpannableString spannableString = EmotionUtils.getEmotionContent(context,viewHolder.tvmsg,bean.get("TEXT", ""));
+            SpannableString spannableString = EmotionUtils.getEmotionContent(context,viewHolder.tvmsg,bean.getText());
             viewHolder.tvmsg.setText(spannableString);
-            viewHolder.tvmsg.setText(bean.get(Key.TEXT, ""));
+            viewHolder.tvmsg.setText(bean.getText());
         }
 		
 			
-		viewHolder.tvtime.setText(bean.get(Key.TIME, ""));
-		int t = bean.get(Key.NUM, 0);
+		viewHolder.tvtime.setText(bean.getTime());
+		int t = bean.getNum();
 		if(t <= 0){
 			viewHolder.tvnum.setText( "") ;
 			viewHolder.tvnum.setVisibility(View.INVISIBLE);
@@ -112,7 +113,7 @@ public   class AdapterLvSession extends BaseAdapter    {
 			viewHolder.tvnum.setVisibility(View.VISIBLE);
 		}
 //	 	NetImage.loadProfile(context, listItems.get(position, "PROFILEPATH"), viewHolder.ivprofile);
-        NetImage.loadProfile(context, bean.get(Key.ID, "default"), viewHolder.ivprofile);
+        NetImage.loadProfile(context, bean.getId(), viewHolder.ivprofile);
 
 
         return convertView;
@@ -130,7 +131,7 @@ public   class AdapterLvSession extends BaseAdapter    {
 		}
 		
 	
-	public AdapterLvSession(Context context, List<Bean> listItems) {
+	public AdapterLvSession(Context context, List<Session> listItems) {
 		this.context = context;
 		layoutInflater = LayoutInflater.from(context); // 创建视图容器并设置上下文
         this.listItems = listItems;

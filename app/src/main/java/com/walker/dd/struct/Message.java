@@ -13,8 +13,8 @@ public class Message  {
     String fromUserId;
     String fromUserName;
     String toUserId;
-    String time;
     String text;
+    String time;
     String file;
     String sta;
     String sessionId;
@@ -138,7 +138,8 @@ public class Message  {
         sta = data.get(Key.STA, Key.STA_DEF);
     }
 
-
-
-
+    @Override
+    public boolean equals(Object obj) {
+        return getMsgId().equals(((Message)obj).getMsgId());
+    }
 }

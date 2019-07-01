@@ -846,31 +846,22 @@ public class AndroidTools {
     }
 
     /**
-     * 移除新集合中存在的 并把新集合中的置顶添加
-     * @param list
-     * @param items
-     * @param compre
-     * @param <T>
-     * @return
+     * 假设set equal单存在 若有则修改 若无则添加
+     * 删除公有的
+     * 并集
      */
-    public static <T> int listReplaceIndexAndAdd(int index, List<T> list, List<T> items, Comparator<T> compre){
-        try {
-            List<T> on = new ArrayList<>();
-            for (int i = list.size() - 1; i >= 0; i--) {
-                for (int j = items.size() - 1; j >= 0; j--) {
-                    if (compre.compare(list.get(i), items.get(j)) == 0) {
-                        list.remove(i);
-                        break;
-                    }else{
-                        on.add(list.get(i) );
-                    }
+    public static <T> int listReplaceIndexAndAdd(int index, List<T> list, List<T> items){
+//        List<T> both = new ArrayList<>();
+        for(int i = list.size() - 1; i >= 0; i--){
+            for(int j = 0; j < items.size(); j++){
+                if(list.get(i).equals(items.get(j))){
+//                    both.add(items.get(j));
+                    list.remove(i);
+                    break;
                 }
             }
-            list.addAll(index, items);
-        }catch (Exception e){
-            e.printStackTrace();
-            log("listReplaceIndexAndAdd", e.toString(), list, items, index);
         }
+        list.addAll(items);
         return list.size();
     }
 
@@ -951,7 +942,7 @@ public class AndroidTools {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType(type.length() > 0 ? type : "*/*");
-        ac.startActivityForResult(Intent.createChooser(intent, "选择文件"), Constant.ACTIVITY_RESULT_PATH );
+        ac.startActivityForResult(Intent.createChooser(intent, "选择文件"), Constant.ACTIVITY_RESULT_FILE );
     }
 
 

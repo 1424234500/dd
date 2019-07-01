@@ -141,17 +141,23 @@ public abstract class AcBase extends FragmentActivity implements View.OnClickLis
      * 打开加载页面
      */
     public void loadingStart( ) {
-        beatsDialog = new DialogBeats(this);
-        //beatsDialog.init();
-        beatsDialog.show();
-        new Handler().postDelayed(new Runnable() {
+        handler.post(new Runnable() {
             @Override
             public void run() {
-                loadingStop();
-            }
-        }, 6000);
-        beatsDialog.setCancelable(true);
+                beatsDialog = new DialogBeats(getContext());
+                //beatsDialog.init();
+                beatsDialog.show();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadingStop();
+                    }
+                }, 6000);
+                beatsDialog.setCancelable(true);
 //        beatsDialog.setCancelable(false);
+            }
+        });
+
     }
 
     /**

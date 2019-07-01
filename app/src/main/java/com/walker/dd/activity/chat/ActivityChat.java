@@ -28,6 +28,7 @@ import com.walker.dd.service.Cache;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.struct.Message;
+import com.walker.dd.struct.Session;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.dd.util.InterfaceBaidu;
@@ -80,7 +81,7 @@ public class ActivityChat extends AcBase {
     AdapterLvChat adapter;
 
     EditText etsend;
-    Bean session;
+    Session session;
 
 
     View viewfill;
@@ -159,9 +160,9 @@ public class ActivityChat extends AcBase {
                 .set(Key.TYPE, Key.TEXT)
                 .set(Key.TEXT, "auto echo")
                 .set(Key.NUM, 1)*/
-        session = AndroidTools.getMapFromIntent(this.getIntent());
+        session = new Session(AndroidTools.getMapFromIntent(this.getIntent()));
 //        listItemMsg = Cache.getInstance().get(session.get(Key.ID, Key.ID), new ArrayList<Bean>());
-        listItemMsg = MsgModel.findMsg(sqlDao, session.get(Key.ID, Key.ID), TimeUtil.getTimeYmdHms(), 15);
+        listItemMsg = MsgModel.findMsg(sqlDao, session.getId(), TimeUtil.getTimeYmdHms(), 15);
 
 
         viewfill = (View)findViewById(R.id.viewfill);
@@ -286,8 +287,8 @@ public class ActivityChat extends AcBase {
 
         nb = (NavigationBar)findViewById(R.id.nb);
         nb.setMenu(R.drawable.more);
-        nb.setTitle(session.get(Key.NAME, Key.NAME));
-        nb.setSubtitle(session.get(Key.ID, Key.ID));
+        nb.setTitle(session.getName());
+        nb.setSubtitle(session.getId());
         nb.setReturn("消息");
 //        nb.setReturnIcon(R.id.ivprofile);
         nb.setOnNavigationBar(new NavigationBar.OnNavigationBar() {
@@ -393,7 +394,7 @@ public class ActivityChat extends AcBase {
         Msg msg = new Msg(msgJson);
         Message item = MsgModel.addMsg(sqlDao, new Message(msg));
 
-        String toid = session.get(Key.ID, "");
+        String toid = session.getId();
         String plugin = msg.getType();
         if(!(msg.getUserFrom().getId().equals(toid)
                 || msg.getTo().equals(toid)))return;
@@ -482,7 +483,7 @@ public class ActivityChat extends AcBase {
     public void sendAutoMsg(String str){
         final String res=RobotAuto.parseTencentRes(str);
         out(res);
-        String toid = session.get(Key.ID, "");   //目标人 或群
+        String toid = session.getId();   //目标人 或群
         String msgid = LangUtil.getGenerateId();
         String file = "";
         Bean data = new Bean()
@@ -504,7 +505,7 @@ public class ActivityChat extends AcBase {
      * @param str
      */
     private void sendMsg(final String str){
-        String toid = session.get(Key.ID, "");   //目标人 或群
+        String toid = session.getId();   //目标人 或群
         String msgid = LangUtil.getGenerateId();
         String file = "";
         Bean data = new Bean()
@@ -540,7 +541,7 @@ public class ActivityChat extends AcBase {
     private void sendFile(final String path){
         String name = FileUtil.getFileName(path);
         String type = FileUtil.getFileType(path);
-        final String toid = session.get(Key.ID, "");   //目标人 或群
+        final String toid = session.getId();   //目标人 或群
         final String msgid = LangUtil.getGenerateId();
         final Bean data = new Bean()
                 .set(Key.ID, msgid)
@@ -616,7 +617,7 @@ public class ActivityChat extends AcBase {
 //        MyFile.copyFile(path, tempPath);
         MyImage.savePNG_After(MyImage.getBitmapByDecodeFile(path), tempPath);
 
-        final String toid = session.get(Key.ID, "");   //目标人 或群
+        final String toid = session.getId();   //目标人 或群
         final String msgid = LangUtil.getGenerateId();
         final Bean data = new Bean()
                 .set(Key.ID, msgid)

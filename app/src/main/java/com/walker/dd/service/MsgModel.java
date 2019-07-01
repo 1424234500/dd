@@ -23,13 +23,13 @@ import java.util.Map;
 public class MsgModel extends Model{
 
     /**
-     * 消息体存储查询
+     * 消息体存储查询 USER_ID MSG_ID
      */
     public final static String MSG = "MSG";
     public final static String SQL_MSG = "create table if not exists MSG (" +
             "USER_ID varchar(30), " +
             "STA varchar(30), " +
-            "SESSION_ID varchar(200), MSG_ID varchar(30) primary key, TYPE varchar(30), " +
+            "SESSION_ID varchar(200), MSG_ID varchar(30), TYPE varchar(30), " +
             "FROM_ID varchar(200), FROM_NAME varchar(200), " +
             "TO_ID varchar(200), TIME varchar(30), TEXT varchar(2000), FILE varchar(600) ) ";
 
@@ -120,6 +120,7 @@ public class MsgModel extends Model{
     public static String getLastMsgTime(BaseDao dao){
         Map<String, Object> map = dao.findOne("select TIME from " + MSG + " where USER_ID=? order by TIME DESC ", NowUser.getId());
         if(map != null){
+            AndroidTools.log(TimeUtil.format(String.valueOf(map.get("TIME")), "yyyy-MM-dd HH:mm:ss:SSS").getTime());
             return String.valueOf(map.get("TIME"));
         }
         return TimeUtil.getTime("yyyy-MM-dd HH:mm:ss:SSS", -1);

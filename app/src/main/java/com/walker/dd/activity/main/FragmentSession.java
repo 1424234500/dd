@@ -18,6 +18,7 @@ import com.walker.dd.adapter.AdapterLvSession;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.SessionModel;
+import com.walker.dd.struct.Session;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
 import com.walker.socket.server_1.Key;
@@ -30,7 +31,7 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
     SwipeRefreshLayout srl;
 
     ListView lv;
-    public static List<Bean> listItems;
+    public static List<Session> listItems;
     AdapterLvSession adapter;
 
 
@@ -68,7 +69,7 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
      */
     @Override
     public void setData(Object data) {
-        this.listItems = (List<Bean>) data;
+        this.listItems = (List<Session>) data;
         this.notifyDataSetChanged();
     }
 
@@ -106,9 +107,9 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Bean bean = listItems.get(position);
-        bean.set(Key.NUM, 0);
-        bean = SessionModel.save(((AcBase)getActivity()).sqlDao,bean);
+        Session bean = listItems.get(position);
+        bean.setNum(0);
+        bean = SessionModel.save(((AcBase)getActivity()).sqlDao, bean);
         listItems.remove(position);
         listItems.add(position, bean);
 
@@ -136,7 +137,7 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
      */
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        Bean bean = listItems.get(position);
+        Session bean = listItems.get(position);
         bean = SessionModel.del(((AcBase)getActivity()).sqlDao, NowUser.getId(), bean);
         AndroidTools.toast(getActivity(), "删除会话 " + bean.toString());
         listItems.remove(position);

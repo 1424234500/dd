@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import com.walker.dd.R;
 import com.walker.dd.util.AndroidTools;
 
-public class BeatsView extends ImageView implements OnClickListener {
+public class BeatsView extends android.support.v7.widget.AppCompatImageView implements OnClickListener {
 
 	Handler handler = new Handler(){
 		public void handleMessage(android.os.Message msg) {
@@ -34,7 +34,6 @@ public class BeatsView extends ImageView implements OnClickListener {
    int count;
 	int maxCount;
     private Bitmap bitmap;
-    private Bitmap bitmapBack;
     float dw;
     int dy, dx, sw, sh;
     int dd = 15;	//上下间隔空白
@@ -55,8 +54,7 @@ public BeatsView(Context context, AttributeSet attrs) {
         Drawable drawable = getDrawable();  
         if (null != drawable) {  
         	bitmap = ((BitmapDrawable) drawable).getBitmap();  
-        	bitmapBack = BitmapFactory.decodeResource(getResources(), R.color.black);
-        	
+
         	sw = AndroidTools.getScreenWidth();
             dw = (float)bitmap.getWidth() /  sw; //x满宽，放大dw倍
         	dy = (int) ((float)bitmap.getHeight() / dw);	   //图像的目标高度dh
