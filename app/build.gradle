@@ -3,12 +3,17 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
+
+
         applicationId "com.walker.dd"
         minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+//        multiDexEnabled true
+
     }
     buildTypes {
         release {
@@ -26,10 +31,20 @@ android {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
+    packagingOptions {
+        exclude'dubbo-service-config.xml'
+//        exclude'META-INF/DEPENDENCIES'
+
+    }
 }
 
+
+
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+//    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:multidex:1.0.0'
+
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
@@ -52,8 +67,20 @@ dependencies {
 //    implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
     implementation 'io.netty:netty-all:4.1.24.Final'
     implementation files('libs/walker-core-0.0.1.jar')
+    implementation files('libs/walker-service-0.0.1.jar')
+    implementation files('libs/walker-socket-0.0.1.jar')
+
+//    baidu push
+//    implementation 'com.android.support:appcompat-v7:25.3.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation files('libs/ufosdk-android-1.7.13.jar')
+    implementation files('libs/pushservice-6.5.0.75.jar')
+    implementation files('libs/galaxy.jar')
+
+
     //    implementation files('libs/httpclient-4.3.4.jar')
     //    implementation files('libs/httpcore-4.3.2.jar')
     //    implementation files('libs/httpmime-4.3.4.jar')
-    //    compile 'com.walker:walker-core:0.0.1-SNAPSHOT'
+
+
 }

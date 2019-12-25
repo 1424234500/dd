@@ -1,8 +1,9 @@
 package com.walker.dd.struct;
 
 import com.walker.common.util.Bean;
-import com.walker.socket.server_1.Key;
 
+import com.walker.mode.*;
+import com.walker.socket.server_1.plugin.*;
 public class Session extends Bean{
     public String getNowUserId() {
         return get("nowUserId", "");

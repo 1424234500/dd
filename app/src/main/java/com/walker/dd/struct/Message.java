@@ -3,10 +3,9 @@ package com.walker.dd.struct;
 import com.walker.common.util.Bean;
 import com.walker.common.util.TimeUtil;
 import com.walker.dd.service.NowUser;
-import com.walker.socket.server_1.Key;
-import com.walker.socket.server_1.Msg;
-import com.walker.socket.server_1.session.User;
 
+import com.walker.mode.*;
+import com.walker.socket.server_1.plugin.*;
 public class Message  {
     String msgId;
     String msgType;
@@ -124,7 +123,7 @@ public class Message  {
         msgId = data.get(Key.ID, Key.ID);
         msgType = data.get(Key.TYPE, Key.TEXT);
 
-        User fromUser = msg.getUserFrom();
+        UserSocket fromUser = msg.getUserFrom();
         fromUserId = fromUser.getId();
         fromUserName = fromUser.getName();
         toUserId = msg.getUserTo()[0];

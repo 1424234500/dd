@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.baidu.android.common.util.DeviceId;
 import com.baidu.ufosdk.UfoSDK;
+import com.walker.dd.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

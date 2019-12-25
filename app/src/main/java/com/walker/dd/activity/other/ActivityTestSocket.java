@@ -24,8 +24,9 @@ import com.walker.dd.util.Constant;
 import com.walker.socket.client.Client;
 import com.walker.socket.client.ClientNetty;
 import com.walker.socket.client.OnSocket;
-import com.walker.socket.server_1.Key;
-import com.walker.socket.server_1.MsgBuilder;
+
+import com.walker.mode.*;
+import com.walker.socket.server_1.plugin.*;
 
 public class ActivityTestSocket extends Activity implements View.OnClickListener, OnSocket {
     private EditText ettop;

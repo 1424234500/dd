@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.multidex.MultiDex;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.walker.common.util.Bean;
@@ -21,10 +22,12 @@ import com.walker.dd.util.picasso.NetImage;
 import com.walker.socket.client.Client;
 import com.walker.socket.client.ClientNetty;
 import com.walker.socket.client.OnSocket;
-import com.walker.socket.server_1.Key;
-import com.walker.socket.server_1.Msg;
 
 import java.io.File;
+
+import com.walker.mode.*;
+import com.walker.socket.server_1.plugin.*;
+
 
 
 public class Application extends android.app.Application implements OnSocket {
@@ -34,6 +37,11 @@ public class Application extends android.app.Application implements OnSocket {
     Bean onConn = new Bean().put(Key.TYPE, Key.SOCKET).put(Msg.KEY_STATUS, 0);
     Bean onDisConn = new Bean().put(Key.TYPE, Key.SOCKET).put(Msg.KEY_STATUS, 1);
 
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+//        MultiDex.install(this);
+    }
     /**
      * socket
      */

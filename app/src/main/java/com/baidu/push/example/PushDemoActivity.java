@@ -31,6 +31,7 @@ import com.baidu.android.pushservice.CustomPushNotificationBuilder;
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
 import com.baidu.ufosdk.UfoSDK;
+import com.walker.dd.R;
 
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class PushDemoActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         Utils.logStringCache = Utils.getLogText(getApplicationContext());
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_baidu);
         initWithApiKey = (Button) findViewById(R.id.btn_initAK);
         displayRichMedia = (Button) findViewById(R.id.btn_rich);
         setTags = (Button) findViewById(R.id.btn_setTags);
@@ -82,8 +83,8 @@ public class PushDemoActivity extends Activity implements OnClickListener {
         // 这里把apikey存放于manifest文件中，只是一种存放方式，
         // 您可以用自定义常量等其它方式实现，来替换参数中的Utils.getMetaValue(PushDemoActivity.this,
         // "api_key")
-        ！！请将AndroidManifest.xml api_key 字段值修改为自己的 api_key 方可使用 ！！
-        ！！ATTENTION：You need to modify the value of api_key to your own in AndroidManifest.xml to use this Demo !!
+//        ！！请将AndroidManifest.xml api_key 字段值修改为自己的 api_key 方可使用 ！！
+//        ！！ATTENTION：You need to modify the value of api_key to your own in AndroidManifest.xml to use this Demo !!
         // 启动百度push
         PushManager.startWork(getApplicationContext(), PushConstants.LOGIN_TYPE_API_KEY,
                 Utils.getMetaValue(PushDemoActivity.this, "api_key"));

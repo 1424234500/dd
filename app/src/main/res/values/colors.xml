@@ -3,6 +3,10 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+<color name="translucence">#506050</color>
+<color name="bg_gray">#e2e2e2</color>
+
 <color name="qqmiddlewhite">#c6cac6</color>
 <color name="qqloginwhite">#ecedf1</color>
 <color name="qqlightwhite">#ffffff</color>

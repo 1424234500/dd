@@ -40,12 +40,9 @@ import com.walker.dd.util.UriUtil;
 import com.walker.dd.util.picasso.NetImage;
 import com.walker.dd.view.DialogImageShow;
 import com.walker.dd.view.EmotionKeyboard;
-import com.walker.socket.server_1.Key;
 import com.walker.dd.util.RobotAuto;
 import com.walker.dd.view.NavigationBar;
 import com.walker.dd.view.NavigationImageView;
-import com.walker.socket.server_1.Msg;
-import com.walker.socket.server_1.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,6 +57,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+
+import com.walker.mode.*;
+import com.walker.socket.server_1.plugin.*;
 
 public class ActivityChat extends AcBase {
     SwipeRefreshLayout srl;

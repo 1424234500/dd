@@ -3,8 +3,11 @@ package com.walker.dd.service;
 import android.content.Context;
 
 import com.walker.dd.util.MySP;
-import com.walker.socket.server_1.Key;
-import com.walker.socket.server_1.session.User;
+
+import com.walker.mode.*;
+import com.walker.socket.server_1.plugin.*;
+
+
 
 public    class NowUser {
     public static Context context;
@@ -12,14 +15,14 @@ public    class NowUser {
     public static boolean offline = false;
     public static boolean loginauto = false;
 
-    public static User getUser(){
-        User user = new User();
+    public static UserSocket getUser(){
+        UserSocket user = new UserSocket();
         user.setId(getId());
         user.setName(getName());
         return user;
     }
-    public static User getDd(){
-        User user = new User();
+    public static UserSocket getDd(){
+        UserSocket user = new UserSocket();
         user.setId(Key.DD);
         user.setName(Key.DD);
         return user;

@@ -27,18 +27,16 @@ import com.walker.dd.struct.Message;
 import com.walker.dd.struct.Session;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
-import com.walker.socket.server_1.Key;
 import com.walker.dd.view.NavigationBar;
 import com.walker.dd.view.NavigationImageTextView;
-import com.walker.socket.server_1.Msg;
-import com.walker.socket.server_1.plugin.Plugin;
-import com.walker.socket.server_1.session.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.walker.mode.*;
+import com.walker.socket.server_1.plugin.*;
 public class MainActivity extends AcBase {
     SwipeRefreshLayout srl;
 
@@ -304,7 +302,7 @@ public class MainActivity extends AcBase {
                 List<Bean> list = msg.getData();
                 List<Session> newList = new ArrayList<>();
                 for(Bean data : list) {
-                    User user = new User(data.get(Key.USER, new Bean()));
+                    UserSocket user = new UserSocket(data.get(Key.USER, new Bean()));
                     String toId = user.getId();
                     String toName = user.getName();
                     String type = Key.TEXT;
@@ -327,7 +325,7 @@ public class MainActivity extends AcBase {
         Message bean = MsgModel.addMsg(sqlDao, new Message(msg));   //存储消息
 
         Bean data = msg.getData();
-        User from = msg.getUserFrom();
+        UserSocket from = msg.getUserFrom();
         String toId = "";
         String toName = "";
         if(msg.getUserTo()[0].equals(NowUser.getId())){
@@ -337,7 +335,7 @@ public class MainActivity extends AcBase {
             toId = msg.getUserTo()[0];
             toName = "G:"+ toId;
         }
-        User user = new User(data.get(Key.USER, new Bean()));
+        UserSocket user = new UserSocket(data.get(Key.USER, new Bean()));
         String type = bean.getMsgType();//bean.get(Key.TYPE, Key.TEXT);
         String time = bean.getTime();//bean.get(Key.TIME, "");
         String text = bean.getText();//bean.get(Key.TEXT, "");

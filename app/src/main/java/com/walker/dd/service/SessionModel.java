@@ -5,9 +5,11 @@ import com.walker.common.util.Bean;
 import com.walker.common.util.TimeUtil;
 import com.walker.core.database.BaseDao;
 import com.walker.dd.struct.Session;
-import com.walker.socket.server_1.Key;
-import com.walker.socket.server_1.Msg;
-import com.walker.socket.server_1.session.User;
+
+import com.walker.mode.*;
+import com.walker.socket.server_1.plugin.*;
+
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,7 +87,7 @@ public class SessionModel extends Model{
      * @return
      */
     public static Session getDd(){
-        User dd = NowUser.getDd();
+        UserSocket dd = NowUser.getDd();
 //        Bean sessionDd = new Bean()
 //                .set(Key.ID, dd.getId())
 //                .set(Key.NAME, dd.getName())

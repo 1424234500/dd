@@ -3,6 +3,8 @@ package com.baidu.push.example;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.walker.dd.R;
+
 /*
  * 推送通知时，自定义打开行为的演示activity。
  * 请在控制台通知推送界面中，高级设置 -> 通知后续行为 -> 自定义打开行为，选中并且填写内容：

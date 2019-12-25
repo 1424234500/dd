@@ -21,9 +21,9 @@ import com.walker.dd.service.SessionModel;
 import com.walker.dd.struct.Session;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
-import com.walker.socket.server_1.Key;
-import com.walker.socket.server_1.plugin.Plugin;
 
+import com.walker.mode.*;
+import com.walker.socket.server_1.plugin.*;
 import java.util.*;
 
 public class FragmentSession extends FragmentBase implements  AdapterView.OnItemClickListener,AdapterView.OnItemLongClickListener{

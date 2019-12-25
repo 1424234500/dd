@@ -22,10 +22,10 @@ import com.walker.dd.database.BaseDaoImpl;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.Constant;
-import com.walker.socket.server_1.Key;
 import com.walker.dd.view.DialogBeats;
-import com.walker.socket.server_1.Msg;
-import com.walker.socket.server_1.MsgBuilder;
+
+import com.walker.mode.*;
+import com.walker.socket.server_1.plugin.*;
 
 public abstract class AcBase extends FragmentActivity implements View.OnClickListener{
     /**

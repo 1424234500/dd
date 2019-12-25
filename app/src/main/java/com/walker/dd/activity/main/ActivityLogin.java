@@ -37,9 +37,9 @@ import com.walker.dd.util.AndroidTools;
 import com.walker.dd.util.KeyUtil;
 import com.walker.dd.util.picasso.NetImage;
 import com.walker.dd.view.ClearEditText;
-import com.walker.socket.server_1.Key;
-import com.walker.socket.server_1.Msg;
-import com.walker.socket.server_1.plugin.Plugin;
+
+import com.walker.mode.*;
+import com.walker.socket.server_1.plugin.*;
 
 public class ActivityLogin extends AcBase implements OnClickListener, TextWatcher {
 
