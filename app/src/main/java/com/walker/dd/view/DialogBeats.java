@@ -2,7 +2,7 @@ package com.walker.dd.view;
 
 
 import com.walker.dd.R;
-import com.walker.dd.util.AndroidTools;
+import com.walker.dd.core.AndroidTools;
 
 import android.app.Dialog;
 import android.content.Context;

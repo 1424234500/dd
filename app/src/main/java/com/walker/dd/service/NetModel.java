@@ -1,8 +1,6 @@
 package com.walker.dd.service;
 
-import com.walker.common.util.Pc;
-import com.walker.dd.util.MySP;
-import com.walker.dd.util.RobotAuto;
+import com.walker.dd.core.service.SharedPreferencesServiceImpl;
 
 public class NetModel {
     /**
@@ -28,25 +26,25 @@ public class NetModel {
     }
 
     public static String getServerSocketIp(){
-        return MySP.get(NowUser.context, "IP_SOCKET", ipSockets[ccSocket]);
+        return SharedPreferencesServiceImpl.get(NowUser.context, "IP_SOCKET", ipSockets[ccSocket]);
     }
     public static void setServerSocketIp(String ip){
-        MySP.put(NowUser.context, "IP_SOCKET", ip);
+        SharedPreferencesServiceImpl.put(NowUser.context, "IP_SOCKET", ip);
     }
 
     public static int getServerSocketPort(){
-        return Integer.valueOf(MySP.get(NowUser.context, "PORT_SOCKET", portSockets[ccSocket] + ""));
+        return Integer.valueOf(SharedPreferencesServiceImpl.get(NowUser.context, "PORT_SOCKET", portSockets[ccSocket] + ""));
     }
     public static void setServerSocketPort(int port){
-        MySP.put(NowUser.context, "PORT", port + "");
+        SharedPreferencesServiceImpl.put(NowUser.context, "PORT", port + "");
     }
 
 
     public static int getServerWebPort(){
-        return Integer.valueOf(MySP.get(NowUser.context, "PORT_WEB", portWebs[ccWeb] + ""));
+        return Integer.valueOf(SharedPreferencesServiceImpl.get(NowUser.context, "PORT_WEB", portWebs[ccWeb] + ""));
     }
     public static String getServerWebIp(){
-        return MySP.get(NowUser.context, "IP_WEB", ipWebs[ccWeb] + "");
+        return SharedPreferencesServiceImpl.get(NowUser.context, "IP_WEB", ipWebs[ccWeb] + "");
     }
     /**
      * //服务器http上传地址"/walker-web/file/uploadCmf.do";

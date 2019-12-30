@@ -1,9 +1,8 @@
 package com.walker.dd.activity.chat;
  
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,7 +17,7 @@ import com.walker.common.util.Bean;
 import com.walker.dd.R;
 import com.walker.dd.activity.FragmentBase;
 import com.walker.dd.adapter.AdapterAblum;
-import com.walker.dd.util.AndroidTools;
+import com.walker.dd.core.AndroidTools;
 import com.walker.dd.view.HorizontalListView;
 
 public class FragmentPhoto extends FragmentBase {  

@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
@@ -25,8 +24,7 @@ import com.walker.dd.service.SessionModel;
 import com.walker.dd.service.NetModel;
 import com.walker.dd.struct.Message;
 import com.walker.dd.struct.Session;
-import com.walker.dd.util.AndroidTools;
-import com.walker.dd.util.Constant;
+import com.walker.dd.core.AndroidTools;
 import com.walker.dd.view.NavigationBar;
 import com.walker.dd.view.NavigationImageTextView;
 

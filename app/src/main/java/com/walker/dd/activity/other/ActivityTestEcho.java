@@ -9,17 +9,15 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.walker.common.util.Bean;
 import com.walker.common.util.Tools;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
-import com.walker.dd.util.AndroidTools;
-import com.walker.dd.util.Constant;
-import com.walker.dd.util.InterfaceBaidu;
-import com.walker.dd.util.RobotAuto;
+import com.walker.dd.core.AndroidTools;
+import com.walker.dd.core.Constant;
+import com.walker.dd.core.RobotAuto;
+import com.walker.dd.core.service.BaiduServiceImpl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -164,7 +162,7 @@ public class ActivityTestEcho extends AcBase {
                     }
                 });
             } else if (v.getId() == R.id.sendbaidu) {
-                InterfaceBaidu.doTextScan(getContext(), msg, new InterfaceBaidu.OnRes() {
+                BaiduServiceImpl.doTextScan(getContext(), msg, new BaiduServiceImpl.OnRes() {
                     @Override
                     public void onException(Exception e) {
 //                        out(e.toString());

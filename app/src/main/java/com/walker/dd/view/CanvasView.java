@@ -2,7 +2,6 @@ package com.walker.dd.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
@@ -10,7 +9,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.walker.dd.util.AndroidTools;
+import com.walker.dd.core.AndroidTools;
 
 
 public class CanvasView extends SurfaceView implements SurfaceHolder.Callback, Runnable {

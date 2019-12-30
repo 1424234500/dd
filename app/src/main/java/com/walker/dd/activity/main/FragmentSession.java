@@ -15,14 +15,12 @@ import com.walker.dd.activity.AcBase;
 import com.walker.dd.activity.FragmentBase;
 import com.walker.dd.activity.chat.ActivityChat;
 import com.walker.dd.adapter.AdapterLvSession;
-import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.SessionModel;
 import com.walker.dd.struct.Session;
-import com.walker.dd.util.AndroidTools;
-import com.walker.dd.util.Constant;
+import com.walker.dd.core.AndroidTools;
+import com.walker.dd.core.Constant;
 
-import com.walker.mode.*;
 import com.walker.socket.server_1.plugin.*;
 import java.util.*;
 
@@ -118,6 +116,8 @@ public class FragmentSession extends FragmentBase implements  AdapterView.OnItem
         notifyDataSetChanged();
         Intent intent = new Intent(getActivity(), ActivityChat.class);
         AndroidTools.putMapToIntent(intent, bean);
+
+
         startActivity(intent);
 
     }

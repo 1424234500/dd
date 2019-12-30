@@ -1,7 +1,6 @@
 package com.walker.dd.activity.other;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,23 +13,15 @@ import android.widget.TextView;
 import com.walker.common.util.JsonUtil;
 import com.walker.common.util.Tools;
 import com.walker.dd.R;
-import com.walker.dd.activity.AcBase;
-import com.walker.dd.service.NetModel;
-import com.walker.dd.util.AndroidTools;
-import com.walker.dd.util.Constant;
-import com.walker.dd.util.KeyUtil;
-import com.walker.dd.util.OkHttpUtil;
-import com.walker.socket.client.Client;
-import com.walker.socket.client.ClientNetty;
-import com.walker.socket.client.OnSocket;
+import com.walker.dd.core.AndroidTools;
+import com.walker.dd.core.Constant;
+import com.walker.dd.core.KeyUtil;
+import com.walker.dd.core.OkHttpUtil;
 
-import com.walker.mode.*;
-import com.walker.socket.server_1.plugin.*;
 import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
 public class ActivityTestOkhttp3 extends Activity implements View.OnClickListener {

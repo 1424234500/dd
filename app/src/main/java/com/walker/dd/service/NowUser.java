@@ -2,16 +2,15 @@ package com.walker.dd.service;
 
 import android.content.Context;
 
-import com.walker.dd.util.MySP;
+import com.walker.dd.core.service.SharedPreferencesServiceImpl;
 
 import com.walker.mode.*;
-import com.walker.socket.server_1.plugin.*;
-
 
 
 public    class NowUser {
     public static Context context;
     public static boolean login = false;
+    public static boolean logining = false;
     public static boolean offline = false;
     public static boolean loginauto = false;
 
@@ -39,6 +38,12 @@ public    class NowUser {
             setAutoLogin(false);
         }
     }
+    public static Boolean isLogining(){
+        return NowUser.logining;
+    }
+    public static void setLogining(Boolean login){
+        NowUser.logining = login;
+    }
     public static Boolean isLogin(){
         return NowUser.login;
     }
@@ -47,44 +52,44 @@ public    class NowUser {
     }
 
     public static void setAutoLogin(Boolean login){
-        MySP.put(context, Key.AUTO, login+"");
+        SharedPreferencesServiceImpl.put(context, Key.AUTO, login+"");
     }
     public static Boolean isAutoLogin(){
-        return Boolean.valueOf(MySP.get(context, Key.AUTO, "false"));
+        return Boolean.valueOf(SharedPreferencesServiceImpl.get(context, Key.AUTO, "false"));
     }
 
     public static void setId(String id) {
-        MySP.put(context, Key.ID, id);
+        SharedPreferencesServiceImpl.put(context, Key.ID, id);
     }
 
     public static void setName(String name) {
-        MySP.put(context, Key.NAME, name);
+        SharedPreferencesServiceImpl.put(context, Key.NAME, name);
     }
 
     public static void setPwd(String pwd) {
-        MySP.put(context, Key.PWD, pwd);
+        SharedPreferencesServiceImpl.put(context, Key.PWD, pwd);
     }
 
     public static void setProfile(String profile) {
-        MySP.put(context, Key.PROFILE, profile);
+        SharedPreferencesServiceImpl.put(context, Key.PROFILE, profile);
     }
 
     public static String getId() {
-        return MySP.get(context, Key.ID, "000");
+        return SharedPreferencesServiceImpl.get(context, Key.ID, "000");
     }
 
     public static String getName() {
-        return MySP.get(context, Key.NAME, "nobody");
+        return SharedPreferencesServiceImpl.get(context, Key.NAME, "nobody");
     }
     public static String getName(String name) {
-        return MySP.get(context, Key.NAME, name);
+        return SharedPreferencesServiceImpl.get(context, Key.NAME, name);
     }
 
     public static String getPwd() {
-        return MySP.get(context, Key.PWD, "");
+        return SharedPreferencesServiceImpl.get(context, Key.PWD, "");
     }
 
     public static String getProfile() {
-        return MySP.get(context, Key.PROFILE, "");
+        return SharedPreferencesServiceImpl.get(context, Key.PROFILE, "");
     }
 }

@@ -12,16 +12,13 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.walker.common.util.Bean;
 import com.walker.dd.R;
-import com.walker.dd.service.NetModel;
 import com.walker.dd.struct.Session;
-import com.walker.dd.util.EmotionUtils;
-import com.walker.dd.util.KeyUtil;
-import com.walker.dd.util.picasso.NetImage;
+import com.walker.dd.core.EmotionUtils;
+import com.walker.dd.core.picasso.NetImage;
 
 import com.walker.mode.*;
-import com.walker.socket.server_1.plugin.*;
+
 /**
  * 会话列表
  *

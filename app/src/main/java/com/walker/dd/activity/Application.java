@@ -5,20 +5,22 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.multidex.MultiDex;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.walker.common.util.Bean;
 import com.walker.core.database.BaseDao;
-import com.walker.dd.database.BaseDaoImpl;
+import com.walker.dd.R;
+import com.walker.dd.core.push.PushService;
+import com.walker.dd.core.push.jpush.PushServiceJpushImpl;
+import com.walker.dd.core.service.BaseServiceImpl;
 import com.walker.dd.service.LoginModel;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.SessionModel;
 import com.walker.dd.service.NetModel;
-import com.walker.dd.util.AndroidTools;
-import com.walker.dd.util.Constant;
-import com.walker.dd.util.picasso.NetImage;
+import com.walker.dd.core.AndroidTools;
+import com.walker.dd.core.Constant;
+import com.walker.dd.core.picasso.NetImage;
 import com.walker.socket.client.Client;
 import com.walker.socket.client.ClientNetty;
 import com.walker.socket.client.OnSocket;
@@ -26,8 +28,6 @@ import com.walker.socket.client.OnSocket;
 import java.io.File;
 
 import com.walker.mode.*;
-import com.walker.socket.server_1.plugin.*;
-
 
 
 public class Application extends android.app.Application implements OnSocket {
@@ -36,6 +36,8 @@ public class Application extends android.app.Application implements OnSocket {
 
     Bean onConn = new Bean().put(Key.TYPE, Key.SOCKET).put(Msg.KEY_STATUS, 0);
     Bean onDisConn = new Bean().put(Key.TYPE, Key.SOCKET).put(Msg.KEY_STATUS, 1);
+
+    PushService pushService;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -123,10 +125,11 @@ public class Application extends android.app.Application implements OnSocket {
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);//推送栏广播
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
 
+        initPush();
 
         initSocket();
-        NowUser.context = getApplicationContext();
 
+        NowUser.context = getApplicationContext();
 
         //初始化picasso 缓存
         NetImage.init(this);
@@ -139,6 +142,16 @@ public class Application extends android.app.Application implements OnSocket {
         //初始化时启动网络后台服务
         AndroidTools.log("App.oncreate");
         //逻辑处理，若没有登陆账号则跳转到 登陆界面
+    }
+
+    private void initPush() {
+        this.pushService = new PushServiceJpushImpl();
+        try {
+            pushService.bind(getApplicationContext());
+        }catch(Exception e){
+            e.printStackTrace();
+            AndroidTools.log("initPush error", e.toString());
+        }
     }
 
     public void initSocket(){
@@ -178,7 +191,7 @@ public class Application extends android.app.Application implements OnSocket {
 
     //初始化数据库表
     public void initDatabaseTable(){
-        BaseDao sqlDao = new BaseDaoImpl(this);
+        BaseDao sqlDao = new BaseServiceImpl(this);
         //sqlDao.execSQL("drop table login_user");
         sqlDao.executeSql(LoginModel.SQL_LOGIN_USER);
         sqlDao.executeSql(MsgModel.SQL_MSG);

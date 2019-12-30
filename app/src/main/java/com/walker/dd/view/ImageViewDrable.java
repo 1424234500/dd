@@ -14,7 +14,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
-import com.walker.dd.util.AndroidTools;
+import com.walker.dd.core.AndroidTools;
 
 public class ImageViewDrable extends View implements OnTouchListener {
 	GestureDetector mGestureDetector;

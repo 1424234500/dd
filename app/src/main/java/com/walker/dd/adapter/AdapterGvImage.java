@@ -1,7 +1,6 @@
 package com.walker.dd.adapter;
 
 import java.util.List;
-import java.util.Map;
 
 
 import android.content.Context;
@@ -13,7 +12,7 @@ import android.widget.ImageView;
 
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
-import com.walker.dd.util.AndroidTools;
+import com.walker.dd.core.AndroidTools;
 import com.walker.mode.Key;
 
 public class AdapterGvImage extends BaseAdapter{

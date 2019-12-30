@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.walker.dd.R;
-import com.walker.dd.util.AndroidTools;
+import com.walker.dd.core.AndroidTools;
 
 
 public class NavigationImageTextView extends LinearLayout implements View.OnClickListener {

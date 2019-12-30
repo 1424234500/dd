@@ -1,6 +1,5 @@
 package com.walker.dd.activity;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,10 +17,10 @@ import com.walker.common.util.Bean;
 import com.walker.common.util.JsonUtil;
 import com.walker.common.util.Tools;
 import com.walker.core.database.BaseDao;
-import com.walker.dd.database.BaseDaoImpl;
+import com.walker.dd.core.service.BaseServiceImpl;
 import com.walker.dd.service.NowUser;
-import com.walker.dd.util.AndroidTools;
-import com.walker.dd.util.Constant;
+import com.walker.dd.core.AndroidTools;
+import com.walker.dd.core.Constant;
 import com.walker.dd.view.DialogBeats;
 
 import com.walker.mode.*;
@@ -90,12 +89,16 @@ public abstract class AcBase extends FragmentActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+
+
+
         //registerReceiver(broadcastReceiver, new IntentFilter(MSGTYPE.broadcastUrl));
         //registerReceiver(mBroadcastReceiver, intentFilter);
         //注册应用内广播接收器
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter(Constant.BROAD_URL));
-        sqlDao = new BaseDaoImpl(this);
+        sqlDao = new BaseServiceImpl(this);
 
         OnCreate(savedInstanceState);
     }

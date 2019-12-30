@@ -4,7 +4,6 @@ import java.util.*;
 
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +13,9 @@ import android.widget.TextView;
 
 import com.walker.common.util.Bean;
 import com.walker.dd.R;
-import com.walker.dd.util.AndroidTools;
+import com.walker.dd.core.AndroidTools;
 
 import com.walker.mode.*;
-import com.walker.socket.server_1.plugin.*;
-import org.w3c.dom.Text;
 
 /**
  * IMAGE, TEXT

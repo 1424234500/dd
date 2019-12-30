@@ -1,7 +1,6 @@
 package com.walker.dd.view;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.walker.dd.R;
-import com.walker.dd.util.AndroidTools;
 
 
 /**

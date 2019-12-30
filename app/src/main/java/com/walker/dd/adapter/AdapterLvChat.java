@@ -18,13 +18,12 @@ import com.walker.common.util.FileUtil;
 import com.walker.dd.R;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.struct.Message;
-import com.walker.dd.util.AndroidTools;
-import com.walker.dd.util.Constant;
-import com.walker.dd.util.EmotionUtils;
-import com.walker.dd.util.picasso.NetImage;
+import com.walker.dd.core.AndroidTools;
+import com.walker.dd.core.Constant;
+import com.walker.dd.core.EmotionUtils;
+import com.walker.dd.core.picasso.NetImage;
 
 import com.walker.mode.*;
-import com.walker.socket.server_1.plugin.*;
 import com.walker.dd.view.ImageText;
 
 

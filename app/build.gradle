@@ -3,8 +3,6 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-
-
         applicationId "com.walker.dd"
         minSdkVersion 23
         targetSdkVersion 28
@@ -12,6 +10,22 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        ndk {
+            //选择要添加的对应 cpu 类型的 .so 库。
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+//            , 'x86', 'x86_64', 'mips', 'mips64'
+            // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
+        }
+//        NDK r17 之后不再支持 mips 平台，在 build.gradle 里增加如下配置可解决
+//        packagingOptions {
+//            doNotStrip '*/mips/*.so'
+//            doNotStrip '*/mips64/*.so'
+//        }
+        manifestPlaceholders = [
+                JPUSH_PKGNAME : applicationId,
+                JPUSH_APPKEY : "557bf3f8c230ec7cdefb0e06", //JPush 上注册的包名对应的 Appkey.
+                JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
+        ]
 //        multiDexEnabled true
 
     }
@@ -36,6 +50,7 @@ android {
 //        exclude'META-INF/DEPENDENCIES'
 
     }
+
 }
 
 
@@ -43,6 +58,15 @@ android {
 dependencies {
 
 //    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(dir: 'libs', include: '*.jar')
+
+//    implementation files('libs/walker-core-0.0.1.jar')
+//    implementation files('libs/walker-service-0.0.1.jar')
+//    implementation files('libs/walker-socket-0.0.1.jar')
+//    implementation files('libs/rt.jar')
+
+
+
     implementation 'com.android.support:multidex:1.0.0'
 
     implementation 'com.android.support:appcompat-v7:28.0.0'
@@ -55,7 +79,9 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     //    implementation 'com.google.code.gson:gson:2.3.1'
 
-    implementation 'log4j:log4j:1.2.14'
+     implementation 'log4j:log4j:1.2.14'
+//    compile group: 'com.googlecode', name: 'openbeans', version: '1.0'
+
 
     implementation 'com.squareup.picasso:picasso:2.5.2'
 //    implementation 'com.squareup.okhttp:okhttp:2.+'
@@ -66,21 +92,10 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.8'
 //    implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
     implementation 'io.netty:netty-all:4.1.24.Final'
-    implementation files('libs/walker-core-0.0.1.jar')
-    implementation files('libs/walker-service-0.0.1.jar')
-    implementation files('libs/walker-socket-0.0.1.jar')
-
-//    baidu push
-//    implementation 'com.android.support:appcompat-v7:25.3.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation files('libs/ufosdk-android-1.7.13.jar')
-    implementation files('libs/pushservice-6.5.0.75.jar')
-    implementation files('libs/galaxy.jar')
 
 
-    //    implementation files('libs/httpclient-4.3.4.jar')
-    //    implementation files('libs/httpcore-4.3.2.jar')
-    //    implementation files('libs/httpmime-4.3.4.jar')
+    implementation 'cn.jiguang.sdk:jpush:3.5.4'  // 此处以JPush 3.5.4 版本为例。
+    implementation 'cn.jiguang.sdk:jcore:2.2.4'  // 此处以JCore 2.2.4 版本为例。
 
 
 }

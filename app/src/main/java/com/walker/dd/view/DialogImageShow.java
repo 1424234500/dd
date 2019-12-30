@@ -8,7 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.walker.dd.R;
-import com.walker.dd.util.AndroidTools;
+import com.walker.dd.core.AndroidTools;
 
 public class DialogImageShow extends Dialog {  
 	ImageViewDrable isv;

@@ -6,9 +6,8 @@ import com.walker.common.util.FileUtil;
 import com.walker.common.util.TimeUtil;
 import com.walker.core.database.BaseDao;
 import com.walker.dd.struct.Message;
-import com.walker.dd.util.AndroidTools;
-import com.walker.dd.util.Constant;
-import com.walker.dd.util.KeyUtil;
+import com.walker.dd.core.AndroidTools;
+import com.walker.dd.core.KeyUtil;
 
 
 import java.util.ArrayList;
@@ -17,8 +16,6 @@ import java.util.Map;
 
 
 import com.walker.mode.*;
-import com.walker.socket.server_1.plugin.*;
-
 
 
 /**

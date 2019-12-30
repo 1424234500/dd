@@ -3,7 +3,6 @@ package com.walker.dd.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -14,10 +13,8 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
 
-import com.walker.dd.R;
-import com.walker.dd.util.AndroidTools;
+import com.walker.dd.core.AndroidTools;
 
 public class BeatsView extends android.support.v7.widget.AppCompatImageView implements OnClickListener {
 

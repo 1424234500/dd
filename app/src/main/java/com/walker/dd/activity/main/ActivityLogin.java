@@ -33,9 +33,8 @@ import com.walker.dd.service.LoginModel;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.NetModel;
-import com.walker.dd.util.AndroidTools;
-import com.walker.dd.util.KeyUtil;
-import com.walker.dd.util.picasso.NetImage;
+import com.walker.dd.core.AndroidTools;
+import com.walker.dd.core.picasso.NetImage;
 import com.walker.dd.view.ClearEditText;
 
 import com.walker.mode.*;
@@ -124,8 +123,6 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 		cetPwd.setText(pwd);
         NetImage.loadProfile(getContext(), id, ivprofile);
 
-		if(! NetModel.isConn())
-		loadingStart();//加载等待socket连接
 	}
 
 	 
@@ -170,13 +167,22 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
      * 点击登录
      */
     private void ClickLogin() {
+    	if(NowUser.isLogining()){
+    		AndroidTools.toast(getContext(), "Logining...");
+			NowUser.setLogining(false);
+			loadingStart();
+			return;
+		}
 		String id = cetId.getText().toString();
 		String pwd = cetPwd.getText().toString();
 		if (id.length() > 0) {
+			NowUser.setLogining(true);
+
 			//合法账号密码，发送登陆请求,并且本地放入本地临时账户信息记录
 			NowUser.setId(id);
 			NowUser.setPwd(pwd);
             LoginModel.login(this, id, pwd, NowUser.getName(), MsgModel.getLastMsgTime(sqlDao));
+
 			//登陆中 提示
             loadingStart();
 		} else {
@@ -307,7 +313,13 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 
 	@Override
 	public void OnResume() {
-
+		if(! NetModel.isConn()) {
+			loadingStart();//加载等待socket连接
+		}else{
+			if(NowUser.isLogin()){
+				ClickLogin();
+			}
+		}
 	}
 
 
@@ -381,7 +393,8 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
             }else{
                 toast(msg.getInfo());
             }
-        }
+			NowUser.setLogining(false);
+		}
 
 
 

@@ -1,26 +1,21 @@
 package com.walker.dd.activity.other;
 
 import android.app.Activity;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.text.method.ScrollingMovementMethod;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.walker.common.util.Bean;
 import com.walker.common.util.TimeUtil;
 import com.walker.common.util.Tools;
 import com.walker.dd.R;
-import com.walker.dd.util.AndroidTools;
-import com.walker.dd.util.Constant;
+import com.walker.dd.core.AndroidTools;
+import com.walker.dd.core.Constant;
 import com.walker.socket.client.Client;
 import com.walker.socket.client.ClientNetty;
 import com.walker.socket.client.OnSocket;

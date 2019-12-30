@@ -1,6 +1,5 @@
 package com.walker.dd.activity.chat;
  
-import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,11 +15,11 @@ import com.walker.common.util.Tools;
 import com.walker.dd.R;
 import com.walker.dd.activity.FragmentBase;
 import com.walker.dd.service.NowUser;
-import com.walker.dd.util.AndroidTools;
-import com.walker.dd.util.AudioRecoderUtils;
-import com.walker.dd.util.Constant;
-import com.walker.dd.util.MyFile;
-import com.walker.dd.util.MyMediaPlayer;
+import com.walker.dd.core.AndroidTools;
+import com.walker.dd.core.AudioRecoderUtils;
+import com.walker.dd.core.Constant;
+import com.walker.dd.core.MyFile;
+import com.walker.dd.core.MyMediaPlayer;
 
 public class FragmentVoice extends FragmentBase implements View.OnTouchListener {
 //	VoiceView vl;
