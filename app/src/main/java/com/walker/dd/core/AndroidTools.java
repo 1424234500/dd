@@ -46,6 +46,7 @@ import android.widget.Toast;
 import com.walker.common.util.Bean;
 import com.walker.common.util.Tools;
 import com.walker.dd.R;
+import com.walker.dd.activity.Application;
 import com.walker.dd.activity.main.ActivityLogin;
 
 public class AndroidTools {
@@ -185,13 +186,19 @@ public class AndroidTools {
         return res;
     }
 
-
-    public static void systemVoiceToast(Context context) {
+    /**
+     * 系统音效
+     * @param context
+     */
+    public static void toastVoice(Context context) {
+        log("toastVoice");
         RingtoneManager.getRingtone(context.getApplicationContext(),
                 RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)).play();
     }
 
-
+    public static void toastVoice() {
+        toastVoice(Application.context);
+    }
     /**
      * 打开文件时调用
      * 高版本api 文件权限uri转换
@@ -269,6 +276,345 @@ public class AndroidTools {
         }
         return type;
     }
+
+
+    public static void post(View view, Runnable run) {
+        view.postDelayed(run, 100);
+    }
+
+    public static void sleep(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static boolean fileExist(String str) {
+        File f = new File(str);
+        return f.exists() && f.isFile() && f.length() > 10;
+    }
+
+
+    public static String getLocalIp(Context c) {
+        WifiManager wifiManager = (WifiManager) c
+                .getSystemService(c.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        // 获取32位整型IP地址
+        int ipAddress = wifiInfo.getIpAddress();
+        // 返回整型地址转换成“*.*.*.*”地址
+        return String.format("%d.%d.%d.%d", (ipAddress & 0xff),
+                (ipAddress >> 8 & 0xff), (ipAddress >> 16 & 0xff),
+                (ipAddress >> 24 & 0xff));
+    }
+    public static InetAddress getBroadcastAddress(Context context) throws UnknownHostException {
+        WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        DhcpInfo dhcp = wifi.getDhcpInfo();
+        if (dhcp == null) {
+            return InetAddress.getByName("255.255.255.255");
+        }
+        int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
+        byte[] quads = new byte[4];
+        for (int k = 0; k < 4; k++)
+            quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
+        return InetAddress.getByAddress(quads);
+
+    }
+
+
+
+    public static void sendNotification(Context context, int notifyId, String title, String text) {
+        log("sendNotification", notifyId, title, text);
+
+        boolean isNotifyEnable = NotificationManagerCompat.from(context).areNotificationsEnabled();
+        boolean isChannelEnable = true;
+
+        //获取NotificationManager实例
+        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        //准备intent
+        Intent clickIntent = new Intent(context, ActivityLogin.class);
+        clickIntent.setAction("com.walker.dd");
+        // 构建 PendingIntent
+        PendingIntent clickPI = PendingIntent.getBroadcast(context, 1, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        //准备intent
+        Intent cacelIntent = new Intent(context, ActivityLogin.class);
+        cacelIntent.setAction("com.xxx.xxx.cancel");
+        // 构建 PendingIntent
+        PendingIntent cacelPI = PendingIntent.getBroadcast(context, 2, cacelIntent, PendingIntent.FLAG_CANCEL_CURRENT );
+
+
+        NotificationCompat.Builder builder;
+//        当compileVersion>=26且Notification没有设置channelId时,8.0的系统上通知不会弹出，在logcat的error级别显示NotificationService提示日志：No Channel found for pkg=aaa,
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel("message", "消息", NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(notificationChannel);
+            builder =new NotificationCompat.Builder(context, "message");
+            isChannelEnable = notificationChannel.getImportance() != NotificationManager.IMPORTANCE_NONE;
+
+        }
+        else {
+            builder =new NotificationCompat.Builder(context);
+        }
+
+//        通知总权限在华为EMUI/魅族flyme/原生系统上默认是打开的，MIUI/VIVO/OPPO是默认关闭的
+
+
+        builder.setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle(title)//设置通知标题
+                .setContentText(text)//设置通知内容
+                .setContentIntent(clickPI)// 设置pendingIntent,点击通知时就会用到
+                .setAutoCancel(true)//设为true，点击通知栏移除通知
+//                .setDeleteIntent(cacelPI)//设置pendingIntent,左滑右滑通知时就会用到
+        ;
+        Notification notification = builder.build();
+        if (isNotifyEnable && isChannelEnable) {
+            notificationManager.notify(notifyId, notification); // 正常notify
+        } else if (!isNotifyEnable) {
+            Intent intent = new Intent();
+            if(!(context instanceof Activity)){
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
+            if (Build.VERSION.SDK_INT >= 26) {
+                intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                context.startActivity(intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName()));
+            }else if (Build.VERSION.SDK_INT >= 21) {
+                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                context.startActivity(intent.putExtra("android.provider.extra.APP_PACKAGE", context.getPackageName()));
+            } else if (Build.VERSION.SDK_INT >= 9) {
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(Uri.fromParts("package", context.getPackageName(), null));
+                context.startActivity(intent);
+            } else {//低于9没有适配必要
+                toast(context, "api < 9 ? ");
+            }
+        }else{
+            toast(context, "只打开了通知开关，但是关闭了当前channel的通知，开发者需要根据通知重要性,自行决定如何提示用户");
+//            只打开了通知开关，但是关闭了当前channel的通知，开发者需要根据通知重要性,自行决定如何提示用户
+        }
+
+    }
+    public static boolean isNotificationEnabled(Context context,String channelId) {
+        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(context);
+        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        boolean returnValue = managerCompat.areNotificationsEnabled();
+        if(manager == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
+            return returnValue;
+        }
+        NotificationChannel channel = manager.getNotificationChannel(channelId);
+        if(channel == null){
+            channel = new NotificationChannel(channelId,"我的推送类别",NotificationManager.IMPORTANCE_HIGH);
+            manager.createNotificationChannel(channel);
+
+//            下面的获取操作必需，创建的channel和获取到的channel的IMPORTANCE可能不一样，OPPO默认IMPORTANCE_NONE。
+            channel = manager.getNotificationChannel(channelId);
+        }
+        return returnValue && channel.getImportance() != NotificationManager.IMPORTANCE_NONE;
+    }
+
+
+    public static void toast(Object...objects) {
+        String str = Tools.objects2string(objects);
+        toast(Application.context, str);
+    }
+    public static void toast(Context c, Object...objects) {
+        String str = Tools.objects2string(objects);
+        toast(c, str);
+    }
+    public static void toast(Context c, String str){
+        Toast.makeText(c, str, Toast.LENGTH_SHORT).show();
+        log("toast." + str);
+    }
+    public static void out(Object...objects) {
+        log(objects);
+    }
+
+    public static void log(Object...objects){
+        String str = Tools.objects2string(objects);
+        log(str);
+    }
+    public static void log(String str) {
+        Log.e("tools.", str);
+    }
+
+    //指定为数序列生成器
+    public static String hexs = "0123456789ABCDEF"; //16
+    public static String rgb = "AA0099";    //6 * 16
+
+    public static double deta = hexs.length() / 16;   //AA
+    /**
+     * 获取随机颜色 FF FF FF AA
+     *
+     button1.setBackgroundColor(0xFFFF00FF);
+     button1.setBackgroundColor(Color.parseColor("#FFFCCC"));
+     */
+    public static int getRandomColor() {
+        String str = "#";
+        for(int i = 0; i < rgb.length(); i++){
+            str += hexs.charAt((int) (Math.random() * hexs.length()));
+        }
+        return Color.parseColor(str);
+    }
+
+
+
+    public static int screenH = 0;
+    public static int screenW = 0;
+
+    public static void init(Activity activity){
+        //初始化屏幕尺寸
+        DisplayMetrics dm = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+        screenH = dm.heightPixels;
+        screenW = dm.widthPixels;
+
+    }
+
+    public static int getScreenWidth(){
+        return screenW;
+    }
+    public static int getScreenHeight(){
+        return screenH;
+    }
+
+
+
+    public static <T> int listIndex(List<T> list, T item, Comparator<T> compre){
+        int res = -1;
+        for(int i = list.size() - 1; i >= 0; i--){
+            if(compre.compare(list.get(i), item) == 0){
+                res = i;
+            }
+        }
+        return res;
+    }
+    public static <T> int listIndexRemoveAll(List<T> list, T item, Comparator<T> compre){
+        List<T> cp = new ArrayList<>();
+        int res = -1;
+        for(int i = list.size() - 1; i >= 0; i--){
+            if(compre.compare(list.get(i), item) == 0){
+                res++;
+            }else{
+                cp.add(list.get(i));
+            }
+        }
+        list.clear();
+        cp.addAll(cp);
+        return res;
+    }
+
+    public static <T> int listReplaceIndex(int index, List<T> list, T item, Comparator<T> compre){
+        for(int i = list.size() - 1; i >= 0; i--){
+            if(compre.compare(list.get(i), item) == 0){
+                list.remove(i);
+            }
+        }
+        list.add(index, item);
+        return list.size();
+    }
+
+    /**
+     * 假设set equal单存在 若有则修改 若无则添加
+     * 删除公有的
+     * 并集
+     */
+    public static <T> int listReplaceIndexAndAdd(int index, List<T> list, List<T> items){
+//        List<T> both = new ArrayList<>();
+        for(int i = list.size() - 1; i >= 0; i--){
+            for(int j = 0; j < items.size(); j++){
+                if(list.get(i).equals(items.get(j))){
+//                    both.add(items.get(j));
+                    list.remove(i);
+                    break;
+                }
+            }
+        }
+        list.addAll(items);
+        return list.size();
+    }
+
+
+
+
+
+    /**
+     * 拍照 ACTIVITY_RESULT_TAKEPHOTO 存入path
+     * @param ac
+     * @param path
+     */
+    public static  void takePhoto(Activity ac, String path ){
+        AndroidTools.log("takePhoto", ac, path);
+        File file = new File(path);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            String authority = ac.getPackageName() + ".fileprovider"; //【清单文件中provider的authorities属性的值】
+            uri = FileProvider.getUriForFile(ac, authority, file);
+        } else {
+            uri = Uri.fromFile(file);
+        }
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        ac.startActivityForResult(intent, Constant.ACTIVITY_RESULT_TAKEPHOTO);
+
+    }
+    /**
+     * Date 2017-5-7 下午6:15:52
+     * Desc: 选择图片调用
+     *
+     * @param ac
+     * @param code
+     */
+    public static void chosePhoto(Activity ac, int code) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        ac.startActivityForResult(Intent.createChooser(intent, "选择图片"), code);
+    }
+
+    /**
+     * 查询最近10张照片路径
+     * @param ac
+     * @return
+     */
+    public static List<Bean> searchPhoto(Context ac, int count){
+        Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        Cursor mCursor = ac.getContentResolver().query(mImageUri, null,
+                MediaStore.Images.Media.MIME_TYPE + "=? or "  + MediaStore.Images.Media.MIME_TYPE + "=?",
+                new String[] { "image/jpeg", "image/png" }, MediaStore.Files.FileColumns.DATE_ADDED + " DESC");
+        if(mCursor == null){  return new ArrayList<>();   }
+        int i = 0;
+        List<Bean> list = new ArrayList<>();
+        while(mCursor.moveToNext() && i++ < count){//只显示最多30张图片
+            Bean map = new Bean();
+            map.put("chose", "false");
+            map.put("path", mCursor.getString(mCursor .getColumnIndex(MediaStore.Images.Media.DATA)));
+            list.add(map );
+        }
+        return list;
+    }
+
+
+
+
+    /**
+     * 选择文件 ACTIVITY_RESULT_PATH
+     *     //intent.setType(“image/*”);//选择图片
+     *     //intent.setType(“audio/*”); //选择音频
+     *     //intent.setType(“video/*”); //选择视频 （mp4 3gp 是android支持的视频格式）
+     *     //intent.setType(“video/*;image/*”);//同时选择视频和图片
+     * @param ac
+     * @param type 类型
+     */
+    public static void choseFile(Activity ac, String type){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(type.length() > 0 ? type : "*/*");
+        ac.startActivityForResult(Intent.createChooser(intent, "选择文件"), Constant.ACTIVITY_RESULT_FILE );
+    }
+
 
     /**
      * -- MIME 列表 --
@@ -712,341 +1058,6 @@ public class AndroidTools {
                     {".zip", "application/zip"},
                     {"", "*/*"}
             };
-
-
-
-    public static void post(View view, Runnable run) {
-        view.postDelayed(run, 100);
-    }
-
-    public static void sleep(long time) {
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public static boolean fileExist(String str) {
-        File f = new File(str);
-        return f.exists() && f.isFile() && f.length() > 10;
-    }
-
-
-    public static String getLocalIp(Context c) {
-        WifiManager wifiManager = (WifiManager) c
-                .getSystemService(c.WIFI_SERVICE);
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        // 获取32位整型IP地址
-        int ipAddress = wifiInfo.getIpAddress();
-        // 返回整型地址转换成“*.*.*.*”地址
-        return String.format("%d.%d.%d.%d", (ipAddress & 0xff),
-                (ipAddress >> 8 & 0xff), (ipAddress >> 16 & 0xff),
-                (ipAddress >> 24 & 0xff));
-    }
-    public static InetAddress getBroadcastAddress(Context context) throws UnknownHostException {
-        WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        DhcpInfo dhcp = wifi.getDhcpInfo();
-        if (dhcp == null) {
-            return InetAddress.getByName("255.255.255.255");
-        }
-        int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
-        byte[] quads = new byte[4];
-        for (int k = 0; k < 4; k++)
-            quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
-        return InetAddress.getByAddress(quads);
-
-    }
-
-
-
-    public static void sendNotification(Context context, int notifyId, String title, String text) {
-        log("sendNotification", notifyId, title, text);
-
-        boolean isNotifyEnable = NotificationManagerCompat.from(context).areNotificationsEnabled();
-        boolean isChannelEnable = true;
-
-        //获取NotificationManager实例
-        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-        //准备intent
-        Intent clickIntent = new Intent(context, ActivityLogin.class);
-        clickIntent.setAction("com.walker.dd");
-        // 构建 PendingIntent
-        PendingIntent clickPI = PendingIntent.getBroadcast(context, 1, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-        //准备intent
-        Intent cacelIntent = new Intent(context, ActivityLogin.class);
-        cacelIntent.setAction("com.xxx.xxx.cancel");
-        // 构建 PendingIntent
-        PendingIntent cacelPI = PendingIntent.getBroadcast(context, 2, cacelIntent, PendingIntent.FLAG_CANCEL_CURRENT );
-
-
-        NotificationCompat.Builder builder;
-//        当compileVersion>=26且Notification没有设置channelId时,8.0的系统上通知不会弹出，在logcat的error级别显示NotificationService提示日志：No Channel found for pkg=aaa,
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel = new NotificationChannel("message", "消息", NotificationManager.IMPORTANCE_HIGH);
-            notificationManager.createNotificationChannel(notificationChannel);
-            builder =new NotificationCompat.Builder(context, "message");
-            isChannelEnable = notificationChannel.getImportance() != NotificationManager.IMPORTANCE_NONE;
-
-        }
-        else {
-            builder =new NotificationCompat.Builder(context);
-        }
-
-//        通知总权限在华为EMUI/魅族flyme/原生系统上默认是打开的，MIUI/VIVO/OPPO是默认关闭的
-
-
-        builder.setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle(title)//设置通知标题
-                .setContentText(text)//设置通知内容
-                .setContentIntent(clickPI)// 设置pendingIntent,点击通知时就会用到
-                .setAutoCancel(true)//设为true，点击通知栏移除通知
-//                .setDeleteIntent(cacelPI)//设置pendingIntent,左滑右滑通知时就会用到
-        ;
-        Notification notification = builder.build();
-        if (isNotifyEnable && isChannelEnable) {
-            notificationManager.notify(notifyId, notification); // 正常notify
-        } else if (!isNotifyEnable) {
-            Intent intent = new Intent();
-            if(!(context instanceof Activity)){
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            }
-            if (Build.VERSION.SDK_INT >= 26) {
-                intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-                context.startActivity(intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName()));
-            }else if (Build.VERSION.SDK_INT >= 21) {
-                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-                context.startActivity(intent.putExtra("android.provider.extra.APP_PACKAGE", context.getPackageName()));
-            } else if (Build.VERSION.SDK_INT >= 9) {
-                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setData(Uri.fromParts("package", context.getPackageName(), null));
-                context.startActivity(intent);
-            } else {//低于9没有适配必要
-                toast(context, "api < 9 ? ");
-            }
-        }else{
-            toast(context, "只打开了通知开关，但是关闭了当前channel的通知，开发者需要根据通知重要性,自行决定如何提示用户");
-//            只打开了通知开关，但是关闭了当前channel的通知，开发者需要根据通知重要性,自行决定如何提示用户
-        }
-
-    }
-    public static boolean isNotificationEnabled(Context context,String channelId) {
-        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(context);
-        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        boolean returnValue = managerCompat.areNotificationsEnabled();
-        if(manager == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
-            return returnValue;
-        }
-        NotificationChannel channel = manager.getNotificationChannel(channelId);
-        if(channel == null){
-            channel = new NotificationChannel(channelId,"我的推送类别",NotificationManager.IMPORTANCE_HIGH);
-            manager.createNotificationChannel(channel);
-
-//            下面的获取操作必需，创建的channel和获取到的channel的IMPORTANCE可能不一样，OPPO默认IMPORTANCE_NONE。
-            channel = manager.getNotificationChannel(channelId);
-        }
-        return returnValue && channel.getImportance() != NotificationManager.IMPORTANCE_NONE;
-    }
-
-
-    public static void toast(Context c, Object...objects) {
-        String str = Tools.objects2string(objects);
-        toast(c, str);
-    }
-    public static void toast(Context c, String str){
-        Toast.makeText(c, str, Toast.LENGTH_SHORT).show();
-        log("toast." + str);
-    }
-    public static void out(Object...objects) {
-        log(objects);
-    }
-
-    public static void log(Object...objects){
-        String str = Tools.objects2string(objects);
-        log(str);
-    }
-    public static void log(String str) {
-        Log.e("tools.", str);
-    }
-
-    //指定为数序列生成器
-    public static String hexs = "0123456789ABCDEF"; //16
-    public static String rgb = "AA0099";    //6 * 16
-
-    public static double deta = hexs.length() / 16;   //AA
-    /**
-     * 获取随机颜色 FF FF FF AA
-     *
-     button1.setBackgroundColor(0xFFFF00FF);
-     button1.setBackgroundColor(Color.parseColor("#FFFCCC"));
-     */
-    public static int getRandomColor() {
-        String str = "#";
-        for(int i = 0; i < rgb.length(); i++){
-            str += hexs.charAt((int) (Math.random() * hexs.length()));
-        }
-        return Color.parseColor(str);
-    }
-
-
-
-    public static int screenH = 0;
-    public static int screenW = 0;
-
-    public static void init(Activity activity){
-        //初始化屏幕尺寸
-        DisplayMetrics dm = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-        screenH = dm.heightPixels;
-        screenW = dm.widthPixels;
-
-    }
-
-    public static int getScreenWidth(){
-        return screenW;
-    }
-    public static int getScreenHeight(){
-        return screenH;
-    }
-
-
-
-    public static <T> int listIndex(List<T> list, T item, Comparator<T> compre){
-        int res = -1;
-        for(int i = list.size() - 1; i >= 0; i--){
-            if(compre.compare(list.get(i), item) == 0){
-                res = i;
-            }
-        }
-        return res;
-    }
-    public static <T> int listIndexRemoveAll(List<T> list, T item, Comparator<T> compre){
-        List<T> cp = new ArrayList<>();
-        int res = -1;
-        for(int i = list.size() - 1; i >= 0; i--){
-            if(compre.compare(list.get(i), item) == 0){
-                res++;
-            }else{
-                cp.add(list.get(i));
-            }
-        }
-        list.clear();
-        cp.addAll(cp);
-        return res;
-    }
-
-    public static <T> int listReplaceIndex(int index, List<T> list, T item, Comparator<T> compre){
-        for(int i = list.size() - 1; i >= 0; i--){
-            if(compre.compare(list.get(i), item) == 0){
-                list.remove(i);
-            }
-        }
-        list.add(index, item);
-        return list.size();
-    }
-
-    /**
-     * 假设set equal单存在 若有则修改 若无则添加
-     * 删除公有的
-     * 并集
-     */
-    public static <T> int listReplaceIndexAndAdd(int index, List<T> list, List<T> items){
-//        List<T> both = new ArrayList<>();
-        for(int i = list.size() - 1; i >= 0; i--){
-            for(int j = 0; j < items.size(); j++){
-                if(list.get(i).equals(items.get(j))){
-//                    both.add(items.get(j));
-                    list.remove(i);
-                    break;
-                }
-            }
-        }
-        list.addAll(items);
-        return list.size();
-    }
-
-
-
-
-
-    /**
-     * 拍照 ACTIVITY_RESULT_TAKEPHOTO 存入path
-     * @param ac
-     * @param path
-     */
-    public static  void takePhoto(Activity ac, String path ){
-        AndroidTools.log("takePhoto", ac, path);
-        File file = new File(path);
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        Uri uri;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            String authority = ac.getPackageName() + ".fileprovider"; //【清单文件中provider的authorities属性的值】
-            uri = FileProvider.getUriForFile(ac, authority, file);
-        } else {
-            uri = Uri.fromFile(file);
-        }
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-        ac.startActivityForResult(intent, Constant.ACTIVITY_RESULT_TAKEPHOTO);
-
-    }
-    /**
-     * Date 2017-5-7 下午6:15:52
-     * Desc: 选择图片调用
-     *
-     * @param ac
-     * @param code
-     */
-    public static void chosePhoto(Activity ac, int code) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("image/*");
-        ac.startActivityForResult(Intent.createChooser(intent, "选择图片"), code);
-    }
-
-    /**
-     * 查询最近10张照片路径
-     * @param ac
-     * @return
-     */
-    public static List<Bean> searchPhoto(Context ac, int count){
-        Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        Cursor mCursor = ac.getContentResolver().query(mImageUri, null,
-                MediaStore.Images.Media.MIME_TYPE + "=? or "  + MediaStore.Images.Media.MIME_TYPE + "=?",
-                new String[] { "image/jpeg", "image/png" }, MediaStore.Files.FileColumns.DATE_ADDED + " DESC");
-        if(mCursor == null){  return new ArrayList<>();   }
-        int i = 0;
-        List<Bean> list = new ArrayList<>();
-        while(mCursor.moveToNext() && i++ < count){//只显示最多30张图片
-            Bean map = new Bean();
-            map.put("chose", "false");
-            map.put("path", mCursor.getString(mCursor .getColumnIndex(MediaStore.Images.Media.DATA)));
-            list.add(map );
-        }
-        return list;
-    }
-
-
-
-
-    /**
-     * 选择文件 ACTIVITY_RESULT_PATH
-     *     //intent.setType(“image/*”);//选择图片
-     *     //intent.setType(“audio/*”); //选择音频
-     *     //intent.setType(“video/*”); //选择视频 （mp4 3gp 是android支持的视频格式）
-     *     //intent.setType(“video/*;image/*”);//同时选择视频和图片
-     * @param ac
-     * @param type 类型
-     */
-    public static void choseFile(Activity ac, String type){
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType(type.length() > 0 ? type : "*/*");
-        ac.startActivityForResult(Intent.createChooser(intent, "选择文件"), Constant.ACTIVITY_RESULT_FILE );
-    }
 
 
 

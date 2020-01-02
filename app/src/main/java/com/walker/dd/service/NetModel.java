@@ -36,16 +36,25 @@ public class NetModel {
         return Integer.valueOf(SharedPreferencesServiceImpl.get(NowUser.context, "PORT_SOCKET", portSockets[ccSocket] + ""));
     }
     public static void setServerSocketPort(int port){
-        SharedPreferencesServiceImpl.put(NowUser.context, "PORT", port + "");
+        SharedPreferencesServiceImpl.put(NowUser.context, "PORT_SOCKET", port + "");
     }
 
-
+    public static String getServerWebUrl(){
+        return "http://" + getServerWebPort() + ":" + getServerWebIp() ;
+    }
     public static int getServerWebPort(){
         return Integer.valueOf(SharedPreferencesServiceImpl.get(NowUser.context, "PORT_WEB", portWebs[ccWeb] + ""));
     }
     public static String getServerWebIp(){
         return SharedPreferencesServiceImpl.get(NowUser.context, "IP_WEB", ipWebs[ccWeb] + "");
     }
+    public static void setServerWebIp(String ip){
+        SharedPreferencesServiceImpl.put(NowUser.context, "IP_WEB", ip);
+    }
+    public static void setServerWebPort(int port){
+        SharedPreferencesServiceImpl.put(NowUser.context, "PORT_WEB", port + "");
+    }
+
     /**
      * //服务器http上传地址"/walker-web/file/uploadCmf.do";
      * @return

@@ -9,11 +9,11 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.walker.common.util.Bean;
 import com.walker.core.database.BaseDao;
-import com.walker.dd.R;
+import com.walker.dd.core.Device;
 import com.walker.dd.core.push.PushService;
 import com.walker.dd.core.push.jpush.PushServiceJpushImpl;
 import com.walker.dd.core.service.BaseServiceImpl;
-import com.walker.dd.service.LoginModel;
+import com.walker.dd.service.SocketService;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.SessionModel;
@@ -31,6 +31,9 @@ import com.walker.mode.*;
 
 
 public class Application extends android.app.Application implements OnSocket {
+    public static Context context;
+
+
     LocalBroadcastManager localBroadcastManager;	//本地的activity广播机制
     NotificationManager notificationManager;    //推送栏广播
 
@@ -129,7 +132,8 @@ public class Application extends android.app.Application implements OnSocket {
 
         initSocket();
 
-        NowUser.context = getApplicationContext();
+//        全局context?
+        context = getApplicationContext();
 
         //初始化picasso 缓存
         NetImage.init(this);
@@ -193,7 +197,7 @@ public class Application extends android.app.Application implements OnSocket {
     public void initDatabaseTable(){
         BaseDao sqlDao = new BaseServiceImpl(this);
         //sqlDao.execSQL("drop table login_user");
-        sqlDao.executeSql(LoginModel.SQL_LOGIN_USER);
+        sqlDao.executeSql(SocketService.SQL_LOGIN_USER);
         sqlDao.executeSql(MsgModel.SQL_MSG);
         sqlDao.executeSql(SessionModel.SQL_SESSION);
 
@@ -205,8 +209,16 @@ public class Application extends android.app.Application implements OnSocket {
     public void showSystemInfo(){
     	ActivityManager activityManager = (ActivityManager)this.getSystemService(Context.ACTIVITY_SERVICE);
 		int memorySize = activityManager.getMemoryClass();
-    	
     	out("设备内存限制:" + memorySize);
+        Device.getInstance().getPhoneModel();
+        Device.getInstance().getResolution(getApplicationContext());
+        Device.getInstance().getDeviceNo(getApplicationContext());
+        Device.getInstance().getMEID(getApplicationContext());
+        Device.getInstance().getIMEI(getApplicationContext());
+        Device.getInstance().getIMEI2(getApplicationContext());
+        Device.getInstance().getNetMode(getApplicationContext());
+        Device.getInstance().getNetOperator(getApplicationContext());
+
     }
 
 

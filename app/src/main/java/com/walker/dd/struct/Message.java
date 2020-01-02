@@ -127,7 +127,7 @@ public class Message  {
         fromUserId = fromUser.getId();
         fromUserName = fromUser.getName();
         toUserId = msg.getUserTo()[0];
-        time = TimeUtil.format(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss:SSS");
+        time = TimeUtil.getTime(msg.getTimeDo(), "yyyy-MM-dd HH:mm:ss:SSS");
         text = data.get(Key.TEXT, "");
         file = data.get(Key.FILE, "");   //存储key -> 下载路径 -> 下载 或者 本地路径path
 

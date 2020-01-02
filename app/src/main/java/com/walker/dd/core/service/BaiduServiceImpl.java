@@ -92,7 +92,7 @@ public class BaiduServiceImpl {
             getToken(context, new OnAuth() {
                 @Override
                 public void onAuth(String token)  {
-                    OkHttpUtil.getClient().newCall(getBaiduRequestTextScan(context, token, content)).enqueue(new Callback() {
+                    OkHttpUtil.getInstance().getClient().newCall(getBaiduRequestTextScan(context, token, content)).enqueue(new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             onRes.onException(e);

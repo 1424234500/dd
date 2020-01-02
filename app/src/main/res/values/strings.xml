@@ -1,5 +1,23 @@
 <resources>
     <string name="app_name">dd</string>
+    <string-array name="array_day">
+        <item>星期一</item>
+        <item>星期二</item>
+        <item>星期三</item>
+        <item>星期四</item>
+        <item>星期五</item>
+        <item>星期六</item>
+        <item>星期日</item>
+    </string-array>
+    <string-array name="array_ips_socket">
+        <item>39.106.111.11:8093</item>
+        <item>127.0.0.1:8093</item>
+    </string-array>
+    <string-array name="array_ips_web">
+        <item>39.106.111.11:8090</item>
+        <item>127.0.0.1:8090</item>
+    </string-array>
+
 
     <string name="hello">Hello World, JPush!</string>
     <string name="tag_hint">Tag can be number, alphabet, underscore, Chinese. Use , to split many tags.</string>

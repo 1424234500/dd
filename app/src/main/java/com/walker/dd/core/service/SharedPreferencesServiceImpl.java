@@ -26,7 +26,7 @@ public class SharedPreferencesServiceImpl {
      */
     public static void  putTime(Context context, String name , String value, long timill){
         SharedPreferences sp = context.getSharedPreferences("mysharedpreferences",  0);
-        String time = TimeUtil.format(System.currentTimeMillis() +timill, "yyyy-MM-dd HH:mm:ss:SSS");
+        String time = TimeUtil.getTime(System.currentTimeMillis() +timill, "yyyy-MM-dd HH:mm:ss:SSS");
         AndroidTools.log(name, value, timill, "过期时间",time);
         sp.edit().putString(name, value).putString(KEY+name, time).commit();
     }

@@ -16,7 +16,28 @@ import com.walker.socket.server_1.plugin.*;
 
 import java.util.*;
 
-public class LoginModel extends  Model{
+public class SocketService extends  Model{
+    /**
+     * 私有构造器
+     */
+    private SocketService(){}
+    /**
+     * 私有静态内部类
+     */
+    private static class SingletonFactory{
+        private static SocketService instance;
+        static {
+            System.out.println("静态内部类初始化" + SingletonFactory.class);
+            instance = new SocketService();
+        }
+    }
+    /**
+     * 内部类模式 可靠
+     */
+    public static SocketService getInstance(){
+        return SingletonFactory.instance;
+    }
+
     /**
      * 用户登陆信息表，成功登录记录
      */

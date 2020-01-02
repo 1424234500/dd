@@ -395,8 +395,7 @@ public class ActivityChat extends AcBase {
 
         String toid = session.getId();
         String plugin = msg.getType();
-        if(!(msg.getUserFrom().getId().equals(toid)
-                || msg.getTo().equals(toid)))return;
+        if(!(msg.getUserFrom().getId().equals(toid) || msg.getTo().equals(toid)))return;
 
         if(plugin.equals(Plugin.KEY_MESSAGE)){
             addMsg(item);
@@ -453,7 +452,7 @@ public class ActivityChat extends AcBase {
                 .url(url)
                 .post(requestBody)
                 .build();
-        OkHttpUtil.getClient().newCall(request).enqueue(new Callback() {
+        OkHttpUtil.getInstance().getClient().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 log( "onFailure: ", e);
@@ -712,23 +711,23 @@ public class ActivityChat extends AcBase {
                 @Override
                 public void run() {
 
-                int i = AndroidTools.listIndex(listItemMsg, bean, compare);
-                if(i >= 0){
-//                    listItemMsg.get(i).putAll(bean);
-                    listItemMsg.remove(i);
-                    listItemMsg.add(i, bean);
-                }else{
-                    listItemMsg.add(bean);
-    //                lv.setSelection(listItemMsg.size());	//选中最新一条，滚动到底部
-                }
-                if(listItemMsg.size() >  Constant.NUM * 3){
-                    listItemMsg.remove(0);
-                }
-                Collections.sort(listItemMsg, compareTime);
-                adapter.notifyDataSetChanged();
-                if(i < 0){
-                    lv.smoothScrollByOffset(listItemMsg.size());
-                }
+                    int i = AndroidTools.listIndex(listItemMsg, bean, compare);
+                    if(i >= 0){
+    //                    listItemMsg.get(i).putAll(bean);
+                        listItemMsg.remove(i);
+                        listItemMsg.add(i, bean);
+                    }else{
+                        listItemMsg.add(bean);
+        //                lv.setSelection(listItemMsg.size());	//选中最新一条，滚动到底部
+                    }
+                    if(listItemMsg.size() >  Constant.NUM * 3){
+                        listItemMsg.remove(0);
+                    }
+                    Collections.sort(listItemMsg, compareTime);
+                    adapter.notifyDataSetChanged();
+                    if(i < 0){
+                        lv.smoothScrollByOffset(listItemMsg.size());
+                    }
 
                 }
             });

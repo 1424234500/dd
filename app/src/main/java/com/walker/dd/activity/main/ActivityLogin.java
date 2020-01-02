@@ -3,9 +3,7 @@ package com.walker.dd.activity.main;
 import java.util.List;
 
 import android.app.ActionBar.LayoutParams;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -19,7 +17,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -29,12 +26,16 @@ import com.walker.common.util.Bean;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
 import com.walker.dd.adapter.AdapterLvIds;
-import com.walker.dd.service.LoginModel;
+import com.walker.dd.core.Device;
+import com.walker.dd.core.push.PushService;
+import com.walker.dd.core.push.jpush.PushServiceJpushImpl;
+import com.walker.dd.service.SocketService;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.NetModel;
 import com.walker.dd.core.AndroidTools;
 import com.walker.dd.core.picasso.NetImage;
+import com.walker.dd.service.WebService;
 import com.walker.dd.view.ClearEditText;
 
 import com.walker.mode.*;
@@ -94,18 +95,9 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 		tvcannotlogin.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View arg0) {
-				final EditText inputServer = new EditText(ActivityLogin.this);
-				inputServer.setText(NetModel.getServerSocketIp());
-		        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityLogin.this);
-		        builder.setTitle("设置服务器IP").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer)  .setNegativeButton("Cancel", null);
-		        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog, int which) {
-		            	String ip = inputServer.getText().toString();
-		            	NetModel.setServerSocketIp(ip);
-                        getApp().initSocket();
-		             }
-		        });
-		        builder.show();
+
+
+
 				return true;
 			}
 		});
@@ -162,6 +154,10 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
         startActivity(new Intent(ActivityLogin.this, MainActivity.class));
         this.finish();
     }
+    private void goConfigSystem(){
+		startActivity(new Intent(ActivityLogin.this, ActivityConfigSystem.class));
+		this.finish();
+	}
 
     /**
      * 点击登录
@@ -181,7 +177,7 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 			//合法账号密码，发送登陆请求,并且本地放入本地临时账户信息记录
 			NowUser.setId(id);
 			NowUser.setPwd(pwd);
-            LoginModel.login(this, id, pwd, NowUser.getName(), MsgModel.getLastMsgTime(sqlDao));
+            SocketService.login(this, id, pwd, NowUser.getName(), MsgModel.getLastMsgTime(sqlDao));
 
 			//登陆中 提示
             loadingStart();
@@ -215,7 +211,7 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 
 	private void OpenIvDown(View view) {
 		// 构造需要显示的数据
-		liststr = LoginModel.finds(sqlDao);
+		liststr = SocketService.finds(sqlDao);
 		if (liststr.size() <= 0)
 			return;
 
@@ -238,7 +234,7 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
             @Override
             public void onDel(Bean res) {
                 String id = res.get(Key.ID, "");
-                LoginModel.delete(sqlDao, id);
+                SocketService.delete(sqlDao, id);
                 liststr.remove(res);	//上下转后 这个对象还是不是list中的那个呢？能否删除
                 mAdapter.notifyDataSetChanged();// 通知ListView，数据已发生改变
                 // popupWindow.dismiss();//关闭，
@@ -270,7 +266,7 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 	public void afterTextChanged(Editable e) {
 	    String id = cetId.getText().toString();
 
-		Bean llu = LoginModel.get(sqlDao, id);
+		Bean llu = SocketService.get(sqlDao, id);
 		if (llu != null){
 			String getid = llu.get(Key.ID, "");
             String getpwd = llu.get(Key.PWD, "");
@@ -385,9 +381,19 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
                 NowUser.setId(id);
                 NowUser.setName(name);
 
-                LoginModel.save(sqlDao, id, pwd, name, profile);
+                SocketService.save(sqlDao, id, pwd, name, profile);
+				PushService pushService = new PushServiceJpushImpl();
+				String pushId = pushService.getId(getApplicationContext());
+				if(pushId == null || pushId.length() == 0){
+					AndroidTools.toast(this, "pushId is null");
+				}else{
+					String deviceId = Device.getInstance().getDeviceNo(getApplicationContext());
+					String userId = NowUser.getId();
+					WebService.getInstance().bind(userId, deviceId, pushId, pushService.getType());
+				}
 
-                toast("login ok", data);
+
+				toast("login ok", data);
                 NowUser.setLogin(true);
                 goMain();
             }else{

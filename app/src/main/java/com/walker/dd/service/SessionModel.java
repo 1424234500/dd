@@ -100,7 +100,7 @@ public class SessionModel extends Model{
         session.setNowUserId(NowUser.getId());
         session.setId(dd.getId());
         session.setName(dd.getName());
-        session.setTime(TimeUtil.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
+        session.setTime(TimeUtil.getTime(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
         session.setType(Key.TEXT);
         session.setText("auto echo");
         session.setNum(1);

@@ -3,63 +3,50 @@ package com.walker.dd.activity.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.walker.common.util.Tools;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
-import com.walker.dd.service.SocketService;
-import com.walker.dd.service.NowUser;
+import com.walker.dd.core.AndroidTools;
+import com.walker.dd.service.NetModel;
 import com.walker.dd.view.ClearEditText;
 
-public class ActivityRegiste extends AcBase implements OnClickListener {
+public class ActivityConfigSystem extends AcBase implements OnClickListener {
 
-	ClearEditText cetUsername, cetEmail, cetPwd, cetRepwd;
+	ClearEditText cettag;
 	RadioGroup rgSex;
-	Button bRegiste;
+	Button bok;
 	TextView tvHelp, tvReturn;
- 
+
+	Spinner sipssocket, sipsweb;
+
 
 	@Override
 	public void OnCreate(Bundle savedInstanceState) {
 		// requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.ac_registe);
-	 
-		cetUsername = (ClearEditText)findViewById(R.id.cetusername);
-		cetPwd = (ClearEditText)findViewById(R.id.cetpwd);
-		cetEmail = (ClearEditText)findViewById(R.id.cetemail);
-		cetRepwd = (ClearEditText)findViewById(R.id.cetrepwd);
-		
+		setContentView(R.layout.ac_config_system);
+
+		cettag = (ClearEditText)findViewById(R.id.cettag);
+		sipssocket = (Spinner)findViewById(R.id.sipssocket);
+		sipsweb = (Spinner)findViewById(R.id.sipsweb);
+
 		rgSex = (RadioGroup)findViewById(R.id.rgsex);
-		bRegiste = (Button)findViewById(R.id.bregiste);
+		bok = (Button)findViewById(R.id.bok);
 		
 		tvHelp = (TextView)findViewById(R.id.tvhelp);
 		tvReturn = (TextView)findViewById(R.id.tvreturn);
 		
 		tvReturn.setOnClickListener(this);
 		tvHelp.setOnClickListener(this);
-		bRegiste.setOnClickListener(this);
-		cetPwd.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-				
-			}
-			@Override
-			public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-			}
-			@Override
-			public void afterTextChanged(Editable arg0) {
-				cetRepwd.setText("");
-			}
-		});
-		
+		bok.setOnClickListener(this);
+
 	} 
 
 	 
@@ -72,7 +59,7 @@ public class ActivityRegiste extends AcBase implements OnClickListener {
 			break;
 		case R.id.tvhelp:
 			break;
-		case R.id.bregiste:
+		case R.id.bok:
 			ClickRegiste();
 			break;
 		 
@@ -81,23 +68,25 @@ public class ActivityRegiste extends AcBase implements OnClickListener {
 
 	private void ClickRegiste() {
 
-		String username = cetUsername.getText().toString();
-		String pwd = cetPwd.getText().toString();
-		String repwd = cetRepwd.getText().toString();
-		String email = cetEmail.getText().toString();
-		
+		String tag = cettag.getText().toString();
+		String socketIp = sipssocket.getSelectedItem().toString();
+		String webIp = sipsweb.getSelectedItem().toString();
+
 	    RadioButton radioButton = (RadioButton)findViewById(rgSex.getCheckedRadioButtonId());
 		String sex =  radioButton.getText() + "";
 		
-		if(Tools.notNull(username,pwd,repwd,email,sex) ){
-			if(repwd.equals(pwd)){
-                NowUser.setPwd(pwd);
-                SocketService.registe(this, username, email, sex, pwd);
-				loadingStart();
-			}else{
-				toast("两次密码不同");
-				cetRepwd.setText("");
+		if(Tools.notNull(socketIp, webIp, sex) ){
+			try {
+				NetModel.setServerSocketIp(socketIp.substring(0, socketIp.lastIndexOf(":")));
+				NetModel.setServerSocketPort(Integer.valueOf(socketIp.substring(socketIp.lastIndexOf(":"), 0)));
+
+				NetModel.setServerWebIp(socketIp.substring(0, webIp.lastIndexOf(":")));
+				NetModel.setServerWebPort(Integer.valueOf(webIp.substring(webIp.lastIndexOf(":"), 0)));
+
+			}catch (Exception e){
+				AndroidTools.toast(getContext(), Tools.toString(e));
 			}
+
 		}else{
 			toast("有数据未填写");
 		}
@@ -107,15 +96,14 @@ public class ActivityRegiste extends AcBase implements OnClickListener {
 
 	  
 	public void out(String str) {
-		Tools.out("ActivityRegiste." + str);
+		Tools.out("ActivityConfigSystem." + str);
 	}
 
 	 
 
 	@Override
 	public void OnStart() {
-		// TODO 自动生成的方法存根
-		
+
 	}
 
 

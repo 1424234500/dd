@@ -26,30 +26,52 @@ import okio.Source;
 
 public class OkHttpUtil {
 
+    /**
+     * 私有构造器
+     */
+    private OkHttpUtil(){}
+    /**
+     * 私有静态内部类
+     */
+    private static class SingletonFactory{
+        private static OkHttpUtil instance;
+        static {
+            System.out.println("静态内部类初始化" + SingletonFactory.class);
+            instance = new OkHttpUtil();
+        }
+    }
+    /**
+     * 内部类模式 可靠
+     */
+    public static OkHttpUtil getInstance(){
+        return SingletonFactory.instance;
+    }
+
+
     public static String get(String url) throws IOException {
-        AndroidTools.log("get", url);
+        AndroidTools.log("get begin", url);
         Request request = new Request.Builder()
                 .url(url)
                 .get()
                 .build();
-        OkHttpClient okHttpClient = OkHttpUtil.getClient();
+        OkHttpClient okHttpClient = OkHttpUtil.getInstance().getClient();
         Response response = okHttpClient.newCall(request).execute();
         return response.body().string();
     }
     public static void get(String url, Callback callback){
-        AndroidTools.log("get", url);
+        AndroidTools.log("get begin", url);
         Request request = new Request.Builder()
                 .url(url)
                 .get()
                 .build();
-        OkHttpClient okHttpClient = OkHttpUtil.getClient();
+        OkHttpClient okHttpClient = OkHttpUtil.getInstance().getClient();
         okHttpClient.newCall(request).enqueue(callback);
     }
     public static void exe(Request request, Callback callback) {
-        getClient().newCall(request).enqueue(callback);
+        OkHttpUtil.getInstance().getClient().newCall(request).enqueue(callback);
     }
     public static void post(String url, Bean data, Callback callback){
-        AndroidTools.log("get", url);
+        AndroidTools.log("get begin", url);
         MultipartBody.Builder builder = new MultipartBody.Builder();
         for(Object key : data.keySet()){
             builder.addFormDataPart(String.valueOf(key), String.valueOf(data.get(key)));
@@ -59,12 +81,28 @@ public class OkHttpUtil {
                 .url(url)
                 .post(requestBody)
                 .build();
-        OkHttpClient okHttpClient = OkHttpUtil.getClient();
+        OkHttpClient okHttpClient = OkHttpUtil.getInstance().getClient();
         okHttpClient.newCall(request).enqueue(callback);
     }
+    public static String post(String url, Bean data) throws IOException {
+        AndroidTools.log("post begin", url, data);
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        for(Object key : data.keySet()){
+            builder.addFormDataPart(String.valueOf(key), String.valueOf(data.get(key)));
+        }
+        RequestBody requestBody = builder.build();
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+        OkHttpClient okHttpClient = OkHttpUtil.getInstance().getClient();
+        String str = okHttpClient.newCall(request).execute().body().toString();
+        AndroidTools.log("post res", url, data, str);
+        return str;
+    }
 
-    static OkHttpClient client = null;
-    public static OkHttpClient getClient() {
+    OkHttpClient client = null;
+    public OkHttpClient getClient() {
         if(client == null) {
             client = new OkHttpClient.Builder()
                     .connectTimeout(4, TimeUnit.SECONDS)
@@ -109,7 +147,7 @@ public class OkHttpUtil {
                 .post(requestBody)
                 .build();
 
-        OkHttpClient okHttpClient = OkHttpUtil.getClient();
+        OkHttpClient okHttpClient = OkHttpUtil.getInstance().getClient();
         AndroidTools.log("upload", url, path, requestBody, request, okHttpClient);
         okHttpClient.newCall(request).enqueue(callback);
     }
@@ -141,7 +179,7 @@ public class OkHttpUtil {
      * @param listener 下载监听
      */
     public static void download(final String url, final String savePath, final OnHttp listener) {
-        AndroidTools.log("download", url, savePath);
+        AndroidTools.log("download begin", url, savePath);
         Request request = new Request.Builder()
                 .url(url)
                 .build();

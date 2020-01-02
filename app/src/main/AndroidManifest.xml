@@ -43,19 +43,16 @@
         <!--android:theme="@style/AppTheme"-->
         <!--android:roundIcon="@mipmap/ic_launcher_round"-->
 
-        <activity android:name=".activity.main.MainActivity">
-
-        </activity>
+        <activity android:name=".activity.main.MainActivity" android:launchMode="singleInstance" />
         <activity android:name=".activity.other.ActivityTestSocket" />
         <activity android:name=".activity.other.ActivityTestEcho" />
         <activity android:name=".activity.other.ActivityCompose" />
         <activity android:name=".activity.other.ActivityTestOkhttp3" />
 
-        <activity android:name=".activity.chat.ActivityChat" />
+        <activity android:name=".activity.chat.ActivityChat"  android:launchMode="singleInstance" />
 
-
-        <activity android:name=".activity.main.ActivityRegiste" />
-        <activity android:name=".activity.main.ActivityLogin">
+        <activity android:name=".activity.main.ActivityRegiste"  android:launchMode="singleInstance" />
+        <activity android:name=".activity.main.ActivityLogin"  android:launchMode="singleInstance" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

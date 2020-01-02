@@ -17,7 +17,7 @@ import com.walker.common.util.Bean;
 import com.walker.dd.R;
 import com.walker.dd.activity.AcBase;
 import com.walker.dd.activity.FragmentBase;
-import com.walker.dd.service.LoginModel;
+import com.walker.dd.service.SocketService;
 import com.walker.dd.service.MsgModel;
 import com.walker.dd.service.NowUser;
 import com.walker.dd.service.SessionModel;
@@ -230,7 +230,7 @@ public class MainActivity extends AcBase {
             public void onClick(DialogInterface dialog, int which) {
                 String name = etuser.getText().toString();
                 NowUser.setName(name);
-                LoginModel.login(MainActivity.this, NowUser.getId(), NowUser.getPwd(), name);
+                SocketService.login(MainActivity.this, NowUser.getId(), NowUser.getPwd(), name);
             }
         });
         builder.show();
@@ -273,7 +273,7 @@ public class MainActivity extends AcBase {
                     NowUser.setId(id);
                     NowUser.setName(name);
                     nb.setTitle(name);
-                    LoginModel.save(sqlDao, id, "", name, "");
+                    SocketService.save(sqlDao, id, "", name, "");
                     toast("login ok", data);
                     sendSocket(Plugin.KEY_SESSION, new Bean());
                 }else{
@@ -282,10 +282,14 @@ public class MainActivity extends AcBase {
                 }
             }
             else if(plugin.equals(Plugin.KEY_MESSAGE)){
-               addMsg(msg);
+                AndroidTools.toastVoice();
+
+                addMsg(msg);
             }
             //批量离线消息
             else if(plugin.equals(Plugin.KEY_OFFLINEMSG)){
+                AndroidTools.toastVoice();
+
                 List<Bean> list = msg.getData();
                 for(Bean item : list){
                     addMsg(new Msg(item));
