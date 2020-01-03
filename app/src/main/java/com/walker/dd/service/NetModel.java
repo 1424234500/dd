@@ -1,5 +1,6 @@
 package com.walker.dd.service;
 
+import com.walker.dd.activity.Application;
 import com.walker.dd.core.service.SharedPreferencesServiceImpl;
 
 public class NetModel {
@@ -26,45 +27,47 @@ public class NetModel {
     }
 
     public static String getServerSocketIp(){
-        return SharedPreferencesServiceImpl.get(NowUser.context, "IP_SOCKET", ipSockets[ccSocket]);
+        return SharedPreferencesServiceImpl.get(Application.context, "IP_SOCKET", ipSockets[ccSocket]);
     }
     public static void setServerSocketIp(String ip){
-        SharedPreferencesServiceImpl.put(NowUser.context, "IP_SOCKET", ip);
+        SharedPreferencesServiceImpl.put(Application.context, "IP_SOCKET", ip);
     }
 
     public static int getServerSocketPort(){
-        return Integer.valueOf(SharedPreferencesServiceImpl.get(NowUser.context, "PORT_SOCKET", portSockets[ccSocket] + ""));
+        return Integer.valueOf(SharedPreferencesServiceImpl.get(Application.context, "PORT_SOCKET", portSockets[ccSocket] + ""));
     }
     public static void setServerSocketPort(int port){
-        SharedPreferencesServiceImpl.put(NowUser.context, "PORT_SOCKET", port + "");
+        SharedPreferencesServiceImpl.put(Application.context, "PORT_SOCKET", port + "");
     }
 
     public static String getServerWebUrl(){
-        return "http://" + getServerWebPort() + ":" + getServerWebIp() ;
+        return "http://"  + getServerWebIp() + ":" + getServerWebPort() ;
     }
     public static int getServerWebPort(){
-        return Integer.valueOf(SharedPreferencesServiceImpl.get(NowUser.context, "PORT_WEB", portWebs[ccWeb] + ""));
+        return Integer.valueOf(SharedPreferencesServiceImpl.get(Application.context, "PORT_WEB", portWebs[ccWeb] + ""));
     }
     public static String getServerWebIp(){
-        return SharedPreferencesServiceImpl.get(NowUser.context, "IP_WEB", ipWebs[ccWeb] + "");
+        return SharedPreferencesServiceImpl.get(Application.context, "IP_WEB", ipWebs[ccWeb] + "");
     }
     public static void setServerWebIp(String ip){
-        SharedPreferencesServiceImpl.put(NowUser.context, "IP_WEB", ip);
+        SharedPreferencesServiceImpl.put(Application.context, "IP_WEB", ip);
     }
     public static void setServerWebPort(int port){
-        SharedPreferencesServiceImpl.put(NowUser.context, "PORT_WEB", port + "");
+        SharedPreferencesServiceImpl.put(Application.context, "PORT_WEB", port + "");
     }
 
     /**
-     * //服务器http上传地址"/walker-web/file/uploadCmf.do";
-     * @return
+     http://127.0.0.1:8090/file/upload.do
      */
     public static String httpUpload(){
-        return "http://"+NetModel.getServerWebIp() + ":" + NetModel.getServerWebPort() + "/walker-web/file/uploadCmf.do";
+        return getServerWebUrl() +  "/file/upload.do";
     }
 
+    /**
+     http://127.0.0.1:8090/file/download.do?key=undefined
+     */
     public static String httpDownload(String id){
-        return "http://"+NetModel.getServerWebIp() + ":" + NetModel.getServerWebPort() + "/walker-web/file/downloadRe.do"+"?KEY=" + id;
+        return getServerWebUrl() + "/file/download.do"+"?key=" + id;
     }
 
 

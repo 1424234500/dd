@@ -71,7 +71,7 @@ public class Device {
      * @param context
      * @return
      */
-    public String getResolution(Context context) {
+    public String getResolution(Activity context) {
         // 方法1 Android获得屏幕的宽和高
         WindowManager windowManager = ((Activity) context).getWindowManager();
         Display display = windowManager.getDefaultDisplay();
@@ -86,7 +86,7 @@ public class Device {
     /**
      * 获取唯一设备号
      */
-    public String getDeviceNo(Context context) {
+    public String getDeviceNo(Activity context) {
         if (!checkReadPhoneStatePermission(context)) {
             Log.w(TAG, "获取唯一设备号: 无权限");
             return "";
@@ -208,7 +208,7 @@ public class Device {
         return strNetworkType;
     }
 
-    private boolean checkReadPhoneStatePermission(Context context) {
+    private boolean checkReadPhoneStatePermission(Activity context) {
         try {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -224,7 +224,7 @@ public class Device {
 
 
     @SuppressLint({"MissingPermission", "HardwareIds"})
-    public String getMEID(Context context) {
+    public String getMEID(Activity context) {
         if (!checkReadPhoneStatePermission(context)) {
             Log.w(TAG, "获取唯一设备号-getMEID: 无权限");
             return "";
@@ -246,7 +246,7 @@ public class Device {
     }
 
     @SuppressLint("MissingPermission")
-    public String getIMEI(Context context) {
+    public String getIMEI(Activity context) {
         if (!checkReadPhoneStatePermission(context)) {
             Log.w(TAG, "获取唯一设备号-getIMEI: 无权限");
             return "";
@@ -276,7 +276,7 @@ public class Device {
     }
 
     @SuppressLint("MissingPermission")
-    public String getIMEI2(Context context) {
+    public String getIMEI2(Activity context) {
         if (!checkReadPhoneStatePermission(context)) {
             Log.w(TAG, "获取唯一设备号-getIMEI2: 无权限");
             return "";

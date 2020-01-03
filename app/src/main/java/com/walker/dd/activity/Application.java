@@ -123,7 +123,7 @@ public class Application extends android.app.Application implements OnSocket {
 		super.onCreate();
 
 		// 初始化全局变量
-		showSystemInfo();
+//		showSystemInfo();
 
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);//推送栏广播
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
@@ -206,20 +206,6 @@ public class Application extends android.app.Application implements OnSocket {
     }
 
 
-    public void showSystemInfo(){
-    	ActivityManager activityManager = (ActivityManager)this.getSystemService(Context.ACTIVITY_SERVICE);
-		int memorySize = activityManager.getMemoryClass();
-    	out("设备内存限制:" + memorySize);
-        Device.getInstance().getPhoneModel();
-        Device.getInstance().getResolution(getApplicationContext());
-        Device.getInstance().getDeviceNo(getApplicationContext());
-        Device.getInstance().getMEID(getApplicationContext());
-        Device.getInstance().getIMEI(getApplicationContext());
-        Device.getInstance().getIMEI2(getApplicationContext());
-        Device.getInstance().getNetMode(getApplicationContext());
-        Device.getInstance().getNetOperator(getApplicationContext());
-
-    }
 
 
 }

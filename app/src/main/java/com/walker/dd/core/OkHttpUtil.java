@@ -2,6 +2,7 @@ package com.walker.dd.core;
 
 import com.walker.common.util.Bean;
 import com.walker.common.util.FileUtil;
+import com.walker.common.util.Watch;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -85,19 +86,30 @@ public class OkHttpUtil {
         okHttpClient.newCall(request).enqueue(callback);
     }
     public static String post(String url, Bean data) throws IOException {
-        AndroidTools.log("post begin", url, data);
-        MultipartBody.Builder builder = new MultipartBody.Builder();
-        for(Object key : data.keySet()){
-            builder.addFormDataPart(String.valueOf(key), String.valueOf(data.get(key)));
+        String str = "";
+        Watch watch = new Watch("post url:" + url + " data:" + data );
+        try {
+            MultipartBody.Builder builder = new MultipartBody.Builder();
+            for (Object key : data.keySet()) {
+                builder.addFormDataPart(String.valueOf(key), String.valueOf(data.get(key)));
+            }
+            RequestBody requestBody = builder.build();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(requestBody)
+                    .build();
+            watch.putln("header:" + String.valueOf(request.headers().toMultimap()));
+            OkHttpClient okHttpClient = OkHttpUtil.getInstance().getClient();
+            ResponseBody responseBody = okHttpClient.newCall(request).execute().body();
+            str = responseBody.string();
+            watch.res(str);
+        }catch (Exception e){
+            watch.exceptionWithThrow(e);
+            throw new RuntimeException(e);
+        }finally {
+            AndroidTools.log(watch);
+
         }
-        RequestBody requestBody = builder.build();
-        Request request = new Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .build();
-        OkHttpClient okHttpClient = OkHttpUtil.getInstance().getClient();
-        String str = okHttpClient.newCall(request).execute().body().toString();
-        AndroidTools.log("post res", url, data, str);
         return str;
     }
 

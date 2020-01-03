@@ -3,10 +3,12 @@ package com.walker.dd.activity.main;
 import java.util.List;
 
 import android.app.ActionBar.LayoutParams;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -57,6 +59,9 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 
 	@Override
 	public void OnCreate(Bundle savedInstanceState) {
+		showSystemInfo();
+		AndroidTools.strictMode();
+
 		// requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.ac_login);
 		rllogin = (View) findViewById(R.id.rllogin);
@@ -96,7 +101,7 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 			@Override
 			public boolean onLongClick(View arg0) {
 
-
+				goConfigSystem();
 
 				return true;
 			}
@@ -382,15 +387,17 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
                 NowUser.setName(name);
 
                 SocketService.save(sqlDao, id, pwd, name, profile);
-				PushService pushService = new PushServiceJpushImpl();
-				String pushId = pushService.getId(getApplicationContext());
-				if(pushId == null || pushId.length() == 0){
-					AndroidTools.toast(this, "pushId is null");
-				}else{
-					String deviceId = Device.getInstance().getDeviceNo(getApplicationContext());
-					String userId = NowUser.getId();
-					WebService.getInstance().bind(userId, deviceId, pushId, pushService.getType());
-				}
+
+				 PushService pushService = new PushServiceJpushImpl();
+				 String pushId = pushService.getId(getApplicationContext());
+				 if(pushId == null || pushId.length() == 0){
+					 AndroidTools.toast(this, "pushId is null");
+				 }else{
+					 String deviceId = Device.getInstance().getDeviceNo(ActivityLogin.this);
+					 String userId = NowUser.getId();
+					 WebService.getInstance().bind(userId, deviceId, pushId, pushService.getType());
+				 }
+
 
 
 				toast("login ok", data);
@@ -406,4 +413,19 @@ public class ActivityLogin extends AcBase implements OnClickListener, TextWatche
 
     }
 
+
+	public void showSystemInfo(){
+		ActivityManager activityManager = (ActivityManager)this.getSystemService(Context.ACTIVITY_SERVICE);
+		int memorySize = activityManager.getMemoryClass();
+		out("设备内存限制:" + memorySize);
+		Device.getInstance().getPhoneModel();
+		Device.getInstance().getResolution(this);
+		Device.getInstance().getDeviceNo(this);
+		Device.getInstance().getMEID(this);
+		Device.getInstance().getIMEI(this);
+		Device.getInstance().getIMEI2(this);
+		Device.getInstance().getNetMode(this);
+		Device.getInstance().getNetOperator(this);
+
+	}
 }

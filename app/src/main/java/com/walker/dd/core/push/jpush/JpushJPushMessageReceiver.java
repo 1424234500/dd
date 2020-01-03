@@ -57,7 +57,7 @@ public class JpushJPushMessageReceiver extends JPushMessageReceiver {
         String text = notificationMessage.notificationContent;
         String appkey = notificationMessage.appkey;     //557bf3f8c230ec7cdefb0e06
         String extras = notificationMessage.notificationExtras; //{"hhh":"www"}
-        int id = Integer.valueOf(notificationMessage.msgId);  //514982759
+        int id = Integer.valueOf(notificationMessage.msgId.substring(notificationMessage.msgId.length() - 5, notificationMessage.msgId.length()));  //514982759
 
         AndroidTools.sendNotification(context, id, title, text);
 

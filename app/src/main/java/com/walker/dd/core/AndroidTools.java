@@ -20,6 +20,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -33,6 +34,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
@@ -362,6 +364,9 @@ public class AndroidTools {
 
 
         builder.setSmallIcon(R.drawable.ic_launcher)
+//                .setBadgeIconType(R.drawable.ic_launcher)
+                .setLargeIcon(BitmapFactory.decodeResource(
+                        context.getResources(), R.mipmap.ic_launcher))
                 .setContentTitle(title)//设置通知标题
                 .setContentText(text)//设置通知内容
                 .setContentIntent(clickPI)// 设置pendingIntent,点击通知时就会用到
@@ -1059,6 +1064,15 @@ public class AndroidTools {
                     {"", "*/*"}
             };
 
-
-
+    /**
+     * 网络耗时主线程 问题
+     */
+    public static void strictMode() {
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                .detectDiskReads().detectDiskWrites().detectNetwork()
+                .penaltyLog().build());
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                .detectLeakedSqlLiteObjects().detectLeakedClosableObjects()
+                .penaltyLog().penaltyDeath().build());
+    }
 }

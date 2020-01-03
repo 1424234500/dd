@@ -3,6 +3,7 @@ package com.walker.dd.service;
 import com.walker.common.util.Bean;
 import com.walker.common.util.HttpUtil;
 import com.walker.common.util.JsonUtil;
+import com.walker.common.util.Watch;
 import com.walker.dd.core.AndroidTools;
 import com.walker.dd.core.OkHttpUtil;
 import com.walker.mode.PushBindModel;
@@ -57,59 +58,83 @@ public class WebService extends Model {
     }
 
     public String get(String url, Bean data) throws Exception {
-//        String url = NetModel.getServerWebUrl() + "/push/push.do";
-        url = NetModel.getServerWebUrl() + url;
-        url = HttpUtil.makeUrl(url, data, "utf-8");
-        AndroidTools.log("get begin", url);
-        Request request = getRequestBuilderWithToken()
-                .url(url)
-                .get()
-                .build();
-        OkHttpClient okHttpClient = getClient();
-        Response response = okHttpClient.newCall(request).execute();
-        if (response.code() == 404) {
-            AndroidTools.log("post error 404 retry login", url, data, String.valueOf(response.body()));
-            AndroidTools.toast("404 retry login");
-            NowUser.setToken("");
-            throw new RuntimeException("404");
+        String str = "";
+        Watch watch = new Watch("get");
+        try {
+    //        String url = NetModel.getServerWebUrl() + "/push/push.do";
+            url = NetModel.getServerWebUrl() + url;
+            url = HttpUtil.makeUrl(url, data, "utf-8");
+            watch.put("url", url);
+            Request request = getRequestBuilderWithToken()
+                    .url(url)
+                    .get()
+                    .build();
+            watch.putln("header:" + String.valueOf(request.headers().toMultimap()));
+
+            OkHttpClient okHttpClient = getClient();
+            Response response = okHttpClient.newCall(request).execute();
+            if (response.code() == 404) {
+                AndroidTools.log("post error 404 retry login", url, data, String.valueOf(response.body()));
+                AndroidTools.toast("404 retry login");
+                NowUser.setToken("");
+                throw new RuntimeException("404");
+            }
+            str = String.valueOf(response.body().string());
+            watch.res(str);
+        }catch (Exception e){
+            watch.exceptionWithThrow(e);
+            throw new RuntimeException(e);
+        }finally {
+            AndroidTools.log(watch);
+
         }
-        String str = String.valueOf(response.body());
-        AndroidTools.out("get res", url, str);
         return str;
     }
 
     public String post(String url, Bean data) throws Exception {
 //        String url = NetModel.getServerWebUrl() + "/push/push.do";
-        url = NetModel.getServerWebUrl() + url;
-        AndroidTools.log("post begin", url, data);
-        MultipartBody.Builder builder = new MultipartBody.Builder();
-        for (Object key : data.keySet()) {
-            builder.addFormDataPart(String.valueOf(key), String.valueOf(data.get(key)));
+
+        String str = "";
+        Watch watch = new Watch("post url:" + url + " data:" + data );
+        try {
+            url = NetModel.getServerWebUrl() + url;
+            MultipartBody.Builder builder = new MultipartBody.Builder();
+            for (Object key : data.keySet()) {
+                builder.addFormDataPart(String.valueOf(key), String.valueOf(data.get(key)));
+            }
+            RequestBody requestBody = builder.build();
+            Request request = getRequestBuilderWithToken()
+                    .url(url)
+                    .post(requestBody)
+                    .build();
+            watch.putln("header:" + String.valueOf(request.headers().toMultimap()));
+
+            OkHttpClient okHttpClient = getClient();
+            Response response = okHttpClient.newCall(request).execute();
+            if (response.code() == 404) {
+                AndroidTools.log("post error 404 retry login", url, data, String.valueOf(response.body()));
+                AndroidTools.toast("404 retry login");
+                NowUser.setToken("");
+                throw new RuntimeException("404");
+            }
+            str = String.valueOf(response.body().string());
+            watch.res(str);
+        }catch (Exception e){
+            watch.exceptionWithThrow(e);
+            throw new RuntimeException(e);
+        }finally {
+            AndroidTools.log(watch);
+
         }
-        RequestBody requestBody = builder.build();
-        Request request = getRequestBuilderWithToken()
-                .url(url)
-                .post(requestBody)
-                .build();
-        OkHttpClient okHttpClient = getClient();
-        Response response = okHttpClient.newCall(request).execute();
-        if (response.code() == 404) {
-            AndroidTools.log("post error 404 retry login", url, data, String.valueOf(response.body()));
-            AndroidTools.toast("404 retry login");
-            NowUser.setToken("");
-            throw new RuntimeException("404");
-        }
-        String str = String.valueOf(response.body());
-        AndroidTools.out("post res", url, data, str);
         return str;
     }
 
 
     public String getToken(String id, String pwd) {
         String res = "";
-
+        Watch watch = new Watch("get");
         try {
-            String url = NetModel.getServerWebUrl() + "/push/push.do";
+            String url = NetModel.getServerWebUrl() + "/shiro/login.do";
             Bean data = new Bean()
                     .put("username", id)
                     .put("password", pwd);
@@ -130,16 +155,19 @@ public class WebService extends Model {
 //                "info": "登录成功"
 //        }
             Bean bean = JsonUtil.get(str);
-            res = bean.get("TOKEN", "");
+            res = bean.get("data", new Bean()).get("TOKEN", "");
+            if (res.length() == 0) {
+                AndroidTools.toast("login web error ");
+                throw new RuntimeException("login web error");
+            }
+            watch.res(res);
+        }catch (Exception e){
+            watch.exceptionWithThrow(e);
+            throw new RuntimeException(e);
+        }finally {
+            AndroidTools.log(watch);
+        }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            AndroidTools.log("getToken", id, pwd, e.getMessage(), e.toString());
-        }
-        if (res.length() == 0) {
-            AndroidTools.toast("login web error ");
-            throw new RuntimeException("login web error");
-        }
         return res;
     }
 
@@ -160,7 +188,7 @@ public class WebService extends Model {
 
         try {
 //http://127.0.0.1:8090/push/bind.do?USER_ID=001&DEVICE_ID=deviceId001&PUSH_ID=deviceId&TYPE=jpush
-            String str = get("/push/push.do", new Bean()
+            String str = get("/push/bind.do", new Bean()
                     .put("USER_ID", userId)
                     .put("DEVICE_ID", deviceId)
                     .put("PUSH_ID", pushId)

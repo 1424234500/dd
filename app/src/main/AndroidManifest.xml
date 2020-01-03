@@ -58,7 +58,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".activity.main.ActivityConfigSystem"  android:launchMode="singleInstance" />
 
         <!--文件外置应用打不开问题 1 -->
         <provider
